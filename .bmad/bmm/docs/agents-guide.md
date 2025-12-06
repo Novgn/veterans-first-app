@@ -695,11 +695,11 @@ You can customize any agent's personality without modifying core agent files.
 ```yaml
 agent:
   persona:
-    displayName: 'Custom Name' # Optional: Override display name
-    communicationStyle: 'Custom style description' # Optional: Override style
+    displayName: "Custom Name" # Optional: Override display name
+    communicationStyle: "Custom style description" # Optional: Override style
     principles: # Optional: Add or replace principles
-      - 'Custom principle for this project'
-      - 'Another project-specific guideline'
+      - "Custom principle for this project"
+      - "Another project-specific guideline"
 ```
 
 ### Override Behavior
@@ -720,7 +720,7 @@ agent:
 ```yaml
 agent:
   persona:
-    communicationStyle: 'Formal and corporate-focused. Uses business terminology. Structured responses with executive summaries.'
+    communicationStyle: "Formal and corporate-focused. Uses business terminology. Structured responses with executive summaries."
 ```
 
 **Add Domain Expertise:**
@@ -740,9 +740,9 @@ agent:
 agent:
   persona:
     principles:
-      - 'HIPAA compliance is non-negotiable'
-      - 'Prioritize patient safety over feature velocity'
-      - 'Every feature must have clinical validation'
+      - "HIPAA compliance is non-negotiable"
+      - "Prioritize patient safety over feature velocity"
+      - "Every feature must have clinical validation"
 ```
 
 **Change Personality:**
@@ -750,8 +750,8 @@ agent:
 ```yaml
 agent:
   persona:
-    displayName: 'Alex' # Change from default "Amelia"
-    communicationStyle: 'Casual and friendly. Uses emojis. Explains technical concepts in simple terms.'
+    displayName: "Alex" # Change from default "Amelia"
+    communicationStyle: "Casual and friendly. Uses emojis. Explains technical concepts in simple terms."
 ```
 
 ### Party Mode Integration

@@ -1,15 +1,15 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 inputDocuments:
-  - 'docs/prd.md'
-  - 'docs/analysis/product-brief-veterans-first-app-2025-12-05.md'
-  - 'docs/analysis/brainstorming-session-2025-12-05.md'
-workflowType: 'ux-design'
+  - "docs/prd.md"
+  - "docs/analysis/product-brief-veterans-first-app-2025-12-05.md"
+  - "docs/analysis/brainstorming-session-2025-12-05.md"
+workflowType: "ux-design"
 lastStep: 14
 workflow_complete: true
-project_name: 'veterans-first-app'
-user_name: 'Wayne'
-date: '2025-12-05'
+project_name: "veterans-first-app"
+user_name: "Wayne"
+date: "2025-12-05"
 ---
 
 # UX Design Specification veterans-first-app
@@ -27,18 +27,20 @@ date: '2025-12-05'
 
 Veterans 1st Transportation is a relationship-centered Non-Emergency Medical Transportation (NEMT) service for seniors, veterans, and mobility-dependent residents in the Raleigh-Durham area. The product vision transcends typical rideshare or medical transport by prioritizing dignity, consistency, and human connection over algorithmic efficiency.
 
-Core ethos: *"It's not about the miles. It's about the service."*
+Core ethos: _"It's not about the miles. It's about the service."_
 
 The UX must embody this philosophy in every interaction — from Margaret's first 3-tap booking to James receiving patience after dialysis to Sarah's notification that Mom arrived safely.
 
 ### Target Users
 
 **Primary Riders:**
+
 - **Margaret Chen (78)** — Independent senior, low tech comfort, fiercely protective of independence, needs simple booking and same-driver consistency
 - **James Washington (67)** — Vietnam veteran, dialysis 3x/week, needs dignity and patience, wants to be treated as a person not a pickup number
 - **Robert & Linda Martinez (72/70)** — Couple losing independence, need flexibility and companion rides to maintain social life
 
 **Secondary Users:**
+
 - **Dave Mitchell (52)** — Mission-driven driver, needs clear rider profiles, relationship history, and predictable earnings
 - **Diana Okonkwo (38)** — Dispatch coordinator, needs real-time visibility and tools that help her care, not just process
 - **Sarah Chen (45)** — Worried daughter, needs peace of mind through visibility without invading mom's privacy
@@ -87,12 +89,12 @@ The experience extends beyond booking to encompass the full ride lifecycle:
 
 **Multi-App Ecosystem:**
 
-| Platform | Application | Primary Users | Priority |
-|----------|-------------|---------------|----------|
-| iOS/Android | Rider App | Seniors, veterans, mobility-dependent riders | P0 — MVP |
-| iOS/Android | Driver App | Mission-driven driver fleet | P0 — MVP |
-| Web | Admin Console | Dispatch coordinators, customer service | P0 — MVP |
-| Web | Business Operations | Billing, compliance, management | P0 — MVP |
+| Platform    | Application         | Primary Users                                | Priority |
+| ----------- | ------------------- | -------------------------------------------- | -------- |
+| iOS/Android | Rider App           | Seniors, veterans, mobility-dependent riders | P0 — MVP |
+| iOS/Android | Driver App          | Mission-driven driver fleet                  | P0 — MVP |
+| Web         | Admin Console       | Dispatch coordinators, customer service      | P0 — MVP |
+| Web         | Business Operations | Billing, compliance, management              | P0 — MVP |
 
 **Cross-Platform Requirements:**
 
@@ -192,15 +194,15 @@ The product must evoke three transformative emotional states:
 
 **Emotion-to-UX Translation:**
 
-| Emotion | UX Implementation |
-|---------|-------------------|
-| Independence | 3-tap booking, no external help needed |
-| Confidence | Large buttons, clear labels, undo always available |
-| Trust | Price shown upfront, same driver matching visible |
-| Calm | Soft colors, no urgency tones, generous timeouts |
-| Dignity | Respectful language, no rushing UI elements |
-| Connection | Driver relationship history, personalization visible |
-| Relief | Auto-notifications, photo proof, zero family action needed |
+| Emotion      | UX Implementation                                          |
+| ------------ | ---------------------------------------------------------- |
+| Independence | 3-tap booking, no external help needed                     |
+| Confidence   | Large buttons, clear labels, undo always available         |
+| Trust        | Price shown upfront, same driver matching visible          |
+| Calm         | Soft colors, no urgency tones, generous timeouts           |
+| Dignity      | Respectful language, no rushing UI elements                |
+| Connection   | Driver relationship history, personalization visible       |
+| Relief       | Auto-notifications, photo proof, zero family action needed |
 
 ### Emotional Design Principles
 
@@ -565,6 +567,7 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 **Goal:** First successful booking from discovery to safe arrival
 
 **Flow:**
+
 1. Sarah calls Veterans 1st → Diana creates rider profile
 2. Books Tuesday grocery ride → Confirmation SMS to Margaret
 3. 24h before: Confirmation call → Margaret confirms
@@ -575,6 +578,7 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 8. Photo confirmation → Sarah notified "Mom arrived safely"
 
 **Critical UX Moments:**
+
 - Phone booking removes tech barrier
 - Confirmation call reduces anxiety
 - Driver photo builds anticipation
@@ -585,6 +589,7 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 **Goal:** Recurring medical transport with dignity
 
 **Flow:**
+
 1. Evelyn sets up M/W/F recurring rides → Auto-books weekly
 2. Each ride: 24h reminder call
 3. Day of: Dave auto-assigned (preferred driver)
@@ -596,6 +601,7 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 9. Dave walks James to door → Safe arrival logged
 
 **Critical UX Moments:**
+
 - Recurring rides mean zero rebooking effort
 - Driver profile shows medical context ("needs extra time post-treatment")
 - Wait time is included, no meter anxiety
@@ -606,6 +612,7 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 **Goal:** Remote family monitoring without invading privacy
 
 **Flow:**
+
 1. Sarah downloads app → Creates family account
 2. Sends permission request to Margaret
 3. Margaret approves: "Sarah can see my rides"
@@ -614,12 +621,14 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 6. Sarah exhales, returns to work
 
 **Family Capabilities:**
+
 - View ride history
 - Book rides for Margaret
 - Add funds to account
 - Update emergency contacts
 
 **Critical UX Moments:**
+
 - Permission model respects autonomy
 - Automatic notifications (no app-checking)
 - Photo proof is emotional payoff
@@ -629,6 +638,7 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 **Goal:** Efficient, meaningful work with relationship building
 
 **Flow:**
+
 1. Open app → Set status: Available
 2. View ride queue → See upcoming rides
 3. Review profile card: "Margaret: assist groceries, walker, likes to chat"
@@ -640,6 +650,7 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 9. Earnings update immediately → Next ride appears
 
 **Critical UX Moments:**
+
 - Profile cards enable personalized service
 - Wait timer removes clock-watching stress
 - Photo completion is quick
@@ -675,25 +686,25 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 
 **P0 — Must Build:**
 
-| Component | Purpose |
-|-----------|---------|
-| **BookingWizard** | 3-tap flow orchestration (Where → When → Confirm) |
-| **DestinationPicker** | Saved places with large touch targets |
-| **TimePicker** | Senior-friendly date/time selection |
-| **DriverCard** | Photo, name, vehicle, relationship history ("Driven you 23 times") |
-| **RideCard** | Upcoming ride with status timeline |
-| **PriceLockBadge** | "$45 locked. No surge. Ever." trust indicator |
-| **PhoneButton** | Always-visible call action |
-| **StatusTimeline** | Booked → Confirmed → Assigned → En Route → Arrived |
+| Component             | Purpose                                                            |
+| --------------------- | ------------------------------------------------------------------ |
+| **BookingWizard**     | 3-tap flow orchestration (Where → When → Confirm)                  |
+| **DestinationPicker** | Saved places with large touch targets                              |
+| **TimePicker**        | Senior-friendly date/time selection                                |
+| **DriverCard**        | Photo, name, vehicle, relationship history ("Driven you 23 times") |
+| **RideCard**          | Upcoming ride with status timeline                                 |
+| **PriceLockBadge**    | "$45 locked. No surge. Ever." trust indicator                      |
+| **PhoneButton**       | Always-visible call action                                         |
+| **StatusTimeline**    | Booked → Confirmed → Assigned → En Route → Arrived                 |
 
 **P1 — Full Experience:**
 
-| Component | Purpose |
-|-----------|---------|
-| **FamilyNotificationCard** | Photo proof + ride status for family |
-| **ConfirmationModal** | Extra-large destructive action dialog |
-| **WaitTimeIndicator** | "20 min included" countdown |
-| **EarningsDisplay** | Driver income visualization |
+| Component                  | Purpose                               |
+| -------------------------- | ------------------------------------- |
+| **FamilyNotificationCard** | Photo proof + ride status for family  |
+| **ConfirmationModal**      | Extra-large destructive action dialog |
+| **WaitTimeIndicator**      | "20 min included" countdown           |
+| **EarningsDisplay**        | Driver income visualization           |
 
 ### Component Implementation Strategy
 
@@ -726,12 +737,12 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 
 ### Button Hierarchy
 
-| Level | Style | Usage |
-|-------|-------|-------|
-| **Primary** | Filled blue, 56px | One per screen, main action ("Book This Ride") |
-| **Secondary** | Outlined blue | Supporting actions ("View Details") |
-| **Tertiary** | Text only | Navigation, minor actions ("Back", "Cancel") |
-| **Destructive** | Filled red | Irreversible actions with confirmation |
+| Level           | Style             | Usage                                          |
+| --------------- | ----------------- | ---------------------------------------------- |
+| **Primary**     | Filled blue, 56px | One per screen, main action ("Book This Ride") |
+| **Secondary**   | Outlined blue     | Supporting actions ("View Details")            |
+| **Tertiary**    | Text only         | Navigation, minor actions ("Back", "Cancel")   |
+| **Destructive** | Filled red        | Irreversible actions with confirmation         |
 
 **Rules:** One primary per screen, primary in thumb zone, all buttons 48dp+ touch target
 
@@ -758,6 +769,7 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 **Mobile:** Bottom tabs (Home, Rides, Profile, Help) + sticky header with phone icon
 
 **Rules:**
+
 - No hamburger menus
 - Back button on detail screens
 - Push right for forward, slide back for back
@@ -773,19 +785,20 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 
 ### Notification Patterns
 
-| Event | Channel |
-|-------|---------|
-| Confirmation | Push + SMS |
-| Reminder | SMS (with reply confirm) |
-| Driver Assigned | Push |
-| En Route | Push with ETA |
-| Arrived | Push + SMS |
-| Complete | Push to family with photo |
-| Error | Push + Phone call |
+| Event           | Channel                   |
+| --------------- | ------------------------- |
+| Confirmation    | Push + SMS                |
+| Reminder        | SMS (with reply confirm)  |
+| Driver Assigned | Push                      |
+| En Route        | Push with ETA             |
+| Arrived         | Push + SMS                |
+| Complete        | Push to family with photo |
+| Error           | Push + Phone call         |
 
 ### Undo Pattern
 
 60-second undo window for destructive actions:
+
 - Toast at bottom with countdown
 - One tap to restore
 - Auto-dismiss after timeout
@@ -797,11 +810,11 @@ Six design directions were evaluated ranging from ultra-minimal to concierge lux
 
 **Mobile-First Approach:** Primary experience is mobile (riders, drivers). Admin is web.
 
-| Platform | Users | Strategy |
-|----------|-------|----------|
-| Mobile (320-428px) | Riders, Drivers | Native apps, single-column |
-| Tablet (768px+) | Some riders | Touch-optimized, optional side-by-side |
-| Desktop (1024px+) | Admin, Family | Multi-column, dense info |
+| Platform           | Users           | Strategy                               |
+| ------------------ | --------------- | -------------------------------------- |
+| Mobile (320-428px) | Riders, Drivers | Native apps, single-column             |
+| Tablet (768px+)    | Some riders     | Touch-optimized, optional side-by-side |
+| Desktop (1024px+)  | Admin, Family   | Multi-column, dense info               |
 
 ### Breakpoint Strategy
 
@@ -810,6 +823,7 @@ Using Tailwind standard breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280p
 **Rider App:** Mobile-only, single-column, no breakpoint adaptations
 
 **Admin Console:**
+
 - < 768px: Single column stacked
 - 768px+: Sidebar navigation
 - 1024px+: Split view (list + detail)
@@ -821,11 +835,11 @@ Using Tailwind standard breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280p
 
 **Senior-Specific Standards:**
 
-| Requirement | WCAG AA | Veterans 1st |
-|-------------|---------|--------------|
-| Color Contrast | 4.5:1 | 7:1 (AAA) |
-| Touch Targets | 44dp | 48dp minimum |
-| Font Size | 16px | 18px base |
+| Requirement      | WCAG AA | Veterans 1st   |
+| ---------------- | ------- | -------------- |
+| Color Contrast   | 4.5:1   | 7:1 (AAA)      |
+| Touch Targets    | 44dp    | 48dp minimum   |
+| Font Size        | 16px    | 18px base      |
 | Focus Indicators | Visible | 4px solid ring |
 
 **Accommodations:**
@@ -850,6 +864,7 @@ Using Tailwind standard breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280p
 **Responsive:** Mobile-first Tailwind classes, flex layouts, relative units
 
 **Accessibility:**
+
 - All buttons: min-h-[48px] min-w-[48px]
 - Focus rings: focus:ring-4 focus:ring-blue-500
 - Status updates: role="status" aria-live="polite"
@@ -862,21 +877,21 @@ Using Tailwind standard breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280p
 
 **UX Design Specification for Veterans 1st Transportation**
 
-| Section | Status |
-|---------|--------|
-| Executive Summary | ✅ Complete |
-| Core User Experience | ✅ Complete |
+| Section                    | Status      |
+| -------------------------- | ----------- |
+| Executive Summary          | ✅ Complete |
+| Core User Experience       | ✅ Complete |
 | Desired Emotional Response | ✅ Complete |
-| UX Pattern Analysis | ✅ Complete |
-| Design System Foundation | ✅ Complete |
-| Defining User Experience | ✅ Complete |
-| Visual Design Foundation | ✅ Complete |
-| Design Direction Decision | ✅ Complete |
-| User Journey Flows | ✅ Complete |
-| Component Strategy | ✅ Complete |
-| UX Consistency Patterns | ✅ Complete |
+| UX Pattern Analysis        | ✅ Complete |
+| Design System Foundation   | ✅ Complete |
+| Defining User Experience   | ✅ Complete |
+| Visual Design Foundation   | ✅ Complete |
+| Design Direction Decision  | ✅ Complete |
+| User Journey Flows         | ✅ Complete |
+| Component Strategy         | ✅ Complete |
+| UX Consistency Patterns    | ✅ Complete |
 | Responsive & Accessibility | ✅ Complete |
 
 ---
 
-*"It's not about the miles. It's about the service."*
+_"It's not about the miles. It's about the service."_

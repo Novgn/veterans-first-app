@@ -19,24 +19,24 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 ### Documents Loaded
 
-| Document | Status | Key Content |
-|----------|--------|-------------|
-| **PRD** | ✅ Loaded | 87 FRs across 9 capability areas, North Star metrics, user journeys |
+| Document         | Status    | Key Content                                                            |
+| ---------------- | --------- | ---------------------------------------------------------------------- |
+| **PRD**          | ✅ Loaded | 87 FRs across 9 capability areas, North Star metrics, user journeys    |
 | **Architecture** | ✅ Loaded | Monorepo with Turborepo, Expo + Next.js, Supabase + Clerk, Drizzle ORM |
-| **UX Design** | ✅ Loaded | "Warm & Minimal" direction, 3-tap booking, component strategy |
+| **UX Design**    | ✅ Loaded | "Warm & Minimal" direction, 3-tap booking, component strategy          |
 
 ### Technology Stack Summary
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Mobile | React Native Expo (SDK 54+), NativeWind | Cross-platform Rider + Driver apps |
-| Web | Next.js 15+, Tailwind CSS, shadcn/ui | Admin Console, Business Ops |
-| Auth | Clerk | Phone-first authentication, RBAC |
-| Database | Supabase (PostgreSQL + Realtime + RLS) | Source of truth, real-time sync |
-| State | TanStack Query + Zustand | Server state + client state |
-| Payments | Stripe | Payment processing |
-| Communications | Twilio (SMS), Expo Notifications (Push) | Multi-channel notifications |
-| Maps | Google Maps Platform, Expo Maps | Geocoding, navigation |
+| Layer          | Technology                              | Purpose                            |
+| -------------- | --------------------------------------- | ---------------------------------- |
+| Mobile         | React Native Expo (SDK 54+), NativeWind | Cross-platform Rider + Driver apps |
+| Web            | Next.js 15+, Tailwind CSS, shadcn/ui    | Admin Console, Business Ops        |
+| Auth           | Clerk                                   | Phone-first authentication, RBAC   |
+| Database       | Supabase (PostgreSQL + Realtime + RLS)  | Source of truth, real-time sync    |
+| State          | TanStack Query + Zustand                | Server state + client state        |
+| Payments       | Stripe                                  | Payment processing                 |
+| Communications | Twilio (SMS), Expo Notifications (Push) | Multi-channel notifications        |
+| Maps           | Google Maps Platform, Expo Maps         | Geocoding, navigation              |
 
 ### Architecture Decisions Impacting Stories
 
@@ -60,152 +60,152 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 ### FR Summary by Category
 
-| Category | FR Count | MVP Priority |
-|----------|----------|--------------|
-| Ride Booking & Management | 12 | Core |
-| Family & Caregiver Support | 6 | Core |
-| Driver Operations | 12 | Core |
-| Dispatch & Admin Operations | 16 | Core |
-| Trip Documentation & Compliance | 10 | Core |
-| Business Operations | 11 | Core |
-| User Account Management | 7 | Core |
-| Notifications & Communications | 8 | Core |
-| System Administration | 5 | Core |
-| **Total** | **87** | **All MVP** |
+| Category                        | FR Count | MVP Priority |
+| ------------------------------- | -------- | ------------ |
+| Ride Booking & Management       | 12       | Core         |
+| Family & Caregiver Support      | 6        | Core         |
+| Driver Operations               | 12       | Core         |
+| Dispatch & Admin Operations     | 16       | Core         |
+| Trip Documentation & Compliance | 10       | Core         |
+| Business Operations             | 11       | Core         |
+| User Account Management         | 7        | Core         |
+| Notifications & Communications  | 8        | Core         |
+| System Administration           | 5        | Core         |
+| **Total**                       | **87**   | **All MVP**  |
 
 ### Complete FR Inventory
 
 #### Ride Booking & Management (FR1-FR12)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR1 | Riders can book a one-time ride by specifying pickup location, destination, and desired time | Epic 2 |
-| FR2 | Riders can book recurring rides with specified frequency (daily, weekly, specific days) | Epic 2 |
-| FR3 | Riders can save frequently used destinations with custom labels | Epic 2 |
-| FR4 | Riders can view the exact price of a ride before confirming booking | Epic 2 |
-| FR5 | Riders can modify or cancel scheduled rides before the ride begins | Epic 2 |
-| FR6 | Riders can request a specific driver by name for their booking | Epic 2 |
-| FR7 | Riders can book rides via phone call with live human assistance | Epic 3 |
-| FR8 | Riders can confirm upcoming rides via automated phone call | Epic 3 |
-| FR9 | Riders can view their upcoming scheduled rides with all details | Epic 2 |
-| FR10 | Riders can see their assigned driver's name, photo, and vehicle information | Epic 2 |
-| FR11 | Riders can track their driver's real-time location and estimated arrival time | Epic 2 |
-| FR12 | Riders can contact their assigned driver directly via phone call or text | Epic 2 |
+| FR   | Description                                                                                  | Epic Target |
+| ---- | -------------------------------------------------------------------------------------------- | ----------- |
+| FR1  | Riders can book a one-time ride by specifying pickup location, destination, and desired time | Epic 2      |
+| FR2  | Riders can book recurring rides with specified frequency (daily, weekly, specific days)      | Epic 2      |
+| FR3  | Riders can save frequently used destinations with custom labels                              | Epic 2      |
+| FR4  | Riders can view the exact price of a ride before confirming booking                          | Epic 2      |
+| FR5  | Riders can modify or cancel scheduled rides before the ride begins                           | Epic 2      |
+| FR6  | Riders can request a specific driver by name for their booking                               | Epic 2      |
+| FR7  | Riders can book rides via phone call with live human assistance                              | Epic 3      |
+| FR8  | Riders can confirm upcoming rides via automated phone call                                   | Epic 3      |
+| FR9  | Riders can view their upcoming scheduled rides with all details                              | Epic 2      |
+| FR10 | Riders can see their assigned driver's name, photo, and vehicle information                  | Epic 2      |
+| FR11 | Riders can track their driver's real-time location and estimated arrival time                | Epic 2      |
+| FR12 | Riders can contact their assigned driver directly via phone call or text                     | Epic 2      |
 
 #### Family & Caregiver Support (FR13-FR18)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR13 | Authorized family members can book rides on behalf of a rider | Epic 4 |
-| FR14 | Authorized family members can view the rider's scheduled and completed rides | Epic 4 |
-| FR15 | Authorized family members can receive real-time notifications when rider is picked up | Epic 4 |
-| FR16 | Authorized family members can receive notification and photo confirmation when rider arrives | Epic 4 |
-| FR17 | Riders can designate which family members have access to their ride information | Epic 4 |
-| FR18 | Riders can revoke family member access at any time | Epic 4 |
+| FR   | Description                                                                                  | Epic Target |
+| ---- | -------------------------------------------------------------------------------------------- | ----------- |
+| FR13 | Authorized family members can book rides on behalf of a rider                                | Epic 4      |
+| FR14 | Authorized family members can view the rider's scheduled and completed rides                 | Epic 4      |
+| FR15 | Authorized family members can receive real-time notifications when rider is picked up        | Epic 4      |
+| FR16 | Authorized family members can receive notification and photo confirmation when rider arrives | Epic 4      |
+| FR17 | Riders can designate which family members have access to their ride information              | Epic 4      |
+| FR18 | Riders can revoke family member access at any time                                           | Epic 4      |
 
 #### Driver Operations (FR19-FR30)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR19 | Drivers can view their assigned trip queue with all upcoming rides | Epic 3 |
-| FR20 | Drivers can see rider profile information including name, photo, preferences, and special needs | Epic 3 |
-| FR21 | Drivers can accept or decline offered rides based on their availability | Epic 3 |
-| FR22 | Drivers can mark trip status transitions (en route, arrived, started, completed) | Epic 3 |
-| FR23 | Drivers can contact riders directly via phone call or text | Epic 3 |
-| FR24 | Drivers can use integrated turn-by-turn navigation to pickup and destination | Epic 3 |
-| FR25 | Drivers can set their availability schedule indicating when they can accept rides | Epic 3 |
-| FR26 | Drivers can block time off on their calendar | Epic 3 |
-| FR27 | Drivers can view their daily/weekly schedule of assigned rides | Epic 3 |
-| FR28 | Drivers can view their earnings summary (daily, weekly, monthly) | Epic 3 |
-| FR29 | Drivers can see breakdown of earnings per completed ride | Epic 3 |
-| FR30 | Drivers can view their performance metrics and rider feedback | Epic 3 |
+| FR   | Description                                                                                     | Epic Target |
+| ---- | ----------------------------------------------------------------------------------------------- | ----------- |
+| FR19 | Drivers can view their assigned trip queue with all upcoming rides                              | Epic 3      |
+| FR20 | Drivers can see rider profile information including name, photo, preferences, and special needs | Epic 3      |
+| FR21 | Drivers can accept or decline offered rides based on their availability                         | Epic 3      |
+| FR22 | Drivers can mark trip status transitions (en route, arrived, started, completed)                | Epic 3      |
+| FR23 | Drivers can contact riders directly via phone call or text                                      | Epic 3      |
+| FR24 | Drivers can use integrated turn-by-turn navigation to pickup and destination                    | Epic 3      |
+| FR25 | Drivers can set their availability schedule indicating when they can accept rides               | Epic 3      |
+| FR26 | Drivers can block time off on their calendar                                                    | Epic 3      |
+| FR27 | Drivers can view their daily/weekly schedule of assigned rides                                  | Epic 3      |
+| FR28 | Drivers can view their earnings summary (daily, weekly, monthly)                                | Epic 3      |
+| FR29 | Drivers can see breakdown of earnings per completed ride                                        | Epic 3      |
+| FR30 | Drivers can view their performance metrics and rider feedback                                   | Epic 3      |
 
 #### Dispatch & Admin Operations (FR31-FR46)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR31 | Dispatchers can view real-time map showing all active drivers and their status | Epic 3 |
-| FR32 | Dispatchers can see driver status (available, on trip, offline) at a glance | Epic 3 |
-| FR33 | Dispatchers can view all scheduled, active, and completed rides for the current day | Epic 3 |
-| FR34 | Dispatchers can manually assign drivers to rides | Epic 3 |
-| FR35 | Dispatchers can reassign a ride from one driver to another | Epic 3 |
-| FR36 | Dispatchers can create new ride bookings on behalf of riders | Epic 3 |
-| FR37 | Dispatchers can modify or cancel existing ride bookings | Epic 3 |
-| FR38 | Dispatchers can view and search rider database by name or phone number | Epic 3 |
-| FR39 | Dispatchers can view rider profile including contact info, addresses, preferences | Epic 3 |
-| FR40 | Dispatchers can add notes to rider profiles | Epic 3 |
-| FR41 | Dispatchers can create new rider accounts | Epic 3 |
-| FR42 | Admins can view and manage driver roster | Epic 5 |
-| FR43 | Admins can onboard new drivers including profile setup and credential verification | Epic 5 |
-| FR44 | Admins can deactivate drivers who no longer meet requirements | Epic 5 |
-| FR45 | Dispatchers can log incoming phone calls and link them to rider records | Epic 3 |
-| FR46 | Dispatchers can create ride bookings during phone calls with caller ID lookup | Epic 3 |
+| FR   | Description                                                                         | Epic Target |
+| ---- | ----------------------------------------------------------------------------------- | ----------- |
+| FR31 | Dispatchers can view real-time map showing all active drivers and their status      | Epic 3      |
+| FR32 | Dispatchers can see driver status (available, on trip, offline) at a glance         | Epic 3      |
+| FR33 | Dispatchers can view all scheduled, active, and completed rides for the current day | Epic 3      |
+| FR34 | Dispatchers can manually assign drivers to rides                                    | Epic 3      |
+| FR35 | Dispatchers can reassign a ride from one driver to another                          | Epic 3      |
+| FR36 | Dispatchers can create new ride bookings on behalf of riders                        | Epic 3      |
+| FR37 | Dispatchers can modify or cancel existing ride bookings                             | Epic 3      |
+| FR38 | Dispatchers can view and search rider database by name or phone number              | Epic 3      |
+| FR39 | Dispatchers can view rider profile including contact info, addresses, preferences   | Epic 3      |
+| FR40 | Dispatchers can add notes to rider profiles                                         | Epic 3      |
+| FR41 | Dispatchers can create new rider accounts                                           | Epic 3      |
+| FR42 | Admins can view and manage driver roster                                            | Epic 5      |
+| FR43 | Admins can onboard new drivers including profile setup and credential verification  | Epic 5      |
+| FR44 | Admins can deactivate drivers who no longer meet requirements                       | Epic 5      |
+| FR45 | Dispatchers can log incoming phone calls and link them to rider records             | Epic 3      |
+| FR46 | Dispatchers can create ride bookings during phone calls with caller ID lookup       | Epic 3      |
 
 #### Trip Documentation & Compliance (FR47-FR56)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR47 | System automatically records pickup time, location, and driver for each trip | Epic 3 |
-| FR48 | System automatically records dropoff time and location for each completed trip | Epic 3 |
-| FR49 | Drivers can capture photo documentation of safe arrival | Epic 3 |
-| FR50 | System calculates and stores mileage for each completed trip | Epic 3 |
-| FR51 | Drivers can mark a ride as no-show when rider is not present | Epic 3 |
-| FR52 | Dispatchers can review and process no-show incidents | Epic 3 |
-| FR53 | System tracks no-show history per rider | Epic 3 |
-| FR54 | System logs all access to rider personal and medical information | Epic 1 |
-| FR55 | System maintains audit trail of all ride modifications and status changes | Epic 1 |
-| FR56 | Admins can generate compliance reports showing trip documentation completeness | Epic 5 |
+| FR   | Description                                                                    | Epic Target |
+| ---- | ------------------------------------------------------------------------------ | ----------- |
+| FR47 | System automatically records pickup time, location, and driver for each trip   | Epic 3      |
+| FR48 | System automatically records dropoff time and location for each completed trip | Epic 3      |
+| FR49 | Drivers can capture photo documentation of safe arrival                        | Epic 3      |
+| FR50 | System calculates and stores mileage for each completed trip                   | Epic 3      |
+| FR51 | Drivers can mark a ride as no-show when rider is not present                   | Epic 3      |
+| FR52 | Dispatchers can review and process no-show incidents                           | Epic 3      |
+| FR53 | System tracks no-show history per rider                                        | Epic 3      |
+| FR54 | System logs all access to rider personal and medical information               | Epic 1      |
+| FR55 | System maintains audit trail of all ride modifications and status changes      | Epic 1      |
+| FR56 | Admins can generate compliance reports showing trip documentation completeness | Epic 5      |
 
 #### Business Operations (FR57-FR67)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR57 | System generates invoices for completed rides | Epic 5 |
-| FR58 | Riders can pay for rides via credit card | Epic 5 |
-| FR59 | System supports recurring billing for riders with regular rides | Epic 5 |
-| FR60 | Admins can view and manage rider payment accounts | Epic 5 |
-| FR61 | System tracks driver earnings for payroll purposes | Epic 5 |
-| FR62 | Admins can view operational reports (rides per day, on-time rate, no-show rate) | Epic 5 |
-| FR63 | Admins can view financial reports (revenue, driver payments, outstanding invoices) | Epic 5 |
-| FR64 | Admins can export ride data for compliance documentation | Epic 5 |
-| FR65 | System stores driver credentials (license, insurance, background checks) | Epic 5 |
-| FR66 | System alerts admins when driver credentials are approaching expiration | Epic 5 |
-| FR67 | Admins can verify and update driver credential status | Epic 5 |
+| FR   | Description                                                                        | Epic Target |
+| ---- | ---------------------------------------------------------------------------------- | ----------- |
+| FR57 | System generates invoices for completed rides                                      | Epic 5      |
+| FR58 | Riders can pay for rides via credit card                                           | Epic 5      |
+| FR59 | System supports recurring billing for riders with regular rides                    | Epic 5      |
+| FR60 | Admins can view and manage rider payment accounts                                  | Epic 5      |
+| FR61 | System tracks driver earnings for payroll purposes                                 | Epic 5      |
+| FR62 | Admins can view operational reports (rides per day, on-time rate, no-show rate)    | Epic 5      |
+| FR63 | Admins can view financial reports (revenue, driver payments, outstanding invoices) | Epic 5      |
+| FR64 | Admins can export ride data for compliance documentation                           | Epic 5      |
+| FR65 | System stores driver credentials (license, insurance, background checks)           | Epic 5      |
+| FR66 | System alerts admins when driver credentials are approaching expiration            | Epic 5      |
+| FR67 | Admins can verify and update driver credential status                              | Epic 5      |
 
 #### User Account Management (FR68-FR74)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR68 | Users can register using their phone number as primary identifier | Epic 1 |
-| FR69 | Users can authenticate via SMS verification code | Epic 1 |
-| FR70 | System enforces role-based access (rider, driver, family, dispatcher, admin) | Epic 1 |
-| FR71 | Riders can update their profile information (name, phone, emergency contact) | Epic 2 |
-| FR72 | Riders can set accessibility preferences (wheelchair, walker, mobility aids) | Epic 2 |
-| FR73 | Riders can specify comfort preferences (temperature, conversation level, music) | Epic 2 |
-| FR74 | Drivers can update their profile information and vehicle details | Epic 3 |
+| FR   | Description                                                                     | Epic Target |
+| ---- | ------------------------------------------------------------------------------- | ----------- |
+| FR68 | Users can register using their phone number as primary identifier               | Epic 1      |
+| FR69 | Users can authenticate via SMS verification code                                | Epic 1      |
+| FR70 | System enforces role-based access (rider, driver, family, dispatcher, admin)    | Epic 1      |
+| FR71 | Riders can update their profile information (name, phone, emergency contact)    | Epic 2      |
+| FR72 | Riders can set accessibility preferences (wheelchair, walker, mobility aids)    | Epic 2      |
+| FR73 | Riders can specify comfort preferences (temperature, conversation level, music) | Epic 2      |
+| FR74 | Drivers can update their profile information and vehicle details                | Epic 3      |
 
 #### Notifications & Communications (FR75-FR82)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR75 | System sends ride reminder notifications 24 hours and 1 hour before rides | Epic 4 |
-| FR76 | System sends notification when driver is en route to pickup | Epic 4 |
-| FR77 | System sends notification when driver arrives at pickup location | Epic 4 |
-| FR78 | Riders can configure their notification preferences (push, SMS, or both) | Epic 4 |
-| FR79 | Drivers receive notification when new ride is assigned | Epic 4 |
-| FR80 | Drivers receive notification if assigned ride is cancelled or modified | Epic 4 |
-| FR81 | Designated family members receive pickup notification automatically | Epic 4 |
-| FR82 | Designated family members receive arrival notification with optional photo | Epic 4 |
+| FR   | Description                                                                | Epic Target |
+| ---- | -------------------------------------------------------------------------- | ----------- |
+| FR75 | System sends ride reminder notifications 24 hours and 1 hour before rides  | Epic 4      |
+| FR76 | System sends notification when driver is en route to pickup                | Epic 4      |
+| FR77 | System sends notification when driver arrives at pickup location           | Epic 4      |
+| FR78 | Riders can configure their notification preferences (push, SMS, or both)   | Epic 4      |
+| FR79 | Drivers receive notification when new ride is assigned                     | Epic 4      |
+| FR80 | Drivers receive notification if assigned ride is cancelled or modified     | Epic 4      |
+| FR81 | Designated family members receive pickup notification automatically        | Epic 4      |
+| FR82 | Designated family members receive arrival notification with optional photo | Epic 4      |
 
 #### System Administration (FR83-FR87)
 
-| FR | Description | Epic Target |
-|----|-------------|-------------|
-| FR83 | Admins can configure service area boundaries | Epic 5 |
-| FR84 | Admins can configure pricing parameters (base rate, mileage rate, wait time) | Epic 5 |
-| FR85 | Admins can configure operating hours | Epic 5 |
-| FR86 | Admins can manage dispatcher and admin user accounts | Epic 5 |
-| FR87 | Admins can reset user passwords and unlock accounts | Epic 5 |
+| FR   | Description                                                                  | Epic Target |
+| ---- | ---------------------------------------------------------------------------- | ----------- |
+| FR83 | Admins can configure service area boundaries                                 | Epic 5      |
+| FR84 | Admins can configure pricing parameters (base rate, mileage rate, wait time) | Epic 5      |
+| FR85 | Admins can configure operating hours                                         | Epic 5      |
+| FR86 | Admins can manage dispatcher and admin user accounts                         | Epic 5      |
+| FR87 | Admins can reset user passwords and unlock accounts                          | Epic 5      |
 
 ---
 
@@ -213,13 +213,13 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 ### Epic Overview
 
-| Epic | Title | User Value | FR Count | Dependencies |
-|------|-------|------------|----------|--------------|
-| 1 | Foundation & Infrastructure | Developers can begin building features on a solid, compliant foundation | 5 | None |
-| 2 | Rider Booking Experience | Riders can book rides in 3 taps and manage their transportation | 14 | Epic 1 |
-| 3 | Driver & Dispatch Operations | Drivers can manage trips; dispatchers can coordinate the fleet | 32 | Epic 1, 2 |
-| 4 | Family Support & Notifications | Families get peace of mind; everyone receives timely updates | 14 | Epic 2, 3 |
-| 5 | Business Operations & Administration | Business runs profitably with compliance and financial oversight | 22 | Epic 1, 3 |
+| Epic | Title                                | User Value                                                              | FR Count | Dependencies |
+| ---- | ------------------------------------ | ----------------------------------------------------------------------- | -------- | ------------ |
+| 1    | Foundation & Infrastructure          | Developers can begin building features on a solid, compliant foundation | 5        | None         |
+| 2    | Rider Booking Experience             | Riders can book rides in 3 taps and manage their transportation         | 14       | Epic 1       |
+| 3    | Driver & Dispatch Operations         | Drivers can manage trips; dispatchers can coordinate the fleet          | 32       | Epic 1, 2    |
+| 4    | Family Support & Notifications       | Families get peace of mind; everyone receives timely updates            | 14       | Epic 2, 3    |
+| 5    | Business Operations & Administration | Business runs profitably with compliance and financial oversight        | 22       | Epic 1, 3    |
 
 ### Epic 1: Foundation & Infrastructure
 
@@ -228,6 +228,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 **PRD Coverage:** FR54, FR55, FR68, FR69, FR70
 
 **Technical Context (Architecture):**
+
 - Turborepo monorepo initialization with apps/ and packages/ structure
 - Supabase project setup with PostgreSQL + Realtime
 - Drizzle ORM schema foundation (users, audit_logs tables)
@@ -238,6 +239,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 **UX Integration:** N/A (infrastructure epic)
 
 **Foundation Epic Guidelines:**
+
 - Project setup and build system
 - Core infrastructure and deployment pipeline
 - Database schema setup with audit logging
@@ -253,6 +255,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 **PRD Coverage:** FR1, FR2, FR3, FR4, FR5, FR6, FR9, FR10, FR11, FR12, FR71, FR72, FR73
 
 **Technical Context (Architecture):**
+
 - `apps/rider/` Expo app with feature-first organization
 - `features/booking/` with BookingWizard component
 - `features/profile/` for rider preferences
@@ -263,6 +266,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 - Zustand for booking wizard state
 
 **UX Integration (UX Design):**
+
 - 3-Tap Booking: Where → When → Confirm (sacred flow)
 - DestinationPicker with large touch targets (48dp+)
 - TimePicker with senior-friendly date/time selection
@@ -281,6 +285,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 **PRD Coverage:** FR7, FR8, FR19-FR53, FR74
 
 **Technical Context (Architecture):**
+
 - `apps/driver/` Expo app with driver-specific features
 - `apps/admin/` Next.js app for dispatch operations
 - `features/trips/` for driver queue and trip management
@@ -293,6 +298,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 - Photo upload to Supabase Storage for arrival confirmation
 
 **UX Integration (UX Design):**
+
 - Driver App: Trip queue cards with RiderProfileCard
 - Wait time indicator: "20 min included" as feature
 - Trip completion flow: Arrived → Started → Completed + Photo
@@ -310,6 +316,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 **PRD Coverage:** FR13, FR14, FR15, FR16, FR17, FR18, FR75, FR76, FR77, FR78, FR79, FR80, FR81, FR82
 
 **Technical Context (Architecture):**
+
 - `features/family/` in rider app for family linking
 - `features/notifications/` across all apps
 - Supabase tables: `family_links`, `notification_preferences`, `notification_logs`
@@ -320,6 +327,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 - Clerk for family member invitation flows
 
 **UX Integration (UX Design):**
+
 - Family permission model: Rider approves → Family sees rides
 - FamilyNotificationCard with photo proof + ride status
 - Notification preferences: Push, SMS, or both
@@ -335,6 +343,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 **PRD Coverage:** FR42, FR43, FR44, FR56, FR57, FR58, FR59, FR60, FR61, FR62, FR63, FR64, FR65, FR66, FR67, FR83, FR84, FR85, FR86, FR87
 
 **Technical Context (Architecture):**
+
 - `apps/business/` Next.js app for business operations
 - `features/billing/` for invoicing and payments
 - `features/compliance/` for reporting and audits
@@ -346,6 +355,7 @@ This document provides the complete epic and story breakdown for veterans-first-
 - Scheduled functions for credential expiration alerts
 
 **UX Integration (UX Design):**
+
 - Business Ops dashboard with financial overview
 - Invoice generation and management
 - Driver credential tracking with expiration alerts
@@ -373,6 +383,7 @@ So that I can begin building features with shared code and consistent tooling.
 **Given** a new project directory
 **When** the monorepo is initialized
 **Then** the following structure exists:
+
 - `apps/rider/` - Expo app scaffolded with create-expo-stack (expo-router, nativewind, npm)
 - `apps/driver/` - Expo app scaffolded with create-expo-stack (expo-router, nativewind, npm)
 - `apps/admin/` - Next.js app scaffolded with create-next-app (ts, tailwind, eslint, app, src-dir, npm)
@@ -382,6 +393,7 @@ So that I can begin building features with shared code and consistent tooling.
 - `supabase/` - Migrations and functions directories
 
 **And** Turborepo is configured with:
+
 - `turbo.json` with build, dev, lint, test pipelines
 - Dependency graph properly configured
 - Environment variable inheritance
@@ -391,6 +403,7 @@ So that I can begin building features with shared code and consistent tooling.
 **And** shared package is importable as `@veterans-first/shared`
 
 **Technical Notes:**
+
 - Follow Architecture section "Monorepo Structure" exactly
 - Use npm as package manager (per Architecture)
 - Configure `.nvmrc` with Node 20 LTS
@@ -411,6 +424,7 @@ So that all apps can interact with a properly structured database.
 **Given** the monorepo is initialized
 **When** Supabase is configured
 **Then** the following exists:
+
 - Supabase project created (or local development setup with `supabase init`)
 - `supabase/config.toml` configured for project
 - Connection to Supabase from all apps works
@@ -448,6 +462,7 @@ audit_logs (
 ```
 
 **And** Drizzle ORM is configured:
+
 - `packages/shared/src/db/schema.ts` with table definitions
 - `drizzle.config.ts` at monorepo root
 - Migration generation works with `npm run db:generate`
@@ -456,6 +471,7 @@ audit_logs (
 **And** TypeScript types are generated from schema
 
 **Technical Notes:**
+
 - Use Drizzle ORM as specified in Architecture
 - Audit logs must be append-only (no UPDATE or DELETE policies)
 - All timestamps use `timestamptz` for timezone awareness
@@ -497,6 +513,7 @@ So that I can access the system without complex passwords or email verification.
 **Technical Implementation:**
 
 For Mobile Apps (Expo):
+
 - Install `@clerk/clerk-expo`
 - Configure ClerkProvider in `app/_layout.tsx`
 - Create `(auth)/sign-in.tsx` and `(auth)/sign-up.tsx` screens
@@ -504,17 +521,20 @@ For Mobile Apps (Expo):
 - Configure Expo SecureStore for token persistence
 
 For Web Apps (Next.js):
+
 - Install `@clerk/nextjs`
 - Configure ClerkProvider in `app/layout.tsx`
 - Add `middleware.ts` for route protection
 - Use `auth()` in server components
 
 Clerk → Supabase JWT Integration:
+
 - Configure Clerk JWT template to include Supabase claims
 - Set up Supabase to verify Clerk JWTs
 - Create `packages/shared/src/lib/supabase.ts` with auth client
 
 **Technical Notes:**
+
 - Phone authentication is PRIMARY method (per PRD)
 - Email + password available for admin/dispatch (per Architecture)
 - Configure Clerk webhooks to sync user creation to Supabase
@@ -586,6 +606,7 @@ CREATE POLICY "dispatchers_all_rides" ON rides
 **And** role assignment happens during user creation via Clerk webhook
 
 **Technical Notes:**
+
 - RLS policies must be tested with each role
 - Create test users for each role in seed data
 - Follow Architecture "Row Level Security Patterns"
@@ -606,6 +627,7 @@ So that we can demonstrate HIPAA compliance and investigate incidents.
 **Given** any user accesses rider personal information
 **When** the query executes
 **Then** an audit log entry is created with:
+
 - User ID who accessed
 - Action type (SELECT, INSERT, UPDATE, DELETE)
 - Resource type (e.g., 'rider_profile', 'ride')
@@ -616,6 +638,7 @@ So that we can demonstrate HIPAA compliance and investigate incidents.
 **Given** any ride record is modified
 **When** the update occurs
 **Then** an audit log captures:
+
 - Old values (before)
 - New values (after)
 - User who made the change
@@ -629,6 +652,7 @@ So that we can demonstrate HIPAA compliance and investigate incidents.
 **Technical Implementation:**
 
 Database triggers for automatic logging:
+
 ```sql
 CREATE OR REPLACE FUNCTION log_audit_event()
 RETURNS TRIGGER AS $$
@@ -652,6 +676,7 @@ CREATE TRIGGER audit_rides AFTER INSERT OR UPDATE OR DELETE ON rides
 ```
 
 **And** RLS policy for audit_logs:
+
 ```sql
 -- Only admins can read audit logs
 CREATE POLICY "admins_read_audit" ON audit_logs
@@ -669,6 +694,7 @@ CREATE POLICY "no_delete_audit" ON audit_logs
 ```
 
 **Technical Notes:**
+
 - SECURITY DEFINER ensures trigger runs with elevated privileges
 - Consider table partitioning for audit_logs if volume is high
 - Implement log rotation strategy for long-term storage
@@ -691,6 +717,7 @@ So that the team can collaborate effectively with high code quality.
 **Then** all dependencies are installed across the monorepo
 
 **And** the following scripts work:
+
 - `npm run dev` - Starts all apps in development mode
 - `npm run build` - Builds all apps
 - `npm run lint` - Lints all apps and packages
@@ -699,6 +726,7 @@ So that the team can collaborate effectively with high code quality.
 - `npm run db:push` - Applies migrations to database
 
 **And** ESLint is configured with:
+
 - TypeScript support
 - React/React Native rules
 - Import sorting
@@ -707,15 +735,18 @@ So that the team can collaborate effectively with high code quality.
 **And** Prettier is configured for consistent formatting
 
 **And** Husky pre-commit hooks run:
+
 - Lint-staged for changed files
 - Type checking
 
 **And** GitHub Actions CI pipeline:
+
 - Triggers on PR to main
 - Runs lint, type check, and tests
 - Fails if any check fails
 
 **Technical Notes:**
+
 - Use `packages/config/` for shared ESLint and TypeScript configs
 - Configure Turborepo caching for faster builds
 - Add `.github/workflows/ci.yml` for CI pipeline
@@ -752,17 +783,20 @@ So that I can easily find booking, rides, profile, and help sections.
 **Given** the rider app is launched
 **When** user is authenticated
 **Then** they see a home screen with:
+
 - Bottom tab navigation: Home, My Rides, Profile, Help
 - Header with app title and PhoneButton (always visible)
 - Quick access to "Book a Ride" as primary action
 
 **And** the navigation follows UX Design patterns:
+
 - Bottom tabs with 48dp+ touch targets
 - Icons with labels for clarity
 - Active tab clearly indicated
 - Phone icon in header always accessible
 
 **And** the app structure follows Architecture:
+
 ```
 apps/rider/
 ├── app/
@@ -787,12 +821,14 @@ apps/rider/
 ```
 
 **And** NativeWind styling is configured with:
+
 - Tailwind config matching UX Design tokens
 - Primary blue (#1E40AF), warm white (#FAFAF9)
 - 18px base font size
 - 48dp minimum touch targets
 
 **Technical Notes:**
+
 - Follow UX Design "Warm & Minimal" direction
 - Implement PhoneButton component from UX component strategy
 - Configure TanStack Query provider with AsyncStorage persistence
@@ -817,6 +853,7 @@ So that I can quickly select them when booking rides.
 **Given** a rider wants to add a new destination
 **When** they tap "Add Place"
 **Then** they can:
+
 - Search for an address using Google Places Autocomplete
 - Enter a custom label (e.g., "Home", "Dr. Wilson", "Harris Teeter")
 - Mark as default pickup or dropoff
@@ -847,6 +884,7 @@ saved_destinations (
 **And** RLS policies allow riders to manage only their own destinations
 
 **Technical Notes:**
+
 - Integrate Google Places API for address search
 - Use Google Geocoding API to get lat/lng
 - Store place_id for consistent address resolution
@@ -870,6 +908,7 @@ So that booking is effortless and I don't get confused.
 **Then** they see Step 1: "Where are you going?"
 
 **And** the screen displays:
+
 - DestinationPicker with saved destinations as large cards (56dp height)
 - Most frequently used destinations shown first
 - "Home" and default dropoff highlighted if set
@@ -882,12 +921,14 @@ So that booking is effortless and I don't get confused.
 **And** a visual indicator shows progress (Step 1 of 3 complete)
 
 **And** the DestinationPicker component:
+
 - Uses 48dp+ touch targets
 - Shows address preview below label
 - Has clear visual hierarchy
 - Supports both pickup and dropoff selection
 
 **Technical Notes:**
+
 - Create BookingWizard in `features/booking/components/`
 - Use Zustand store for wizard state (`bookingStore`)
 - DestinationPicker is a P0 custom component (UX Design)
@@ -910,6 +951,7 @@ So that scheduling is simple and predictable.
 **Then** they see "When do you need a ride?"
 
 **And** the TimePicker displays:
+
 - Today's date selected by default
 - Common time slots as large buttons (9:00 AM, 10:00 AM, etc.)
 - "ASAP" option for immediate rides
@@ -923,16 +965,19 @@ So that scheduling is simple and predictable.
 **Given** a rider enables "Make this recurring"
 **When** they configure the schedule
 **Then** they can select:
+
 - Frequency: Daily, Weekly, Specific days
 - End date or "Ongoing"
 
 **And** the TimePicker component:
+
 - Uses senior-friendly large buttons
 - Shows AM/PM clearly
 - Defaults to reasonable times (not 3 AM)
 - Has generous touch targets
 
 **Technical Notes:**
+
 - Create TimePicker component matching UX Design
 - Store time selection in bookingStore
 - Recurring config stored separately for processing
@@ -953,6 +998,7 @@ So that I know exactly what I'm booking and feel confident.
 **Given** a rider has selected destination and time
 **When** they reach Step 3
 **Then** they see a confirmation screen with:
+
 - Route summary (pickup → destination)
 - Date and time of ride
 - Price with PriceLockBadge ("$45 locked. No surge. Ever.")
@@ -962,6 +1008,7 @@ So that I know exactly what I'm booking and feel confident.
 
 **Given** the price is calculated
 **Then** the system uses the `calculate-price` Edge Function with:
+
 - Base rate from system config
 - Distance calculation via Google Distance Matrix API
 - Time of day adjustments (if any)
@@ -970,12 +1017,14 @@ So that I know exactly what I'm booking and feel confident.
 **Given** a rider taps "Book This Ride"
 **When** the booking is submitted
 **Then** the `book-ride` Edge Function:
+
 - Creates ride record in database
 - Sets status to 'booked'
 - Creates recurring ride records if applicable
 - Returns confirmation
 
 **And** the rider sees:
+
 - Success screen with celebration feedback
 - Ride confirmation number
 - 60-second undo button
@@ -1011,6 +1060,7 @@ rides (
 ```
 
 **Technical Notes:**
+
 - Create PriceLockBadge component (UX Design P0)
 - Implement `book-ride` Edge Function in `supabase/functions/`
 - Use Google Distance Matrix for accurate pricing
@@ -1032,6 +1082,7 @@ So that I can adjust plans without calling for help.
 **Given** a rider views an upcoming ride
 **When** the ride is in 'booked' or 'confirmed' status
 **Then** they can:
+
 - Change the pickup time
 - Change the destination
 - Cancel the ride
@@ -1039,6 +1090,7 @@ So that I can adjust plans without calling for help.
 **Given** a rider cancels a ride
 **When** they confirm cancellation
 **Then**:
+
 - Ride status changes to 'cancelled'
 - Cancellation reason is captured
 - 60-second undo window appears
@@ -1049,12 +1101,14 @@ So that I can adjust plans without calling for help.
 **Then** a late cancellation fee may apply (configurable)
 
 **And** the `cancel-ride` Edge Function:
+
 - Validates cancellation is allowed
 - Updates ride status
 - Notifies affected parties
 - Applies fees if configured
 
 **Technical Notes:**
+
 - ConfirmationModal for destructive actions (UX Design)
 - 60-second undo pattern from UX consistency patterns
 - Audit log captures cancellation with reason
@@ -1079,6 +1133,7 @@ So that I can ride with someone I trust and who knows my needs.
 **Given** a rider selects a preferred driver
 **When** booking a new ride
 **Then**:
+
 - The booking includes `preferred_driver_id`
 - Confirmation shows "Requesting [Driver Name]"
 - System prioritizes matching to this driver
@@ -1088,11 +1143,13 @@ So that I can ride with someone I trust and who knows my needs.
 **Then** future bookings default to this driver
 
 **And** the system shows relationship history:
+
 - "Dave has driven you 23 times"
 - Driver photo, name, vehicle info
 - Last ride date
 
 **Technical Notes:**
+
 - DriverCard component with relationship counter
 - Store rider's driver history for display
 - Same-driver matching is a SOFT preference (dispatch may override)
@@ -1113,6 +1170,7 @@ So that I know my schedule and can manage my transportation.
 **Given** a rider navigates to "My Rides" tab
 **When** the screen loads
 **Then** they see:
+
 - Upcoming rides sorted by date (nearest first)
 - RideCard for each ride showing:
   - Date and time
@@ -1124,23 +1182,27 @@ So that I know my schedule and can manage my transportation.
 **Given** a rider taps on a ride
 **When** the ride detail opens
 **Then** they can:
+
 - View full ride details
 - See driver info and vehicle (if assigned)
 - Access modify/cancel options
 - Contact driver (if assigned)
 
 **And** the RideCard component follows UX Design:
+
 - 16px border radius, soft shadow
 - Status indicated by color and badge
 - Large touch target (full card tappable)
 - Shows next action clearly
 
 **And** TanStack Query fetches rides with:
+
 - Real-time subscriptions for status updates
 - Optimistic updates for modifications
 - Cache persistence for offline viewing
 
 **Technical Notes:**
+
 - Create RideCard and StatusTimeline components (UX P0)
 - Implement `rideKeys` query key factory (Architecture pattern)
 - Subscribe to `ride:{id}` channel for real-time updates
@@ -1161,6 +1223,7 @@ So that I know who to expect and feel safe.
 **Given** a ride has been assigned to a driver
 **When** the rider views the ride
 **Then** they see DriverCard with:
+
 - Driver photo (profile_photo_url)
 - Driver first name
 - Vehicle description (make, model, color)
@@ -1192,6 +1255,7 @@ driver_profiles (
 ```
 
 **Technical Notes:**
+
 - DriverCard is P0 custom component (UX Design)
 - Join rides with driver_profiles and users for full info
 - Calculate relationship count from completed rides
@@ -1212,6 +1276,7 @@ So that I know exactly when they'll arrive.
 **Given** a ride status is 'en_route' or 'arrived'
 **When** the rider views the ride
 **Then** they see:
+
 - Map showing driver's current location
 - Route from driver to pickup
 - Live ETA updating every 30 seconds
@@ -1223,6 +1288,7 @@ So that I know exactly when they'll arrive.
 **And** ETA recalculates
 
 **And** real-time tracking uses:
+
 - Supabase Realtime subscription to `driver:{id}:location` channel
 - Google Directions API for route and ETA
 - Expo Maps for map display
@@ -1243,6 +1309,7 @@ driver_locations (
 ```
 
 **Technical Notes:**
+
 - Use Expo Maps (`expo-maps`) for map component
 - Subscribe to real-time location channel
 - Cache route to avoid excessive API calls
@@ -1268,18 +1335,22 @@ So that I can communicate about pickup details or delays.
 **Given** the rider taps "Contact Driver"
 **When** the action sheet opens
 **Then** they can choose:
+
 - Call Driver (opens phone dialer)
 - Text Driver (opens SMS)
 
 **And** driver contact is available only when:
+
 - Ride status is 'assigned', 'en_route', 'arrived', or 'in_progress'
 - Driver is actively on the ride
 
 **And** phone/SMS uses native device capabilities:
+
 - `Linking.openURL('tel:${driverPhone}')`
 - `Linking.openURL('sms:${driverPhone}')`
 
 **Technical Notes:**
+
 - PhoneButton variant for driver contact
 - Contact info comes from driver's user record
 - Log contact attempts in audit (optional)
@@ -1300,6 +1371,7 @@ So that drivers know my needs and I receive better service.
 **Given** a rider navigates to Profile tab
 **When** the screen loads
 **Then** they see:
+
 - Profile photo
 - Name (editable)
 - Phone number (primary identifier, not editable in-app)
@@ -1311,6 +1383,7 @@ So that drivers know my needs and I receive better service.
 **And** changes sync to all devices
 
 **And** the profile includes:
+
 - Basic info (name, photo, emergency contact)
 - Saved destinations link
 - Accessibility preferences link
@@ -1319,6 +1392,7 @@ So that drivers know my needs and I receive better service.
 - Notification settings link
 
 **Technical Notes:**
+
 - Use Clerk user profile for basic info sync
 - Store emergency_contact in users table extension
 - Profile photo upload to Supabase Storage
@@ -1339,6 +1413,7 @@ So that drivers are prepared to assist me properly.
 **Given** a rider navigates to Accessibility Preferences
 **When** the screen loads
 **Then** they can configure:
+
 - Mobility aids: Wheelchair, Walker, Cane, None
 - Vehicle requirements: Extra space, Easy entry
 - Assistance needed: Help to door, Help with packages
@@ -1347,6 +1422,7 @@ So that drivers are prepared to assist me properly.
 **Given** a rider saves accessibility preferences
 **When** the preferences are stored
 **Then**:
+
 - Preferences appear on rider profile for drivers
 - Booking confirmation shows accessibility notes
 - Driver sees accessibility info on RiderProfileCard
@@ -1372,6 +1448,7 @@ rider_preferences (
 ```
 
 **Technical Notes:**
+
 - Use multi-select for some options
 - Show clear descriptions for each preference
 - This satisfies FR72
@@ -1391,6 +1468,7 @@ So that every ride feels personalized and comfortable.
 **Given** a rider navigates to Comfort Preferences
 **When** the screen loads
 **Then** they can configure:
+
 - Temperature: Cool, Normal, Warm
 - Conversation: Quiet ride, Some conversation, Chatty
 - Music: No music, Soft background, Any music
@@ -1401,10 +1479,12 @@ So that every ride feels personalized and comfortable.
 **Then** they see comfort preferences in RiderProfileCard
 
 **And** comfort preferences support the PRD's "relationship-first" model:
+
 - Dave knows Margaret likes it cool and quiet
 - Preferences are visible before pickup
 
 **Technical Notes:**
+
 - Uses same rider_preferences table as Story 2.13
 - Simple radio button groups for each preference
 - This satisfies FR73
@@ -1440,12 +1520,14 @@ So that I can focus on serving riders without distractions.
 **Given** the driver app is launched
 **When** user is authenticated with role 'driver'
 **Then** they see a home screen with:
+
 - Today's scheduled rides prominently displayed
 - Current status indicator (Available, On Trip, Offline)
 - Quick access to navigation for next ride
 - Bottom tab navigation: Home, Schedule, Earnings, Profile
 
 **And** the app structure follows Architecture:
+
 ```
 apps/driver/
 ├── app/
@@ -1468,11 +1550,13 @@ apps/driver/
 ```
 
 **And** driver-specific components include:
+
 - Status toggle (Available/Offline)
 - Trip queue cards with rider info
 - Active trip view with navigation
 
 **Technical Notes:**
+
 - Follow same NativeWind config as rider app
 - Share components from `@veterans-first/shared` where applicable
 - Driver-specific Zustand store for trip state
@@ -1493,6 +1577,7 @@ So that I can prepare for each ride and serve riders well.
 **Given** a driver opens the app
 **When** they view the home screen
 **Then** they see their trip queue with:
+
 - Upcoming rides sorted by scheduled time
 - TripCard for each ride showing:
   - Pickup time
@@ -1504,6 +1589,7 @@ So that I can prepare for each ride and serve riders well.
 **Given** a driver taps on a TripCard
 **When** the trip detail opens
 **Then** they see full RiderProfileCard with:
+
 - Rider photo and name
 - Contact buttons (call/text)
 - Accessibility preferences
@@ -1512,11 +1598,13 @@ So that I can prepare for each ride and serve riders well.
 - Special instructions
 
 **And** trips are fetched via TanStack Query with:
+
 - Real-time subscription for new assignments
 - Automatic refresh on app foreground
 - Offline caching for reliability
 
 **Technical Notes:**
+
 - Create TripCard and RiderProfileCard components
 - Query rides where `driver_id = current_user` and status in appropriate states
 - Join with rider_preferences for full context
@@ -1537,6 +1625,7 @@ So that I have control over my schedule.
 **Given** a new ride is assigned to a driver
 **When** the assignment notification arrives
 **Then** driver sees:
+
 - New ride offer with details
 - Accept and Decline buttons
 - Time limit for response (configurable, e.g., 5 minutes)
@@ -1544,6 +1633,7 @@ So that I have control over my schedule.
 **Given** a driver taps Accept
 **When** the action completes
 **Then**:
+
 - Ride status changes to 'assigned'
 - Ride appears in driver's queue
 - Rider is notified of driver assignment
@@ -1551,16 +1641,19 @@ So that I have control over my schedule.
 **Given** a driver taps Decline
 **When** the action completes
 **Then**:
+
 - Ride returns to dispatch pool
 - Driver can optionally provide decline reason
 - No penalty for reasonable declines
 
 **And** the assign-driver Edge Function handles:
+
 - Initial assignment from dispatch
 - Driver acceptance/decline flow
 - Fallback to next available driver on decline
 
 **Technical Notes:**
+
 - Push notification for new ride offers
 - Store decline reasons for dispatch insights
 - Configurable acceptance timeout
@@ -1581,6 +1674,7 @@ So that riders and dispatchers know the ride status in real-time.
 **Given** a driver has an assigned trip
 **When** they start working on the trip
 **Then** they can mark status transitions:
+
 1. **Start Route** → Status: 'en_route' (heading to pickup)
 2. **Arrived** → Status: 'arrived' (at pickup location)
 3. **Start Trip** → Status: 'in_progress' (rider in vehicle)
@@ -1589,6 +1683,7 @@ So that riders and dispatchers know the ride status in real-time.
 **Given** each status transition
 **When** the driver confirms
 **Then**:
+
 - Ride status updates in database
 - Rider receives push notification
 - Timestamp is recorded
@@ -1610,12 +1705,14 @@ ride_events (
 ```
 
 **And** the active trip screen shows:
+
 - Current status prominently
 - Next action button (primary)
 - Map with route to destination
 - Rider contact options
 
 **Technical Notes:**
+
 - Create ActiveTripScreen component
 - Update `complete-ride` Edge Function for final completion
 - Record lat/lng with each status change
@@ -1636,22 +1733,26 @@ So that I don't have to switch between apps while driving.
 **Given** a driver is en route to pickup or destination
 **When** they view the active trip
 **Then** they see:
+
 - Map with route displayed
 - "Navigate" button to launch navigation
 
 **Given** the driver taps "Navigate"
 **When** navigation launches
 **Then**:
+
 - Google Maps or Apple Maps opens with directions
 - Destination is pre-filled
 - Driver can return to app easily
 
 **Alternative:** In-app navigation display
+
 - Turn-by-turn directions shown in app
 - Voice guidance (if implemented)
 - Distance and ETA visible
 
 **Technical Notes:**
+
 - Use deep linking to native maps apps
 - `Linking.openURL('maps://?daddr=${lat},${lng}')`
 - `Linking.openURL('google.navigation:q=${lat},${lng}')`
@@ -1679,11 +1780,13 @@ So that I can communicate about arrival or delays.
 **Then** the native phone/SMS app opens with rider's number
 
 **And** contact is available during:
+
 - En route to pickup
 - Arrived at pickup
 - In progress
 
 **Technical Notes:**
+
 - PhoneButton component variant
 - Same implementation pattern as rider contact driver
 - This satisfies FR23
@@ -1703,6 +1806,7 @@ So that I only receive ride assignments when I can work.
 **Given** a driver navigates to Schedule tab
 **When** they view their availability
 **Then** they see:
+
 - Calendar view of their availability
 - Toggle to set Available/Offline
 - Recurring availability patterns
@@ -1710,6 +1814,7 @@ So that I only receive ride assignments when I can work.
 **Given** a driver sets recurring availability
 **When** they configure their schedule
 **Then** they can specify:
+
 - Days of week available
 - Hours each day (start/end times)
 - Exceptions for specific dates
@@ -1733,6 +1838,7 @@ driver_availability (
 **And** dispatch system respects availability when assigning rides
 
 **Technical Notes:**
+
 - Calendar component for visual schedule
 - Real-time toggle syncs to database
 - Dispatch queries availability before assignment
@@ -1753,6 +1859,7 @@ So that I know how much I'm making and plan my finances.
 **Given** a driver navigates to Earnings tab
 **When** the screen loads
 **Then** they see:
+
 - Today's earnings total
 - This week's earnings total
 - This month's earnings total
@@ -1761,17 +1868,20 @@ So that I know how much I'm making and plan my finances.
 **Given** a driver wants detailed breakdown
 **When** they tap on a time period
 **Then** they see:
+
 - List of completed rides
 - Earnings per ride
 - Total miles driven
 - Hours worked
 
 **And** the earnings calculation:
+
 - Driver earnings = ride price × driver percentage (e.g., 75%)
 - Stored per ride in `driver_earnings_cents` column
 - Calculated at ride completion
 
 **Technical Notes:**
+
 - EarningsDisplay component (UX P1)
 - Query completed rides aggregated by period
 - Show trends (up/down from previous period)
@@ -1796,18 +1906,21 @@ So that families have visual confirmation and we have documentation.
 **Given** the driver takes a photo
 **When** the photo is captured
 **Then**:
+
 - Photo uploads to Supabase Storage
 - Photo URL is attached to ride record
 - Family members receive notification with photo
 - Photo is accessible in ride history
 
 **And** photo requirements:
+
 - Uses device camera (expo-camera)
 - Compressed before upload
 - Stored in secure bucket with RLS
 - Metadata includes timestamp and location
 
 **Technical Notes:**
+
 - Use `expo-camera` for photo capture
 - Upload to `supabase.storage.from('arrival-photos')`
 - Store photo_url in rides table
@@ -1832,6 +1945,7 @@ So that the situation is documented and I can move to my next ride.
 **Given** the driver marks no-show
 **When** they confirm the action
 **Then**:
+
 - Status changes to 'no_show'
 - Wait time duration is recorded
 - Reason/notes can be added
@@ -1855,6 +1969,7 @@ no_shows (
 **And** system tracks no-show history per rider (FR53)
 
 **Technical Notes:**
+
 - ConfirmationModal for no-show action
 - Process no-show Edge Function
 - Alert dispatch for follow-up
@@ -1875,6 +1990,7 @@ So that riders see accurate information about me.
 **Given** a driver navigates to Profile tab
 **When** the screen loads
 **Then** they see:
+
 - Profile photo (editable)
 - Name
 - Vehicle information
@@ -1883,15 +1999,18 @@ So that riders see accurate information about me.
 **Given** a driver updates their vehicle info
 **When** they save changes
 **Then**:
+
 - driver_profiles table updates
 - Changes visible to riders immediately
 
 **And** vehicle information includes:
+
 - Make, Model, Year
 - Color
 - License plate
 
 **Technical Notes:**
+
 - Photo upload to Supabase Storage
 - Validate vehicle info format
 - This satisfies FR74
@@ -1911,11 +2030,13 @@ So that I can efficiently coordinate drivers and riders.
 **Given** the admin console is loaded
 **When** user is authenticated with role 'dispatcher' or 'admin'
 **Then** they see:
+
 - Sidebar navigation: Dashboard, Dispatch, Rides, Riders, Drivers
 - Header with user info and notifications
 - Main content area
 
 **And** the app structure follows Architecture:
+
 ```
 apps/admin/
 ├── src/
@@ -1935,12 +2056,14 @@ apps/admin/
 ```
 
 **And** shadcn/ui components are configured:
+
 - Navigation menu
 - Data tables
 - Cards
 - Modals
 
 **Technical Notes:**
+
 - Use Next.js App Router
 - Clerk middleware for route protection
 - TanStack Query for data fetching
@@ -1961,6 +2084,7 @@ So that I can understand fleet positions and make smart assignments.
 **Given** a dispatcher views the Dispatch screen
 **When** the map loads
 **Then** they see:
+
 - Map showing Raleigh-Durham area
 - Driver markers for all active drivers
 - Color-coded status: Available (green), On Trip (blue), Offline (gray)
@@ -1973,17 +2097,20 @@ So that I can understand fleet positions and make smart assignments.
 **Given** a dispatcher clicks on a driver marker
 **When** the popup appears
 **Then** they see:
+
 - Driver name and photo
 - Current status
 - Current ride (if on trip)
 - Quick actions (assign ride, view profile)
 
 **And** real-time updates use:
+
 - Supabase Realtime subscription to `fleet:active` channel
 - Broadcast from driver location updates
 - Efficient marker rendering
 
 **Technical Notes:**
+
 - Use Google Maps JavaScript API or Mapbox
 - Subscribe to all driver location updates
 - FleetMap component in `features/dispatch/`
@@ -2004,6 +2131,7 @@ So that I can optimize matching based on my knowledge.
 **Given** a dispatcher views unassigned rides
 **When** they select a ride
 **Then** they see:
+
 - Ride details
 - List of available drivers
 - Drivers sorted by proximity to pickup
@@ -2012,6 +2140,7 @@ So that I can optimize matching based on my knowledge.
 **Given** a dispatcher assigns a driver
 **When** they confirm the assignment
 **Then**:
+
 - `assign-driver` Edge Function is called
 - Ride status changes to 'assigned'
 - Driver receives notification
@@ -2020,11 +2149,13 @@ So that I can optimize matching based on my knowledge.
 **Given** a ride needs reassignment
 **When** dispatcher selects "Reassign"
 **Then**:
+
 - Current driver is notified of reassignment
 - New driver selection flow begins
 - Original driver's ride is cleared
 
 **Technical Notes:**
+
 - DispatchBoard component with drag-drop (optional)
 - Real-time ride list with status filters
 - This satisfies FR34, FR35
@@ -2044,6 +2175,7 @@ So that riders who prefer calling can still book rides.
 **Given** a phone call comes in
 **When** the dispatcher answers
 **Then** they can:
+
 - Look up caller by phone number
 - Create new rider if not found
 - Create ride booking
@@ -2055,6 +2187,7 @@ So that riders who prefer calling can still book rides.
 **Given** dispatcher creates a phone booking
 **When** they save the ride
 **Then**:
+
 - Ride created with source='phone'
 - Call logged in system
 - Same booking flow as app booking
@@ -2075,6 +2208,7 @@ phone_calls (
 ```
 
 **Technical Notes:**
+
 - Phone number search with fuzzy matching
 - Quick rider creation form
 - BookingManager component
@@ -2095,6 +2229,7 @@ So that I can provide good customer service.
 **Given** a dispatcher navigates to Riders section
 **When** the screen loads
 **Then** they see:
+
 - Searchable list of all riders
 - Search by name or phone number
 - Filters for active/inactive
@@ -2106,6 +2241,7 @@ So that I can provide good customer service.
 **Given** a dispatcher views a rider profile
 **When** the profile opens
 **Then** they see:
+
 - Contact information
 - Saved destinations
 - Ride history
@@ -2118,6 +2254,7 @@ So that I can provide good customer service.
 **Then** note is visible to all dispatchers
 
 **Technical Notes:**
+
 - DataTable component with search
 - RiderProfile detail view
 - Notes stored in rider_notes table
@@ -2142,6 +2279,7 @@ So that riders confirm or can cancel in advance.
 **Given** the rider answers the call
 **When** they hear the confirmation message
 **Then** they can:
+
 - Press 1 to confirm
 - Press 2 to cancel
 - Press 0 to speak to someone
@@ -2149,16 +2287,19 @@ So that riders confirm or can cancel in advance.
 **Given** the rider confirms (presses 1)
 **When** the confirmation is recorded
 **Then**:
+
 - Ride status changes to 'confirmed'
 - Confirmation logged
 
 **Given** the rider cancels (presses 2)
 **When** the cancellation is recorded
 **Then**:
+
 - Ride status changes to 'cancelled'
 - Dispatch notified
 
 **Technical Notes:**
+
 - Twilio Programmable Voice integration
 - TwiML for call flow
 - Webhook to handle responses
@@ -2183,6 +2324,7 @@ So that appropriate follow-up actions are taken.
 **Given** a dispatcher reviews no-shows
 **When** they view the no-show list
 **Then** they see:
+
 - Ride details
 - Rider information
 - Driver notes
@@ -2191,12 +2333,14 @@ So that appropriate follow-up actions are taken.
 **Given** a dispatcher processes a no-show
 **When** they take action
 **Then** they can:
+
 - Apply no-show fee (optional)
 - Contact rider
 - Add notes
 - Mark as resolved
 
 **Technical Notes:**
+
 - No-show queue in Admin Console
 - Integration with billing for fee application
 - This satisfies FR52
@@ -2216,6 +2360,7 @@ So that we have accurate documentation for compliance.
 **Given** a trip is completed
 **When** the completion is processed
 **Then** the system records:
+
 - Actual pickup time (from 'arrived' event)
 - Actual dropoff time (from 'completed' event)
 - Pickup location coordinates
@@ -2223,17 +2368,20 @@ So that we have accurate documentation for compliance.
 - Calculated mileage
 
 **And** mileage calculation:
+
 - Uses Google Distance Matrix API with actual coordinates
 - OR calculates from recorded route (if available)
 - Stored in `distance_miles` column
 
 **And** trip log includes:
+
 - All ride_events with timestamps
 - Driver information
 - Photo confirmation (if captured)
 - Signature (future enhancement)
 
 **Technical Notes:**
+
 - Automatic calculation in `complete-ride` Edge Function
 - Store all events for audit trail
 - This satisfies FR47, FR48, FR50
@@ -2269,6 +2417,7 @@ So that they can have peace of mind without invading my privacy.
 **Given** a rider navigates to Profile → Family Access
 **When** the screen loads
 **Then** they see:
+
 - List of linked family members
 - "Add Family Member" button
 - Status for each link (pending, approved)
@@ -2276,6 +2425,7 @@ So that they can have peace of mind without invading my privacy.
 **Given** a rider adds a family member
 **When** they enter the family member's phone number
 **Then**:
+
 - Invitation sent via SMS
 - Link status shows "Pending"
 - Family member can accept in their app
@@ -2283,6 +2433,7 @@ So that they can have peace of mind without invading my privacy.
 **Given** a family member accepts the invitation
 **When** they confirm in their app
 **Then**:
+
 - Link status changes to "Approved"
 - Family member can view rider's rides
 - Rider receives confirmation
@@ -2304,6 +2455,7 @@ family_links (
 ```
 
 **Technical Notes:**
+
 - Use Clerk for invitation flow
 - SMS via Twilio for invitation link
 - Respects rider autonomy (they control access)
@@ -2328,17 +2480,20 @@ So that I maintain control over my privacy.
 **Given** the rider confirms removal
 **When** the action completes
 **Then**:
+
 - Link status changes to 'revoked'
 - Family member loses access immediately
 - Family member receives notification
 - 60-second undo window appears
 
 **And** revocation is immediate and complete:
+
 - No more ride visibility
 - No more notifications
 - Historical access logged for audit
 
 **Technical Notes:**
+
 - ConfirmationModal with 60-second undo
 - Update family_links status to 'revoked'
 - Real-time sync removes data access
@@ -2359,6 +2514,7 @@ So that I know they're getting to their appointments safely.
 **Given** a family member opens the rider app with 'family' role
 **When** they view the home screen
 **Then** they see:
+
 - Linked riders they have access to
 - Current/upcoming rides for each rider
 - Ride status (upcoming, in progress, completed)
@@ -2366,17 +2522,20 @@ So that I know they're getting to their appointments safely.
 **Given** a family member views a rider's rides
 **When** they tap on a ride
 **Then** they see:
+
 - Ride details (time, pickup, destination)
 - Driver info (if assigned)
 - Status timeline
 - Arrival photo (if completed)
 
 **And** family members CANNOT:
+
 - Modify or cancel rides (unless permission granted)
 - Access rider preferences
 - Contact driver directly (rider does this)
 
 **Technical Notes:**
+
 - Family role sees filtered home screen
 - RLS policies enforce visibility
 - FamilyNotificationCard component
@@ -2401,12 +2560,14 @@ So that I can help manage their transportation.
 **Given** a family member books a ride
 **When** they complete the booking flow
 **Then**:
+
 - Ride is created for the linked rider
 - Rider receives confirmation notification
 - Booking source shows 'family'
 - Family member sees confirmation
 
 **And** permission check:
+
 ```sql
 -- Check booking permission
 SELECT permissions->>'book_rides' = 'true'
@@ -2415,6 +2576,7 @@ WHERE family_member_id = auth.uid() AND rider_id = :rider_id AND status = 'appro
 ```
 
 **Technical Notes:**
+
 - Same BookingWizard, different rider context
 - Clear indication "Booking for [Rider Name]"
 - Audit log shows who booked
@@ -2435,6 +2597,7 @@ So that I get updates in my preferred way.
 **Given** a user navigates to Profile → Notifications
 **When** the screen loads
 **Then** they see notification preferences:
+
 - Push notifications: On/Off
 - SMS notifications: On/Off
 - Notification types:
@@ -2447,6 +2610,7 @@ So that I get updates in my preferred way.
 **Given** a user updates their preferences
 **When** they save
 **Then**:
+
 - Preferences stored in notification_preferences table
 - Future notifications respect preferences
 
@@ -2468,6 +2632,7 @@ notification_preferences (
 ```
 
 **Technical Notes:**
+
 - Default to both push and SMS enabled
 - Respect preferences in all notification sends
 - This satisfies FR78
@@ -2487,16 +2652,19 @@ So that I'm prepared and don't miss my transportation.
 **Given** a ride is scheduled
 **When** 24 hours before the ride
 **Then** rider receives reminder notification:
+
 - "Reminder: You have a ride tomorrow at [time]"
 - Push and/or SMS based on preferences
 
 **Given** a ride is scheduled
 **When** 1 hour before the ride
 **Then** rider receives reminder notification:
+
 - "Your ride is in 1 hour. Pickup at [location]"
 - Driver info if assigned
 
 **And** the notification system:
+
 - Scheduled job checks for upcoming rides
 - Sends via configured channels (push, SMS)
 - Logs all sent notifications
@@ -2517,6 +2685,7 @@ notification_logs (
 ```
 
 **Technical Notes:**
+
 - Use Supabase scheduled functions or external cron
 - Expo Push Notifications for mobile push
 - Twilio for SMS
@@ -2537,26 +2706,31 @@ So that I know when to be ready for pickup.
 **Given** a driver is assigned to a ride
 **When** the assignment is confirmed
 **Then** rider receives notification:
+
 - "Your driver [Name] has been assigned"
 - Includes driver photo and vehicle info
 
 **Given** a driver marks 'en_route'
 **When** the status changes
 **Then** rider receives notification:
+
 - "[Name] is on the way!"
 - Includes ETA
 
 **Given** a driver marks 'arrived'
 **When** the status changes
 **Then** rider receives notification:
+
 - "[Name] has arrived"
 - Includes vehicle info reminder
 
 **And** notifications are triggered by:
+
 - ride_events table INSERT triggers
 - Edge Function sends notifications
 
 **Technical Notes:**
+
 - Database trigger on ride status change
 - send-notification Edge Function
 - Include driver photo in push notification
@@ -2577,6 +2751,7 @@ So that I know when I have new work.
 **Given** a new ride is assigned to a driver
 **When** the assignment is made
 **Then** driver receives notification:
+
 - "New ride assigned"
 - Pickup time and location
 - Rider name
@@ -2585,6 +2760,7 @@ So that I know when I have new work.
 **Given** an assigned ride is cancelled
 **When** the cancellation occurs
 **Then** driver receives notification:
+
 - "Ride cancelled"
 - Ride details
 - Reason (if provided)
@@ -2592,10 +2768,12 @@ So that I know when I have new work.
 **Given** an assigned ride is modified
 **When** time or location changes
 **Then** driver receives notification:
+
 - "Ride updated"
 - Shows what changed
 
 **Technical Notes:**
+
 - Driver app must register for push tokens
 - Push notifications with data payload
 - Handle notification tap to navigate
@@ -2616,16 +2794,19 @@ So that I know their ride has started.
 **Given** a family member has notification permission
 **When** the rider's ride status changes to 'in_progress'
 **Then** family member receives notification:
+
 - "[Rider Name] was picked up by [Driver Name]"
 - Time of pickup
 - Destination
 
 **And** notification respects:
+
 - Family link status (must be 'approved')
 - Family member notification preferences
 - Rider hasn't disabled family notifications
 
 **Technical Notes:**
+
 - Query family_links for approved members
 - send-notification to each family member
 - This satisfies FR81
@@ -2645,6 +2826,7 @@ So that I have visual confirmation and peace of mind.
 **Given** a ride is completed with photo confirmation
 **When** the completion is processed
 **Then** family members receive notification:
+
 - "[Rider Name] arrived safely"
 - Arrival time
 - Location
@@ -2653,16 +2835,19 @@ So that I have visual confirmation and peace of mind.
 **Given** a family member receives the notification
 **When** they tap on it
 **Then** they see:
+
 - Full arrival photo
 - Ride completion details
 - Option to view ride history
 
 **And** photo delivery:
+
 - Compress image for notification
 - Store full resolution for viewing
 - Include thumbnail in push payload
 
 **Technical Notes:**
+
 - FamilyNotificationCard shows photo
 - Image URL in notification payload
 - Respect notification preferences
@@ -2700,11 +2885,13 @@ So that I can manage billing, compliance, and configuration.
 **Given** the business ops app is loaded
 **When** user is authenticated with role 'admin'
 **Then** they see:
+
 - Sidebar navigation: Dashboard, Billing, Drivers, Compliance, Settings
 - Financial overview on dashboard
 - Quick access to common actions
 
 **And** the app structure:
+
 ```
 apps/business/
 ├── src/
@@ -2720,6 +2907,7 @@ apps/business/
 ```
 
 **Technical Notes:**
+
 - Next.js App Router
 - Admin-only access via Clerk middleware
 - shadcn/ui for consistent design
@@ -2740,6 +2928,7 @@ So that I maintain an active, qualified driver fleet.
 **Given** an admin navigates to Drivers section
 **When** the screen loads
 **Then** they see:
+
 - List of all drivers (active and inactive)
 - Driver status indicators
 - Search and filter capabilities
@@ -2748,6 +2937,7 @@ So that I maintain an active, qualified driver fleet.
 **Given** an admin views a driver profile
 **When** the profile opens
 **Then** they see:
+
 - Contact information
 - Vehicle information
 - Credential status (see Story 5.6)
@@ -2758,12 +2948,14 @@ So that I maintain an active, qualified driver fleet.
 **Given** an admin deactivates a driver
 **When** they confirm the action
 **Then**:
+
 - Driver status changes to inactive
 - Driver removed from assignment pool
 - Active rides reassigned (with notification)
 - Driver notified
 
 **Technical Notes:**
+
 - DataTable with status filters
 - Driver detail drawer/modal
 - Deactivation with reassignment logic
@@ -2784,6 +2976,7 @@ So that only qualified drivers can serve riders.
 **Given** an admin clicks "Add Driver"
 **When** the onboarding form opens
 **Then** they can enter:
+
 - Personal information (name, phone, email)
 - Vehicle information
 - Credential documents (upload)
@@ -2792,6 +2985,7 @@ So that only qualified drivers can serve riders.
 **Given** an admin submits a new driver
 **When** the driver is created
 **Then**:
+
 - User account created with 'driver' role
 - Driver profile created
 - Credential records created (pending verification)
@@ -2799,6 +2993,7 @@ So that only qualified drivers can serve riders.
 - Driver can log into app
 
 **And** onboarding checklist:
+
 - [ ] Personal info complete
 - [ ] Vehicle info complete
 - [ ] Driver's license uploaded
@@ -2807,6 +3002,7 @@ So that only qualified drivers can serve riders.
 - [ ] Profile photo uploaded
 
 **Technical Notes:**
+
 - Multi-step onboarding wizard
 - File upload to Supabase Storage
 - Credential tracking from start
@@ -2827,6 +3023,7 @@ So that billing is accurate and timely.
 **Given** a ride is completed
 **When** invoice generation runs
 **Then** an invoice is created with:
+
 - Invoice number (sequential)
 - Rider information
 - Ride details (date, pickup, destination)
@@ -2853,10 +3050,12 @@ invoices (
 ```
 
 **And** invoice options:
+
 - Per-ride invoicing (default)
 - Weekly/monthly consolidated invoices (configurable)
 
 **Technical Notes:**
+
 - generate-invoice Edge Function
 - PDF generation for downloadable invoices
 - This satisfies FR57
@@ -2876,6 +3075,7 @@ So that payment is convenient and automatic.
 **Given** a rider needs to add a payment method
 **When** they navigate to Profile → Payment
 **Then** they can:
+
 - Add credit/debit card via Stripe
 - View saved payment methods
 - Set default payment method
@@ -2884,6 +3084,7 @@ So that payment is convenient and automatic.
 **Given** an invoice is generated
 **When** auto-pay is enabled
 **Then**:
+
 - Default card is charged
 - Payment record created
 - Invoice marked as paid
@@ -2892,6 +3093,7 @@ So that payment is convenient and automatic.
 **Given** a payment fails
 **When** the charge is declined
 **Then**:
+
 - Invoice remains pending
 - Rider notified
 - Admin alerted for follow-up
@@ -2912,6 +3114,7 @@ payments (
 ```
 
 **Technical Notes:**
+
 - Stripe Elements for card input
 - Stripe Customer for saved cards
 - process-payment Edge Function
@@ -2933,6 +3136,7 @@ So that I don't have to pay for each ride individually.
 **Given** a rider has recurring rides
 **When** billing period ends (weekly/monthly)
 **Then**:
+
 - Consolidated invoice generated
 - All rides in period listed
 - Total calculated
@@ -2941,11 +3145,13 @@ So that I don't have to pay for each ride individually.
 **Given** an admin views rider billing
 **When** they select billing frequency
 **Then** they can set:
+
 - Per-ride billing
 - Weekly billing
 - Monthly billing
 
 **Technical Notes:**
+
 - Scheduled job for billing cycle
 - Consolidation logic in generate-invoice
 - This satisfies FR59
@@ -2965,6 +3171,7 @@ So that I can resolve billing issues.
 **Given** an admin views a rider's billing
 **When** they access payment management
 **Then** they see:
+
 - Payment history
 - Outstanding balance
 - Payment methods (masked)
@@ -2973,12 +3180,14 @@ So that I can resolve billing issues.
 **Given** an admin needs to adjust billing
 **When** they take action
 **Then** they can:
+
 - Apply credits
 - Waive fees
 - Process manual payment
 - Generate statement
 
 **Technical Notes:**
+
 - Admin view of Stripe customer
 - Audit log for all adjustments
 - This satisfies FR60
@@ -2998,6 +3207,7 @@ So that drivers are paid accurately.
 **Given** a ride is completed
 **When** earnings are calculated
 **Then**:
+
 - Driver earnings = ride price × driver percentage
 - Recorded in driver_earnings table
 - Visible in driver earnings dashboard
@@ -3005,6 +3215,7 @@ So that drivers are paid accurately.
 **Given** an admin views payroll
 **When** they select a pay period
 **Then** they see:
+
 - Total earnings per driver
 - Ride count
 - Total miles
@@ -3026,6 +3237,7 @@ driver_earnings (
 ```
 
 **Technical Notes:**
+
 - Earnings calculated in complete-ride Edge Function
 - Configurable driver percentage
 - Export for payroll processing
@@ -3046,6 +3258,7 @@ So that all drivers remain compliant.
 **Given** an admin views driver credentials
 **When** they access the credentials section
 **Then** they see:
+
 - Driver's license (number, expiration)
 - Vehicle insurance (provider, expiration)
 - Background check (date, status)
@@ -3054,6 +3267,7 @@ So that all drivers remain compliant.
 **Given** a credential is approaching expiration (30 days)
 **When** the alert check runs
 **Then**:
+
 - Admin receives alert
 - Driver receives reminder
 - Dashboard shows warning indicator
@@ -3079,6 +3293,7 @@ driver_credentials (
 ```
 
 **Technical Notes:**
+
 - Document upload to Supabase Storage
 - Scheduled job for expiration checks
 - This satisfies FR65, FR66, FR67
@@ -3098,6 +3313,7 @@ So that I can monitor business performance.
 **Given** an admin views the dashboard
 **When** operational metrics load
 **Then** they see:
+
 - Rides today/this week/this month
 - On-time rate
 - Completion rate
@@ -3108,12 +3324,14 @@ So that I can monitor business performance.
 **Given** an admin wants detailed reports
 **When** they access Reports section
 **Then** they can generate:
+
 - Daily operations summary
 - Weekly performance report
 - Driver performance comparison
 - Rider activity report
 
 **Technical Notes:**
+
 - Aggregate queries with date ranges
 - Charts using recharts or similar
 - Export to CSV/PDF
@@ -3134,6 +3352,7 @@ So that I can track business profitability.
 **Given** an admin views financial dashboard
 **When** the data loads
 **Then** they see:
+
 - Revenue (daily/weekly/monthly)
 - Outstanding invoices
 - Driver payments due
@@ -3142,6 +3361,7 @@ So that I can track business profitability.
 **Given** an admin generates financial report
 **When** they select parameters
 **Then** the report shows:
+
 - Total revenue by period
 - Revenue by rider/source
 - Driver payments
@@ -3149,6 +3369,7 @@ So that I can track business profitability.
 - Refunds/credits
 
 **Technical Notes:**
+
 - Aggregate from invoices, payments, driver_earnings
 - Period comparison (vs last period)
 - This satisfies FR63
@@ -3168,6 +3389,7 @@ So that we meet regulatory requirements.
 **Given** an admin needs compliance documentation
 **When** they access Compliance section
 **Then** they can generate:
+
 - Trip documentation completeness report
 - Driver credential status report
 - Audit log export
@@ -3176,12 +3398,14 @@ So that we meet regulatory requirements.
 **Given** a compliance report is generated
 **When** export is requested
 **Then**:
+
 - Report generated in PDF/CSV format
 - Includes all required fields
 - Date range selectable
 - Downloadable
 
 **And** trip documentation includes:
+
 - Pickup time/location
 - Dropoff time/location
 - Driver information
@@ -3189,6 +3413,7 @@ So that we meet regulatory requirements.
 - Photo confirmation (if available)
 
 **Technical Notes:**
+
 - Export functionality for all ride data
 - Audit log queries for access reports
 - This satisfies FR56, FR64
@@ -3208,6 +3433,7 @@ So that rides are only booked within our operating region.
 **Given** an admin accesses Settings → Service Area
 **When** the configuration opens
 **Then** they can:
+
 - View current service area on map
 - Draw/edit polygon boundary
 - Save service area
@@ -3215,6 +3441,7 @@ So that rides are only booked within our operating region.
 **Given** a rider tries to book outside service area
 **When** address is selected
 **Then**:
+
 - Booking shows "Outside Service Area"
 - Cannot proceed with booking
 - Suggests calling for special arrangements
@@ -3239,6 +3466,7 @@ system_config (
 ```
 
 **Technical Notes:**
+
 - Map component for boundary editing
 - PostGIS for geospatial queries
 - calculate-price checks service area
@@ -3259,6 +3487,7 @@ So that ride prices are calculated correctly.
 **Given** an admin accesses Settings → Pricing
 **When** the configuration opens
 **Then** they can configure:
+
 - Base rate ($X per ride)
 - Per mile rate ($X per mile)
 - Wait time rate ($X per minute after included)
@@ -3268,11 +3497,13 @@ So that ride prices are calculated correctly.
 **Given** pricing is updated
 **When** the admin saves
 **Then**:
+
 - New pricing takes effect immediately
 - Existing booked rides keep original price
 - Change logged in audit trail
 
 **Technical Notes:**
+
 - system_config with key 'pricing'
 - calculate-price reads config
 - Show preview of sample ride price
@@ -3293,6 +3524,7 @@ So that rides can only be booked during business hours.
 **Given** an admin accesses Settings → Hours
 **When** the configuration opens
 **Then** they can configure:
+
 - Operating days (e.g., Mon-Sat)
 - Operating hours per day
 - Holiday closures
@@ -3301,11 +3533,13 @@ So that rides can only be booked during business hours.
 **Given** a rider tries to book outside operating hours
 **When** they select a time
 **Then**:
+
 - Time picker shows unavailable times
 - Cannot select times outside hours
 - Shows next available time
 
 **Technical Notes:**
+
 - system_config with key 'operating_hours'
 - TimePicker validates against config
 - This satisfies FR85
@@ -3325,6 +3559,7 @@ So that the right people have the right access.
 **Given** an admin accesses Settings → Users
 **When** the screen loads
 **Then** they see:
+
 - List of admin/dispatcher users
 - Role assignments
 - "Invite User" button
@@ -3332,6 +3567,7 @@ So that the right people have the right access.
 **Given** an admin invites a new user
 **When** they send the invitation
 **Then**:
+
 - Clerk invitation sent
 - User can sign up with role assigned
 - Appears in user list as pending
@@ -3339,11 +3575,13 @@ So that the right people have the right access.
 **Given** an admin needs to modify user access
 **When** they edit a user
 **Then** they can:
+
 - Change role (dispatcher ↔ admin)
 - Deactivate account
 - Reset password (trigger reset email)
 
 **Technical Notes:**
+
 - Clerk Admin API for user management
 - Role stored in Clerk metadata + users table
 - This satisfies FR86, FR87
@@ -3364,95 +3602,95 @@ So that the right people have the right access.
 
 ### Complete Coverage Verification
 
-| FR | Description | Epic | Story |
-|----|-------------|------|-------|
-| FR1 | Book one-time ride | 2 | 2.3, 2.4, 2.5 |
-| FR2 | Book recurring rides | 2 | 2.4, 2.5 |
-| FR3 | Save destinations | 2 | 2.2 |
-| FR4 | View price before booking | 2 | 2.5 |
-| FR5 | Modify/cancel rides | 2 | 2.6 |
-| FR6 | Request specific driver | 2 | 2.7 |
-| FR7 | Phone booking | 3 | 3.15 |
-| FR8 | Confirmation calls | 3 | 3.17 |
-| FR9 | View upcoming rides | 2 | 2.8 |
-| FR10 | See driver info | 2 | 2.9 |
-| FR11 | Track driver location | 2 | 2.10 |
-| FR12 | Contact driver | 2 | 2.11 |
-| FR13 | Family booking | 4 | 4.4 |
-| FR14 | Family view rides | 4 | 4.3 |
-| FR15 | Family pickup notification | 4 | 4.9, 4.10 |
-| FR16 | Family arrival + photo | 4 | 4.10 |
-| FR17 | Designate family access | 4 | 4.1 |
-| FR18 | Revoke family access | 4 | 4.2 |
-| FR19 | Driver trip queue | 3 | 3.2 |
-| FR20 | Driver sees rider profile | 3 | 3.2 |
-| FR21 | Accept/decline rides | 3 | 3.3 |
-| FR22 | Trip status transitions | 3 | 3.4 |
-| FR23 | Driver contact rider | 3 | 3.6 |
-| FR24 | Integrated navigation | 3 | 3.5 |
-| FR25 | Availability schedule | 3 | 3.7 |
-| FR26 | Block time off | 3 | 3.7 |
-| FR27 | View schedule | 3 | 3.7 |
-| FR28 | Earnings summary | 3 | 3.8 |
-| FR29 | Earnings per ride | 3 | 3.8 |
-| FR30 | Performance metrics | 3 | 3.8 |
-| FR31 | Fleet map | 3 | 3.13 |
-| FR32 | Driver status | 3 | 3.13 |
-| FR33 | Daily rides view | 3 | 3.14 |
-| FR34 | Manual assignment | 3 | 3.14 |
-| FR35 | Reassign rides | 3 | 3.14 |
-| FR36 | Dispatcher booking | 3 | 3.15 |
-| FR37 | Dispatcher modify/cancel | 3 | 3.15 |
-| FR38 | Rider search | 3 | 3.16 |
-| FR39 | View rider profile | 3 | 3.16 |
-| FR40 | Add rider notes | 3 | 3.16 |
-| FR41 | Create rider accounts | 3 | 3.16 |
-| FR42 | Manage driver roster | 5 | 5.2 |
-| FR43 | Onboard drivers | 5 | 5.3 |
-| FR44 | Deactivate drivers | 5 | 5.2 |
-| FR45 | Log phone calls | 3 | 3.15 |
-| FR46 | Caller ID booking | 3 | 3.15 |
-| FR47 | Record pickup time | 3 | 3.4, 3.19 |
-| FR48 | Record dropoff time | 3 | 3.4, 3.19 |
-| FR49 | Photo documentation | 3 | 3.9 |
-| FR50 | Calculate mileage | 3 | 3.19 |
-| FR51 | Mark no-show | 3 | 3.10 |
-| FR52 | Process no-shows | 3 | 3.18 |
-| FR53 | Track no-show history | 3 | 3.10 |
-| FR54 | Log data access | 1 | 1.5 |
-| FR55 | Audit trail | 1 | 1.5 |
-| FR56 | Compliance reports | 5 | 5.12 |
-| FR57 | Generate invoices | 5 | 5.4 |
-| FR58 | Credit card payment | 5 | 5.5 |
-| FR59 | Recurring billing | 5 | 5.6 |
-| FR60 | Manage payment accounts | 5 | 5.7 |
-| FR61 | Track driver earnings | 5 | 5.8 |
-| FR62 | Operational reports | 5 | 5.10 |
-| FR63 | Financial reports | 5 | 5.11 |
-| FR64 | Export ride data | 5 | 5.12 |
-| FR65 | Store credentials | 5 | 5.9 |
-| FR66 | Credential alerts | 5 | 5.9 |
-| FR67 | Verify credentials | 5 | 5.9 |
-| FR68 | Phone registration | 1 | 1.3 |
-| FR69 | SMS authentication | 1 | 1.3 |
-| FR70 | Role-based access | 1 | 1.4 |
-| FR71 | Update rider profile | 2 | 2.12 |
-| FR72 | Accessibility prefs | 2 | 2.13 |
-| FR73 | Comfort prefs | 2 | 2.14 |
-| FR74 | Update driver profile | 3 | 3.11 |
-| FR75 | Ride reminders | 4 | 4.6 |
-| FR76 | Driver en route notification | 4 | 4.7 |
-| FR77 | Driver arrived notification | 4 | 4.7 |
-| FR78 | Notification preferences | 4 | 4.5 |
-| FR79 | Driver assignment notification | 4 | 4.8 |
-| FR80 | Driver ride change notification | 4 | 4.8 |
-| FR81 | Family pickup notification | 4 | 4.9 |
-| FR82 | Family arrival notification | 4 | 4.10 |
-| FR83 | Service area config | 5 | 5.13 |
-| FR84 | Pricing config | 5 | 5.14 |
-| FR85 | Operating hours config | 5 | 5.15 |
-| FR86 | Manage admin accounts | 5 | 5.16 |
-| FR87 | Reset passwords | 5 | 5.16 |
+| FR   | Description                     | Epic | Story         |
+| ---- | ------------------------------- | ---- | ------------- |
+| FR1  | Book one-time ride              | 2    | 2.3, 2.4, 2.5 |
+| FR2  | Book recurring rides            | 2    | 2.4, 2.5      |
+| FR3  | Save destinations               | 2    | 2.2           |
+| FR4  | View price before booking       | 2    | 2.5           |
+| FR5  | Modify/cancel rides             | 2    | 2.6           |
+| FR6  | Request specific driver         | 2    | 2.7           |
+| FR7  | Phone booking                   | 3    | 3.15          |
+| FR8  | Confirmation calls              | 3    | 3.17          |
+| FR9  | View upcoming rides             | 2    | 2.8           |
+| FR10 | See driver info                 | 2    | 2.9           |
+| FR11 | Track driver location           | 2    | 2.10          |
+| FR12 | Contact driver                  | 2    | 2.11          |
+| FR13 | Family booking                  | 4    | 4.4           |
+| FR14 | Family view rides               | 4    | 4.3           |
+| FR15 | Family pickup notification      | 4    | 4.9, 4.10     |
+| FR16 | Family arrival + photo          | 4    | 4.10          |
+| FR17 | Designate family access         | 4    | 4.1           |
+| FR18 | Revoke family access            | 4    | 4.2           |
+| FR19 | Driver trip queue               | 3    | 3.2           |
+| FR20 | Driver sees rider profile       | 3    | 3.2           |
+| FR21 | Accept/decline rides            | 3    | 3.3           |
+| FR22 | Trip status transitions         | 3    | 3.4           |
+| FR23 | Driver contact rider            | 3    | 3.6           |
+| FR24 | Integrated navigation           | 3    | 3.5           |
+| FR25 | Availability schedule           | 3    | 3.7           |
+| FR26 | Block time off                  | 3    | 3.7           |
+| FR27 | View schedule                   | 3    | 3.7           |
+| FR28 | Earnings summary                | 3    | 3.8           |
+| FR29 | Earnings per ride               | 3    | 3.8           |
+| FR30 | Performance metrics             | 3    | 3.8           |
+| FR31 | Fleet map                       | 3    | 3.13          |
+| FR32 | Driver status                   | 3    | 3.13          |
+| FR33 | Daily rides view                | 3    | 3.14          |
+| FR34 | Manual assignment               | 3    | 3.14          |
+| FR35 | Reassign rides                  | 3    | 3.14          |
+| FR36 | Dispatcher booking              | 3    | 3.15          |
+| FR37 | Dispatcher modify/cancel        | 3    | 3.15          |
+| FR38 | Rider search                    | 3    | 3.16          |
+| FR39 | View rider profile              | 3    | 3.16          |
+| FR40 | Add rider notes                 | 3    | 3.16          |
+| FR41 | Create rider accounts           | 3    | 3.16          |
+| FR42 | Manage driver roster            | 5    | 5.2           |
+| FR43 | Onboard drivers                 | 5    | 5.3           |
+| FR44 | Deactivate drivers              | 5    | 5.2           |
+| FR45 | Log phone calls                 | 3    | 3.15          |
+| FR46 | Caller ID booking               | 3    | 3.15          |
+| FR47 | Record pickup time              | 3    | 3.4, 3.19     |
+| FR48 | Record dropoff time             | 3    | 3.4, 3.19     |
+| FR49 | Photo documentation             | 3    | 3.9           |
+| FR50 | Calculate mileage               | 3    | 3.19          |
+| FR51 | Mark no-show                    | 3    | 3.10          |
+| FR52 | Process no-shows                | 3    | 3.18          |
+| FR53 | Track no-show history           | 3    | 3.10          |
+| FR54 | Log data access                 | 1    | 1.5           |
+| FR55 | Audit trail                     | 1    | 1.5           |
+| FR56 | Compliance reports              | 5    | 5.12          |
+| FR57 | Generate invoices               | 5    | 5.4           |
+| FR58 | Credit card payment             | 5    | 5.5           |
+| FR59 | Recurring billing               | 5    | 5.6           |
+| FR60 | Manage payment accounts         | 5    | 5.7           |
+| FR61 | Track driver earnings           | 5    | 5.8           |
+| FR62 | Operational reports             | 5    | 5.10          |
+| FR63 | Financial reports               | 5    | 5.11          |
+| FR64 | Export ride data                | 5    | 5.12          |
+| FR65 | Store credentials               | 5    | 5.9           |
+| FR66 | Credential alerts               | 5    | 5.9           |
+| FR67 | Verify credentials              | 5    | 5.9           |
+| FR68 | Phone registration              | 1    | 1.3           |
+| FR69 | SMS authentication              | 1    | 1.3           |
+| FR70 | Role-based access               | 1    | 1.4           |
+| FR71 | Update rider profile            | 2    | 2.12          |
+| FR72 | Accessibility prefs             | 2    | 2.13          |
+| FR73 | Comfort prefs                   | 2    | 2.14          |
+| FR74 | Update driver profile           | 3    | 3.11          |
+| FR75 | Ride reminders                  | 4    | 4.6           |
+| FR76 | Driver en route notification    | 4    | 4.7           |
+| FR77 | Driver arrived notification     | 4    | 4.7           |
+| FR78 | Notification preferences        | 4    | 4.5           |
+| FR79 | Driver assignment notification  | 4    | 4.8           |
+| FR80 | Driver ride change notification | 4    | 4.8           |
+| FR81 | Family pickup notification      | 4    | 4.9           |
+| FR82 | Family arrival notification     | 4    | 4.10          |
+| FR83 | Service area config             | 5    | 5.13          |
+| FR84 | Pricing config                  | 5    | 5.14          |
+| FR85 | Operating hours config          | 5    | 5.15          |
+| FR86 | Manage admin accounts           | 5    | 5.16          |
+| FR87 | Reset passwords                 | 5    | 5.16          |
 
 **Coverage: 87/87 FRs (100%)**
 
@@ -3462,14 +3700,14 @@ So that the right people have the right access.
 
 ### Total Stories by Epic
 
-| Epic | Title | Stories | FR Coverage |
-|------|-------|---------|-------------|
-| 1 | Foundation & Infrastructure | 6 | 5 FRs |
-| 2 | Rider Booking Experience | 14 | 13 FRs |
-| 3 | Driver & Dispatch Operations | 19 | 37 FRs |
-| 4 | Family Support & Notifications | 10 | 14 FRs |
-| 5 | Business Operations & Administration | 16 | 22 FRs |
-| **Total** | | **65 Stories** | **87 FRs (100%)** |
+| Epic      | Title                                | Stories        | FR Coverage       |
+| --------- | ------------------------------------ | -------------- | ----------------- |
+| 1         | Foundation & Infrastructure          | 6              | 5 FRs             |
+| 2         | Rider Booking Experience             | 14             | 13 FRs            |
+| 3         | Driver & Dispatch Operations         | 19             | 37 FRs            |
+| 4         | Family Support & Notifications       | 10             | 14 FRs            |
+| 5         | Business Operations & Administration | 16             | 22 FRs            |
+| **Total** |                                      | **65 Stories** | **87 FRs (100%)** |
 
 ### Recommended Implementation Order
 
@@ -3517,7 +3755,6 @@ These stories are on the critical path and should be prioritized:
 
 **Document Complete**
 
-*Generated: 2025-12-06*
-*Total: 65 Stories covering 87 Functional Requirements*
-*Ready for Sprint Planning*
-
+_Generated: 2025-12-06_
+_Total: 65 Stories covering 87 Functional Requirements_
+_Ready for Sprint Planning_

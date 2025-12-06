@@ -1,42 +1,51 @@
 /**
- * Shared ESLint configuration for Veterans First monorepo
+ * Shared ESLint flat configuration for Veterans First monorepo
+ * Compatible with ESLint 9+ flat config
+ *
+ * Note: React and React Hooks plugins are NOT included here since
+ * framework-specific configs (Next.js, Expo) already include them.
+ * This config provides base TypeScript rules only.
  */
 
-module.exports = {
-  parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "react", "react-hooks"],
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-  ],
-  rules: {
-    // TypeScript
-    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
+const tseslint = require("@typescript-eslint/eslint-plugin");
+const tsparser = require("@typescript-eslint/parser");
 
-    // React
-    "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off",
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
+/** @type {import('eslint').Linter.Config[]} */
+const baseConfig = [
+  {
+    files: ["**/*.{ts,tsx,js,jsx}"],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint,
+    },
+    rules: {
+      // TypeScript
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
 
-    // General
-    "no-console": ["warn", { allow: ["warn", "error"] }],
-    "prefer-const": "warn",
-  },
-  settings: {
-    react: {
-      version: "detect",
+      // General
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "prefer-const": "warn",
     },
   },
-  env: {
-    browser: true,
-    node: true,
-    es2022: true,
+  {
+    ignores: ["node_modules/", "dist/", ".next/", ".expo/", "build/"],
   },
-  ignorePatterns: ["node_modules/", "dist/", ".next/", ".expo/"],
-};
+];
+
+module.exports = baseConfig;
+module.exports.baseConfig = baseConfig;

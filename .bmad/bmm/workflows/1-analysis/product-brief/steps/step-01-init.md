@@ -1,18 +1,18 @@
 ---
-name: 'step-01-init'
-description: 'Initialize the product brief workflow by detecting continuation state and setting up the document'
+name: "step-01-init"
+description: "Initialize the product brief workflow by detecting continuation state and setting up the document"
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/bmm/workflows/1-analysis/product-brief'
+workflow_path: "{project-root}/.bmad/bmm/workflows/1-analysis/product-brief"
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-vision.md'
-workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
+thisStepFile: "{workflow_path}/steps/step-01-init.md"
+nextStepFile: "{workflow_path}/steps/step-02-vision.md"
+workflowFile: "{workflow_path}/workflow.md"
+outputFile: "{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md"
 
 # Template References
-productBriefTemplate: '{workflow_path}/product-brief.template.md'
+productBriefTemplate: "{workflow_path}/product-brief.template.md"
 ---
 
 # Step 1: Product Brief Initialization
@@ -122,11 +122,11 @@ Discover and load context documents using smart discovery:
 ---
 stepsCompleted: []
 inputDocuments: []
-workflowType: 'product-brief'
+workflowType: "product-brief"
 lastStep: 0
-project_name: '{{project_name}}'
-user_name: '{{user_name}}'
-date: '{{date}}'
+project_name: "{{project_name}}"
+user_name: "{{user_name}}"
+date: "{{date}}"
 ---
 ```
 

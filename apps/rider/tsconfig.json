@@ -1,5 +1,8 @@
 {
-  "extends": "../../node_modules/expo/tsconfig.base.json",
+  "extends": [
+    "@veterans-first/config/typescript/react-native",
+    "../../node_modules/expo/tsconfig.base.json"
+  ],
   "compilerOptions": {
     "strict": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
@@ -7,11 +10,5 @@
       "@/*": ["./*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "nativewind-env.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"]
 }

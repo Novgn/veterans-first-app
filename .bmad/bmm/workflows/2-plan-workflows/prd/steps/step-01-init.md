@@ -103,11 +103,11 @@ Initialize frontmatter with:
 ---
 stepsCompleted: []
 inputDocuments: []
-workflowType: 'prd'
+workflowType: "prd"
 lastStep: 0
-project_name: '{{project_name}}'
-user_name: '{{user_name}}'
-date: '{{date}}'
+project_name: "{{project_name}}"
+user_name: "{{user_name}}"
+date: "{{date}}"
 ---
 ```
 

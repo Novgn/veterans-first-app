@@ -17,7 +17,10 @@ export function formatPhoneNumber(phone: string): string {
 /**
  * Format a date for display
  */
-export function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions): string {
+export function formatDate(
+  date: Date | string,
+  options?: Intl.DateTimeFormatOptions,
+): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-US", {
     year: "numeric",
@@ -30,7 +33,10 @@ export function formatDate(date: Date | string, options?: Intl.DateTimeFormatOpt
 /**
  * Format a time for display
  */
-export function formatTime(date: Date | string, options?: Intl.DateTimeFormatOptions): string {
+export function formatTime(
+  date: Date | string,
+  options?: Intl.DateTimeFormatOptions,
+): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleTimeString("en-US", {
     hour: "numeric",

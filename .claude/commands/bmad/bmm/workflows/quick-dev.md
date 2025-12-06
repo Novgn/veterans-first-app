@@ -1,5 +1,5 @@
 ---
-description: 'Flexible development - execute tech-specs OR direct instructions with optional planning.'
+description: "Flexible development - execute tech-specs OR direct instructions with optional planning."
 ---
 
 IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:

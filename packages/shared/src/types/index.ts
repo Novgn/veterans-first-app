@@ -3,7 +3,13 @@
  */
 
 // User roles in the system
-export type UserRole = "rider" | "driver" | "dispatcher" | "admin" | "business" | "family";
+export type UserRole =
+  | "rider"
+  | "driver"
+  | "dispatcher"
+  | "admin"
+  | "business"
+  | "family";
 
 // Base user type
 export interface User {

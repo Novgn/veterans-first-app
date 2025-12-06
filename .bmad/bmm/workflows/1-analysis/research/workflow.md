@@ -182,14 +182,14 @@ Create research document with proper metadata:
 ---
 stepsCompleted: [1]
 inputDocuments: []
-workflowType: 'research'
+workflowType: "research"
 lastStep: 1
-research_type: '{{research_type}}'
-research_topic: '{{research_topic}}'
-research_goals: '{{research_goals}}'
-user_name: '{{user_name}}'
-date: '{{date}}'
-current_year: '{{current_year}}'
+research_type: "{{research_type}}"
+research_topic: "{{research_topic}}"
+research_goals: "{{research_goals}}"
+user_name: "{{user_name}}"
+date: "{{date}}"
+current_year: "{{current_year}}"
 web_research_enabled: true
 source_verification: true
 ---

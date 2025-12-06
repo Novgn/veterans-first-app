@@ -1,14 +1,14 @@
 ---
-name: 'step-06-complete'
-description: 'Complete the product brief workflow, update status files, and suggest next steps for the project'
+name: "step-06-complete"
+description: "Complete the product brief workflow, update status files, and suggest next steps for the project"
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/bmm/workflows/1-analysis/product-brief'
+workflow_path: "{project-root}/.bmad/bmm/workflows/1-analysis/product-brief"
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-06-complete.md'
-workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
+thisStepFile: "{workflow_path}/steps/step-06-complete.md"
+workflowFile: "{workflow_path}/workflow.md"
+outputFile: "{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md"
 # Task References
 # (No task references used in this completion step)
 ---

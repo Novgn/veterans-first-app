@@ -1,8 +1,12 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import sharedConfig from "@veterans-first/config/eslint";
 
 const eslintConfig = defineConfig([
+  // Veterans First shared config
+  ...sharedConfig,
+  // Next.js specific configs
   ...nextVitals,
   ...nextTs,
   // Override default ignores of eslint-config-next.

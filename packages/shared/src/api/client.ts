@@ -18,7 +18,7 @@ export function createApiClient(config: ApiClientConfig) {
 
   async function request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     try {
       const response = await fetch(`${baseUrl}${endpoint}`, {
