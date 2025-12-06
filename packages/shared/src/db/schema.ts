@@ -15,7 +15,7 @@ import { sql, type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 // Role enum as CHECK constraint (Architecture pattern)
 const roleCheck = check(
   "role_check",
-  sql`role IN ('rider', 'driver', 'family', 'dispatcher', 'admin')`
+  sql`role IN ('rider', 'driver', 'family', 'dispatcher', 'admin')`,
 );
 
 /**
@@ -35,8 +35,9 @@ export const users = pgTable(
     profilePhotoUrl: text("profile_photo_url"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
   },
-  (_table) => [roleCheck]
+  (_table) => [roleCheck],
 );
 
 /**

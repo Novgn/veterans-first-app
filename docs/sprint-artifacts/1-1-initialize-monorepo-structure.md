@@ -373,6 +373,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 ### Review Fixes Applied (2025-12-06)
 
 **Issues Fixed:**
+
 1. **Config Package Integration** - All apps now extend `@veterans-first/config`:
    - TypeScript configs extend `@veterans-first/config/typescript/nextjs` (web) and `@veterans-first/config/typescript/react-native` (mobile)
    - ESLint configs import and spread `@veterans-first/config/eslint` shared rules
@@ -385,6 +386,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 4. **NativeWind Version Pinned** - Changed from `"latest"` to `"4.2.1"` for reproducible builds
 
 **Files Modified During Review:**
+
 - apps/rider/metro.config.js
 - apps/driver/metro.config.js
 - apps/rider/package.json (test script, nativewind version)

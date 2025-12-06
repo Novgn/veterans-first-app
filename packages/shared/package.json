@@ -35,6 +35,11 @@
       "types": "./dist/db/index.d.ts",
       "import": "./dist/db/index.mjs",
       "require": "./dist/db/index.js"
+    },
+    "./lib/supabase": {
+      "types": "./dist/lib/supabase.d.ts",
+      "import": "./dist/lib/supabase.mjs",
+      "require": "./dist/lib/supabase.js"
     }
   },
   "scripts": {
@@ -54,6 +59,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.47.10",
     "dotenv": "17.2.3",
     "drizzle-orm": "0.45.0",
     "postgres": "3.4.7"

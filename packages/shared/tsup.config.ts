@@ -8,6 +8,7 @@ export default defineConfig({
     "utils/index": "src/utils/index.ts",
     "hooks/index": "src/hooks/index.ts",
     "db/index": "src/db/index.ts",
+    "lib/supabase": "src/lib/supabase.ts",
   },
   format: ["cjs", "esm"],
   dts: true,

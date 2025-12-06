@@ -3,20 +3,10 @@
  */
 
 // Re-export database types (Drizzle schema inferred types)
-export type {
-  User,
-  NewUser,
-  AuditLog,
-  NewAuditLog,
-} from "../db/schema";
+export type { User, NewUser, AuditLog, NewAuditLog } from "../db/schema";
 
 // User roles in the system (compatible with DB schema role CHECK constraint)
-export type UserRole =
-  | "rider"
-  | "driver"
-  | "dispatcher"
-  | "admin"
-  | "family";
+export type UserRole = "rider" | "driver" | "dispatcher" | "admin" | "family";
 
 // Ride status
 export type RideStatus =

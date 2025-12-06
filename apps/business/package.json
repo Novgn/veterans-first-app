@@ -10,6 +10,7 @@
     "test": "echo \"No tests configured yet\" && exit 0"
   },
   "dependencies": {
+    "@clerk/nextjs": "6.36.0",
     "@veterans-first/shared": "*",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

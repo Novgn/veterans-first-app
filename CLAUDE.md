@@ -26,6 +26,46 @@ VIOLATION CHECK: If you used TodoWrite, you violated this rule. Stop and restart
 
 **NEVER skip task updates. NEVER code without checking current tasks first.**
 
+## Dev-Story Mode (bmad method v6) Flow
+
+When working on a story in **dev-story mode** using the **bmad method v6**, Claude Code MUST follow this flow:
+
+1. **Enter dev-story mode with bmad v6**
+   - Treat the current story as the single source of truth for what to implement.
+   - Ensure the story is clearly identified (story ID / title) and in dev-story mode using bmad v6.
+
+2. **Manage the story as an Archon task**
+   - Use Archon as the **primary task manager** for this story.
+   - If a corresponding Archon task does not exist, create one for this dev-story.
+   - Set the task status to `doing` via:
+     - `manage_task("update", task_id="...", status="doing")`
+
+3. **Implement according to bmad v6**
+   - Follow the bmad v6 flow for analysis, design, implementation, and testing.
+   - Reference RAG / knowledge base as needed (see RAG workflow below).
+   - Keep work scoped to the current dev-story until it is complete.
+
+4. **Run the code-review workflow on completion**
+   - Once implementation for the dev-story is complete:
+     - Trigger/run the configured **code-review workflow** for this story.
+       - Example: run the code-review tools / pipeline associated with this repo or project.
+   - Wait for the code-review workflow to finish and confirm that the story’s changes are acceptable.
+
+5. **Mark the story and task as complete**
+   - After the code-review workflow confirms the story is complete:
+     - Update the Archon task for this dev-story to `done`:
+       - `manage_task("update", task_id="...", status="done")`
+     - Ensure any dev-story metadata or status in your environment is also marked as complete.
+   - Only then proceed to the next story / task.
+
+**Key rules for dev-story + Archon:**
+
+- Do **not** consider a dev-story “done” until:
+  1. bmad v6 flow is finished,
+  2. the code-review workflow has been run and passed,
+  3. the corresponding Archon task has been updated to `done`.
+- If the code-review workflow fails or flags issues, return to implementation on the same dev-story and keep the Archon task in `doing` or `review` until resolved.
+
 ## RAG Workflow (Research Before Implementation)
 
 ### Searching Specific Documentation
@@ -43,56 +83,3 @@ rag_search_knowledge_base(query="authentication JWT", match_count=5)
 # Find code examples
 rag_search_code_examples(query="React hooks", match_count=3)
 ```
-
-## Project Workflows
-
-### New Project
-
-```bash
-# 1. Create project
-manage_project("create", title="My Feature", description="...")
-
-# 2. Create tasks
-manage_task("create", project_id="proj-123", title="Setup environment", task_order=10)
-manage_task("create", project_id="proj-123", title="Implement API", task_order=9)
-```
-
-### Existing Project
-
-```bash
-# 1. Find project
-find_projects(query="auth")  # or find_projects() to list all
-
-# 2. Get project tasks
-find_tasks(filter_by="project", filter_value="proj-123")
-
-# 3. Continue work or create new tasks
-```
-
-## Tool Reference
-
-**Projects:**
-
-- `find_projects(query="...")` - Search projects
-- `find_projects(project_id="...")` - Get specific project
-- `manage_project("create"/"update"/"delete", ...)` - Manage projects
-
-**Tasks:**
-
-- `find_tasks(query="...")` - Search tasks by keyword
-- `find_tasks(task_id="...")` - Get specific task
-- `find_tasks(filter_by="status"/"project"/"assignee", filter_value="...")` - Filter tasks
-- `manage_task("create"/"update"/"delete", ...)` - Manage tasks
-
-**Knowledge Base:**
-
-- `rag_get_available_sources()` - List all sources
-- `rag_search_knowledge_base(query="...", source_id="...")` - Search docs
-- `rag_search_code_examples(query="...", source_id="...")` - Find code
-
-## Important Notes
-
-- Task status flow: `todo` → `doing` → `review` → `done`
-- Keep queries SHORT (2-5 keywords) for better search results
-- Higher `task_order` = higher priority (0-100)
-- Tasks should be 30 min - 4 hours of work

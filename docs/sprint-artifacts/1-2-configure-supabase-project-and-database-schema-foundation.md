@@ -110,6 +110,7 @@ audit_logs (
 This story implements the database foundation defined in `docs/architecture.md`:
 
 **Schema Management Decision (from Architecture):**
+
 - Use **Drizzle ORM** for type-safe, lightweight schema management
 - Drizzle Kit + Supabase CLI for migrations
 - Drizzle inference + `supabase gen types` for TypeScript types
@@ -122,36 +123,50 @@ This story implements the database foundation defined in `docs/architecture.md`:
 
 ### Technical Stack Requirements
 
-| Dependency | Version | Purpose |
-| --- | --- | --- |
-| drizzle-orm | ^0.38.x | ORM for type-safe queries |
-| drizzle-kit | ^0.30.x | Migration generation CLI |
-| postgres | ^3.4.x | PostgreSQL driver for Node.js |
-| dotenv | ^16.x | Environment variable loading |
+| Dependency  | Version | Purpose                       |
+| ----------- | ------- | ----------------------------- |
+| drizzle-orm | ^0.38.x | ORM for type-safe queries     |
+| drizzle-kit | ^0.30.x | Migration generation CLI      |
+| postgres    | ^3.4.x  | PostgreSQL driver for Node.js |
+| dotenv      | ^16.x   | Environment variable loading  |
 
 ### Drizzle Schema Pattern (MUST FOLLOW)
 
 ```typescript
 // packages/shared/src/db/schema.ts
-import { pgTable, uuid, text, timestamptz, jsonb, check } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  text,
+  timestamptz,
+  jsonb,
+  check,
+} from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { InferSelectModel, InferInsertModel } from "drizzle-orm";
 
 // Role enum as CHECK constraint (Architecture pattern)
-const roleCheck = check("role_check", sql`role IN ('rider', 'driver', 'family', 'dispatcher', 'admin')`);
+const roleCheck = check(
+  "role_check",
+  sql`role IN ('rider', 'driver', 'family', 'dispatcher', 'admin')`,
+);
 
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  clerkId: text("clerk_id").unique().notNull(),
-  phone: text("phone").unique().notNull(),
-  email: text("email"),
-  firstName: text("first_name").notNull(),
-  lastName: text("last_name").notNull(),
-  role: text("role").notNull(),
-  profilePhotoUrl: text("profile_photo_url"),
-  createdAt: timestamptz("created_at").defaultNow(),
-  updatedAt: timestamptz("updated_at").defaultNow(),
-}, (table) => [roleCheck]);
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clerkId: text("clerk_id").unique().notNull(),
+    phone: text("phone").unique().notNull(),
+    email: text("email"),
+    firstName: text("first_name").notNull(),
+    lastName: text("last_name").notNull(),
+    role: text("role").notNull(),
+    profilePhotoUrl: text("profile_photo_url"),
+    createdAt: timestamptz("created_at").defaultNow(),
+    updatedAt: timestamptz("updated_at").defaultNow(),
+  },
+  (table) => [roleCheck],
+);
 
 export const auditLogs = pgTable("audit_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -220,10 +235,10 @@ DATABASE_URL_DIRECT=postgresql://postgres.[project-ref]:[password]@db.[project-r
 
 ### FR Coverage
 
-| FR | Description | Implementation |
-| --- | --- | --- |
-| FR54 | System logs all access to rider personal and medical information | `audit_logs` table with `resource_type`, `action`, `old_values`, `new_values` |
-| FR55 | System maintains audit trail of all ride modifications and status changes | `audit_logs` table captures all changes with user attribution |
+| FR   | Description                                                               | Implementation                                                                |
+| ---- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| FR54 | System logs all access to rider personal and medical information          | `audit_logs` table with `resource_type`, `action`, `old_values`, `new_values` |
+| FR55 | System maintains audit trail of all ride modifications and status changes | `audit_logs` table captures all changes with user attribution                 |
 
 ### Naming Conventions (Architecture)
 
@@ -250,6 +265,7 @@ DATABASE_URL_DIRECT=postgresql://postgres.[project-ref]:[password]@db.[project-r
 - Node 20 LTS configured in `.nvmrc`
 
 **Files created in 1.1 that this story builds upon:**
+
 - `supabase/config.toml` - Supabase local dev config
 - `supabase/migrations/` - Empty directory for Drizzle migrations
 - `packages/shared/src/types/index.ts` - Existing types (User, Ride interfaces)
@@ -333,12 +349,12 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 ### Code Review Fixes Applied (2025-12-06)
 
 **HIGH severity fixes:**
+
 1. **Fixed eager DB connection on import** - Removed `export * from "./db"` from main barrel (`packages/shared/src/index.ts`). DB types are now available via `./types` re-export, and apps must explicitly import `@veterans-first/shared/db` to get the client. This prevents apps from crashing when importing just types/utils without DATABASE_URL set.
 
 2. **Fixed migration config using wrong connection** - Updated `drizzle.config.ts` to prefer `DATABASE_URL_DIRECT` (direct connection, port 5432) over `DATABASE_URL` (transaction pooler, port 6543). Transaction pooler doesn't support prepared statements needed for DDL operations.
 
-**MEDIUM severity fixes:**
-3. **Added DATABASE_URL validation** - `drizzle.config.ts` now throws a helpful error message if neither DATABASE_URL_DIRECT nor DATABASE_URL is set.
+**MEDIUM severity fixes:** 3. **Added DATABASE_URL validation** - `drizzle.config.ts` now throws a helpful error message if neither DATABASE_URL_DIRECT nor DATABASE_URL is set.
 
 4. **Documented DATABASE_URL_DIRECT** - Updated `.env.example` with proper format hint for direct connection string.
 
@@ -347,16 +363,18 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 ### File List
 
 **New Files:**
+
 - packages/shared/src/db/schema.ts - Drizzle table definitions (users, audit_logs)
 - packages/shared/src/db/client.ts - Database connection with Supabase pooler support
 - packages/shared/src/db/index.ts - Barrel export for db module
-- packages/shared/src/db/__tests__/schema.test.ts - Schema type verification tests (added in review)
+- packages/shared/src/db/**tests**/schema.test.ts - Schema type verification tests (added in review)
 - drizzle.config.ts - Drizzle Kit configuration at monorepo root
 - supabase/migrations/0000_friendly_mauler.sql - Initial migration (auto-generated)
-- supabase/migrations/meta/_journal.json - Migration journal
+- supabase/migrations/meta/\_journal.json - Migration journal
 - supabase/migrations/meta/0000_snapshot.json - Schema snapshot
 
 **Modified Files:**
+
 - packages/shared/package.json - Added drizzle-orm, postgres, dotenv, drizzle-kit dependencies; added ./db export
 - packages/shared/src/index.ts - Removed db barrel export to prevent eager connection (fixed in review)
 - packages/shared/src/types/index.ts - Re-export DB types (User, NewUser, AuditLog, NewAuditLog)
