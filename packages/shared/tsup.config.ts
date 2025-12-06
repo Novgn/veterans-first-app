@@ -7,6 +7,7 @@ export default defineConfig({
     "api/index": "src/api/index.ts",
     "utils/index": "src/utils/index.ts",
     "hooks/index": "src/hooks/index.ts",
+    "db/index": "src/db/index.ts",
   },
   format: ["cjs", "esm"],
   dts: true,

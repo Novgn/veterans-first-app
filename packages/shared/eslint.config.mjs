@@ -16,6 +16,7 @@ export default [
         console: "readonly",
         fetch: "readonly",
         RequestInit: "readonly",
+        process: "readonly",
       },
     },
     plugins: {

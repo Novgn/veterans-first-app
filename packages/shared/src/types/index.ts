@@ -2,26 +2,21 @@
  * Shared types for Veterans First application
  */
 
-// User roles in the system
+// Re-export database types (Drizzle schema inferred types)
+export type {
+  User,
+  NewUser,
+  AuditLog,
+  NewAuditLog,
+} from "../db/schema";
+
+// User roles in the system (compatible with DB schema role CHECK constraint)
 export type UserRole =
   | "rider"
   | "driver"
   | "dispatcher"
   | "admin"
-  | "business"
   | "family";
-
-// Base user type
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  role: UserRole;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 // Ride status
 export type RideStatus =
