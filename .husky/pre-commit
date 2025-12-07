@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Run prettier on staged files
+npx lint-staged
+
+# Run lint and typecheck across affected packages via turbo
+npm run lint
+npm run typecheck

@@ -105,10 +105,22 @@ export default function Verify() {
 
     try {
       if (mode === 'sign-in' && signIn) {
-        await signIn.create({
-          strategy: 'phone_code',
-          phoneNumber: phone,
+        // Create sign-in with identifier
+        const { supportedFirstFactors } = await signIn.create({
+          identifier: phone,
         });
+
+        // Find the phone_code factor and prepare
+        const phoneCodeFactor = supportedFirstFactors?.find(
+          (factor) => factor.strategy === 'phone_code'
+        );
+
+        if (phoneCodeFactor && 'phoneNumberId' in phoneCodeFactor) {
+          await signIn.prepareFirstFactor({
+            strategy: 'phone_code',
+            phoneNumberId: phoneCodeFactor.phoneNumberId,
+          });
+        }
       } else if (mode === 'sign-up' && signUp) {
         await signUp.preparePhoneNumberVerification();
       }
@@ -142,7 +154,9 @@ export default function Verify() {
           {code.map((digit, index) => (
             <TextInput
               key={index}
-              ref={(ref) => (inputRefs.current[index] = ref)}
+              ref={(ref) => {
+                inputRefs.current[index] = ref;
+              }}
               className="h-14 w-12 rounded-lg border border-gray-300 bg-white text-center text-2xl font-semibold"
               keyboardType="number-pad"
               maxLength={1}

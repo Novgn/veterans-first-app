@@ -1,17 +1,11 @@
 import js from "@eslint/js";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
+import { fullConfig } from "@veterans-first/config/eslint";
 
 export default [
   js.configs.recommended,
+  ...fullConfig,
   {
-    files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-      },
       globals: {
         console: "readonly",
         fetch: "readonly",
@@ -19,13 +13,10 @@ export default [
         process: "readonly",
       },
     },
-    plugins: {
-      "@typescript-eslint": tsPlugin,
-    },
     rules: {
-      ...tsPlugin.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "@typescript-eslint/no-explicit-any": "warn",
+      // Disable base no-unused-vars in favor of @typescript-eslint version
+      // which already handles argsIgnorePattern: "^_"
+      "no-unused-vars": "off",
     },
   },
   {

@@ -29,16 +29,31 @@ export default function SignIn() {
       // Format phone number - ensure it starts with +1 for US
       const formattedPhone = phone.startsWith('+') ? phone : `+1${phone.replace(/\D/g, '')}`;
 
-      await signIn.create({
-        strategy: 'phone_code',
-        phoneNumber: formattedPhone,
+      // Create sign-in with identifier
+      const { supportedFirstFactors } = await signIn.create({
+        identifier: formattedPhone,
       });
 
-      // Navigate to verification screen with phone number
-      router.push({
-        pathname: '/(auth)/verify',
-        params: { phone: formattedPhone, mode: 'sign-in' },
-      });
+      // Find the phone_code factor
+      const phoneCodeFactor = supportedFirstFactors?.find(
+        (factor) => factor.strategy === 'phone_code'
+      );
+
+      if (phoneCodeFactor && 'phoneNumberId' in phoneCodeFactor) {
+        // Send the OTP code
+        await signIn.prepareFirstFactor({
+          strategy: 'phone_code',
+          phoneNumberId: phoneCodeFactor.phoneNumberId,
+        });
+
+        // Navigate to verification screen with phone number
+        router.push({
+          pathname: '/(auth)/verify',
+          params: { phone: formattedPhone, mode: 'sign-in' },
+        });
+      } else {
+        setError('Phone authentication not available for this account');
+      }
     } catch (err: unknown) {
       const clerkError = err as { errors?: { message: string }[] };
       setError(clerkError.errors?.[0]?.message || 'Failed to send verification code');
