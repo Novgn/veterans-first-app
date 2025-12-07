@@ -8,8 +8,17 @@
  */
 
 import { describe, it, expect } from "vitest";
-import type { User, NewUser, AuditLog, NewAuditLog } from "../schema";
-import { users, auditLogs } from "../schema";
+import type {
+  User,
+  NewUser,
+  AuditLog,
+  NewAuditLog,
+  Ride,
+  NewRide,
+  FamilyLink,
+  NewFamilyLink,
+} from "../schema";
+import { users, auditLogs, rides, familyLinks } from "../schema";
 
 describe("Database Schema", () => {
   describe("users table", () => {
@@ -44,6 +53,7 @@ describe("Database Schema", () => {
         profilePhotoUrl: null,
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       };
 
       const mockNewUser: NewUser = {
@@ -99,6 +109,86 @@ describe("Database Schema", () => {
 
       expect(mockAuditLog.id).toBeDefined();
       expect(mockNewAuditLog.action).toBeDefined();
+    });
+  });
+
+  describe("rides table", () => {
+    it("has correct column definitions", () => {
+      // Verify table name
+      expect(rides._.name).toBe("rides");
+
+      // Verify required columns exist
+      const columnNames = Object.keys(rides);
+      expect(columnNames).toContain("id");
+      expect(columnNames).toContain("riderId");
+      expect(columnNames).toContain("driverId");
+      expect(columnNames).toContain("status");
+      expect(columnNames).toContain("pickupAddress");
+      expect(columnNames).toContain("dropoffAddress");
+      expect(columnNames).toContain("scheduledPickupTime");
+      expect(columnNames).toContain("createdAt");
+      expect(columnNames).toContain("updatedAt");
+    });
+
+    it("exports correct TypeScript types", () => {
+      const mockRide: Ride = {
+        id: "123e4567-e89b-12d3-a456-426614174003",
+        riderId: "123e4567-e89b-12d3-a456-426614174000",
+        driverId: "123e4567-e89b-12d3-a456-426614174004",
+        status: "pending",
+        pickupAddress: "123 Main St",
+        dropoffAddress: "456 Oak Ave",
+        scheduledPickupTime: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const mockNewRide: NewRide = {
+        riderId: "123e4567-e89b-12d3-a456-426614174000",
+        status: "pending",
+        pickupAddress: "123 Main St",
+        dropoffAddress: "456 Oak Ave",
+        scheduledPickupTime: new Date(),
+      };
+
+      expect(mockRide.id).toBeDefined();
+      expect(mockNewRide.riderId).toBeDefined();
+    });
+  });
+
+  describe("family_links table", () => {
+    it("has correct column definitions", () => {
+      // Verify table name
+      expect(familyLinks._.name).toBe("family_links");
+
+      // Verify required columns exist
+      const columnNames = Object.keys(familyLinks);
+      expect(columnNames).toContain("id");
+      expect(columnNames).toContain("riderId");
+      expect(columnNames).toContain("familyMemberId");
+      expect(columnNames).toContain("status");
+      expect(columnNames).toContain("createdAt");
+      expect(columnNames).toContain("updatedAt");
+    });
+
+    it("exports correct TypeScript types", () => {
+      const mockFamilyLink: FamilyLink = {
+        id: "123e4567-e89b-12d3-a456-426614174005",
+        riderId: "123e4567-e89b-12d3-a456-426614174000",
+        familyMemberId: "123e4567-e89b-12d3-a456-426614174006",
+        status: "approved",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const mockNewFamilyLink: NewFamilyLink = {
+        riderId: "123e4567-e89b-12d3-a456-426614174000",
+        familyMemberId: "123e4567-e89b-12d3-a456-426614174006",
+        status: "pending",
+      };
+
+      expect(mockFamilyLink.id).toBeDefined();
+      expect(mockNewFamilyLink.riderId).toBeDefined();
     });
   });
 });
