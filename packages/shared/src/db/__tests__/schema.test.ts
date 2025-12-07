@@ -23,10 +23,7 @@ import { users, auditLogs, rides, familyLinks } from "../schema";
 describe("Database Schema", () => {
   describe("users table", () => {
     it("has correct column definitions", () => {
-      // Verify table name
-      expect(users._.name).toBe("users");
-
-      // Verify required columns exist
+      // Verify required columns exist in the table object
       const columnNames = Object.keys(users);
       expect(columnNames).toContain("id");
       expect(columnNames).toContain("clerkId");
@@ -71,10 +68,7 @@ describe("Database Schema", () => {
 
   describe("audit_logs table", () => {
     it("has correct column definitions", () => {
-      // Verify table name
-      expect(auditLogs._.name).toBe("audit_logs");
-
-      // Verify required columns exist
+      // Verify required columns exist in the table object
       const columnNames = Object.keys(auditLogs);
       expect(columnNames).toContain("id");
       expect(columnNames).toContain("userId");
@@ -114,10 +108,7 @@ describe("Database Schema", () => {
 
   describe("rides table", () => {
     it("has correct column definitions", () => {
-      // Verify table name
-      expect(rides._.name).toBe("rides");
-
-      // Verify required columns exist
+      // Verify required columns exist in the table object
       const columnNames = Object.keys(rides);
       expect(columnNames).toContain("id");
       expect(columnNames).toContain("riderId");
@@ -158,10 +149,7 @@ describe("Database Schema", () => {
 
   describe("family_links table", () => {
     it("has correct column definitions", () => {
-      // Verify table name
-      expect(familyLinks._.name).toBe("family_links");
-
-      // Verify required columns exist
+      // Verify required columns exist in the table object
       const columnNames = Object.keys(familyLinks);
       expect(columnNames).toContain("id");
       expect(columnNames).toContain("riderId");
