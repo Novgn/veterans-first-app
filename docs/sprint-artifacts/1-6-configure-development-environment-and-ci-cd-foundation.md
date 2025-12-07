@@ -431,7 +431,7 @@ N/A
 - `apps/business/eslint.config.mjs` - Updated for new config exports
 - `packages/shared/eslint.config.mjs` - Updated to use fullConfig
 - `turbo.json` - Added typecheck task
-- `package.json` (root) - Added typecheck script, lint-staged config with eslint --fix, husky
+- `package.json` (root) - Added typecheck script, lint-staged config (prettier only), husky
 - `package-lock.json` - Updated with new devDependencies
 - `apps/rider/package.json` - Added typecheck script
 - `apps/driver/package.json` - Added typecheck script
@@ -450,8 +450,8 @@ N/A
 
 ## Change Log
 
-| Date       | Change                                                                                                       | Author                |
-| ---------- | ------------------------------------------------------------------------------------------------------------ | --------------------- |
-| 2025-12-07 | Story created with comprehensive developer context                                                           | Create-Story Workflow |
-| 2025-12-07 | Implemented all tasks: ESLint config, Prettier, typecheck, Husky, CI/CD, verified scripts                    | Claude Opus 4.5       |
-| 2025-12-07 | Code review fixes: Added eslint --fix to lint-staged, added Supabase env vars to CI build, updated File List | Claude Opus 4.5       |
+| Date       | Change                                                                                                                                          | Author                |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| 2025-12-07 | Story created with comprehensive developer context                                                                                              | Create-Story Workflow |
+| 2025-12-07 | Implemented all tasks: ESLint config, Prettier, typecheck, Husky, CI/CD, verified scripts                                                       | Claude Opus 4.5       |
+| 2025-12-07 | Code review fixes: Added Supabase env vars to CI build, updated File List (lint-staged uses prettier only since lint runs separately via turbo) | Claude Opus 4.5       |
