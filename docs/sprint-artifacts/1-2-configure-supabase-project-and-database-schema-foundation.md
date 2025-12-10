@@ -134,21 +134,14 @@ This story implements the database foundation defined in `docs/architecture.md`:
 
 ```typescript
 // packages/shared/src/db/schema.ts
-import {
-  pgTable,
-  uuid,
-  text,
-  timestamptz,
-  jsonb,
-  check,
-} from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamptz, jsonb, check } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { InferSelectModel, InferInsertModel } from "drizzle-orm";
 
 // Role enum as CHECK constraint (Architecture pattern)
 const roleCheck = check(
   "role_check",
-  sql`role IN ('rider', 'driver', 'family', 'dispatcher', 'admin')`,
+  sql`role IN ('rider', 'driver', 'family', 'dispatcher', 'admin')`
 );
 
 export const users = pgTable(
@@ -165,7 +158,7 @@ export const users = pgTable(
     createdAt: timestamptz("created_at").defaultNow(),
     updatedAt: timestamptz("updated_at").defaultNow(),
   },
-  (table) => [roleCheck],
+  (table) => [roleCheck]
 );
 
 export const auditLogs = pgTable("audit_logs", {

@@ -30,9 +30,7 @@ Non-functional requirements (security, performance, reliability, maintainability
 import { test, expect } from "@playwright/test";
 
 test.describe("Security NFR: Authentication & Authorization", () => {
-  test("unauthenticated users cannot access protected routes", async ({
-    page,
-  }) => {
+  test("unauthenticated users cannot access protected routes", async ({ page }) => {
     // Attempt to access dashboard without auth
     await page.goto("/dashboard");
 
@@ -90,10 +88,7 @@ test.describe("Security NFR: Authentication & Authorization", () => {
     expect(consoleLogs.join("\n")).not.toContain("WrongPassword123!");
   });
 
-  test("RBAC: users can only access resources they own", async ({
-    page,
-    request,
-  }) => {
+  test("RBAC: users can only access resources they own", async ({ page, request }) => {
     // Login as User A
     const userAToken = await login(request, "userA@example.com", "password");
 
@@ -111,9 +106,7 @@ test.describe("Security NFR: Authentication & Authorization", () => {
     await page.goto("/search");
 
     // Attempt SQL injection
-    await page
-      .getByPlaceholder("Search products")
-      .fill("'; DROP TABLE users; --");
+    await page.getByPlaceholder("Search products").fill("'; DROP TABLE users; --");
     await page.getByRole("button", { name: "Search" }).click();
 
     // Should return empty results, NOT crash or expose error
@@ -143,11 +136,7 @@ test.describe("Security NFR: Authentication & Authorization", () => {
 });
 
 // Helper
-async function login(
-  request: any,
-  email: string,
-  password: string,
-): Promise<string> {
+async function login(request: any, email: string, password: string): Promise<string> {
   const response = await request.post("/api/auth/login", {
     data: { email, password },
   });
@@ -228,9 +217,7 @@ export default function () {
   errorRate.add(apiResponse.status !== 200);
 
   // Test 3: Search endpoint under load
-  const searchResponse = http.get(
-    `${__ENV.BASE_URL}/api/search?q=laptop&limit=100`,
-  );
+  const searchResponse = http.get(`${__ENV.BASE_URL}/api/search?q=laptop&limit=100`);
   check(searchResponse, {
     "search status is 200": (r) => r.status === 200,
     "search responds in <1s": (r) => r.timings.duration < 1000,
@@ -313,10 +300,7 @@ k6 run --out json=performance-results.json tests/nfr/performance.k6.js
 import { test, expect } from "@playwright/test";
 
 test.describe("Reliability NFR: Error Handling & Recovery", () => {
-  test("app remains functional when API returns 500 error", async ({
-    page,
-    context,
-  }) => {
+  test("app remains functional when API returns 500 error", async ({ page, context }) => {
     // Mock API failure
     await context.route("**/api/products", (route) => {
       route.fulfill({
@@ -328,9 +312,7 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
     await page.goto("/products");
 
     // User sees error message (not blank page or crash)
-    await expect(
-      page.getByText("Unable to load products. Please try again."),
-    ).toBeVisible();
+    await expect(page.getByText("Unable to load products. Please try again.")).toBeVisible();
     await expect(page.getByRole("button", { name: "Retry" })).toBeVisible();
 
     // App navigation still works (graceful degradation)
@@ -338,10 +320,7 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
     await expect(page).toHaveURL("/");
   });
 
-  test("API client retries on transient failures (3 attempts)", async ({
-    page,
-    context,
-  }) => {
+  test("API client retries on transient failures (3 attempts)", async ({ page, context }) => {
     let attemptCount = 0;
 
     await context.route("**/api/checkout", (route) => {
@@ -369,10 +348,7 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
     expect(attemptCount).toBe(3);
   });
 
-  test("app handles network disconnection gracefully", async ({
-    page,
-    context,
-  }) => {
+  test("app handles network disconnection gracefully", async ({ page, context }) => {
     await page.goto("/dashboard");
 
     // Simulate offline mode
@@ -383,7 +359,7 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
 
     // User sees offline indicator (not crash)
     await expect(
-      page.getByText("You are offline. Changes will sync when reconnected."),
+      page.getByText("You are offline. Changes will sync when reconnected.")
     ).toBeVisible();
 
     // Reconnect
@@ -415,10 +391,7 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
     expect(health.services.queue.status).toBe("UP");
   });
 
-  test("circuit breaker opens after 5 consecutive failures", async ({
-    page,
-    context,
-  }) => {
+  test("circuit breaker opens after 5 consecutive failures", async ({ page, context }) => {
     let failureCount = 0;
 
     await context.route("**/api/recommendations", (route) => {
@@ -432,18 +405,15 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
     await page.goto("/product/123");
 
     // Wait for circuit breaker to open (fallback UI appears)
-    await expect(
-      page.getByText("Recommendations temporarily unavailable"),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Recommendations temporarily unavailable")).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify circuit breaker stopped making requests after threshold (should be ≤5)
     expect(failureCount).toBeLessThanOrEqual(5);
   });
 
-  test("rate limiting gracefully handles 429 responses", async ({
-    page,
-    context,
-  }) => {
+  test("rate limiting gracefully handles 429 responses", async ({ page, context }) => {
     let requestCount = 0;
 
     await context.route("**/api/search", (route) => {
@@ -470,9 +440,7 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
     }
 
     // User sees rate limit message (not crash)
-    await expect(
-      page.getByText("Too many requests. Please wait a moment."),
-    ).toBeVisible();
+    await expect(page.getByText("Too many requests. Please wait a moment.")).toBeVisible();
   });
 });
 ```
@@ -579,10 +547,7 @@ jobs:
 import { test, expect } from "@playwright/test";
 
 test.describe("Maintainability NFR: Observability Validation", () => {
-  test("critical errors are reported to monitoring service", async ({
-    page,
-    context,
-  }) => {
+  test("critical errors are reported to monitoring service", async ({ page, context }) => {
     const sentryEvents: any[] = [];
 
     // Mock Sentry SDK to verify error tracking
@@ -591,7 +556,7 @@ test.describe("Maintainability NFR: Observability Validation", () => {
         captureException: (error: Error) => {
           console.log(
             "SENTRY_CAPTURE:",
-            JSON.stringify({ message: error.message, stack: error.stack }),
+            JSON.stringify({ message: error.message, stack: error.stack })
           );
         },
       };
@@ -599,9 +564,7 @@ test.describe("Maintainability NFR: Observability Validation", () => {
 
     page.on("console", (msg) => {
       if (msg.text().includes("SENTRY_CAPTURE:")) {
-        sentryEvents.push(
-          JSON.parse(msg.text().replace("SENTRY_CAPTURE:", "")),
-        );
+        sentryEvents.push(JSON.parse(msg.text().replace("SENTRY_CAPTURE:", "")));
       }
     });
 

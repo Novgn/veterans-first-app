@@ -97,18 +97,12 @@ import { test, expect } from "@playwright/test";
 import path from "path";
 
 test.describe("Checkout Flow with HAR Recording", () => {
-  test("should complete payment with full network capture", async ({
-    page,
-    context,
-  }) => {
+  test("should complete payment with full network capture", async ({ page, context }) => {
     // Start HAR recording BEFORE navigation
-    await context.routeFromHAR(
-      path.join(__dirname, "../fixtures/checkout.har"),
-      {
-        url: "**/api/**", // Only capture API calls
-        update: true, // Update HAR if file exists
-      },
-    );
+    await context.routeFromHAR(path.join(__dirname, "../fixtures/checkout.har"), {
+      url: "**/api/**", // Only capture API calls
+      update: true, // Update HAR if file exists
+    });
 
     await page.goto("/checkout");
 
@@ -222,17 +216,13 @@ export const test = base.extend<DebugFixture>({
       fs.mkdirSync(artifactDir, { recursive: true });
 
       // Save console logs
-      fs.writeFileSync(
-        path.join(artifactDir, "console.log"),
-        consoleLogs.join("\n"),
-        "utf-8",
-      );
+      fs.writeFileSync(path.join(artifactDir, "console.log"), consoleLogs.join("\n"), "utf-8");
 
       // Save network summary
       fs.writeFileSync(
         path.join(artifactDir, "network.json"),
         JSON.stringify(networkRequests, null, 2),
-        "utf-8",
+        "utf-8"
       );
 
       console.log(`Debug artifacts saved to: ${artifactDir}`);
@@ -329,19 +319,13 @@ export const test = base.extend<A11yFixture>({
 
       // Attach results to test report (visible in trace viewer)
       if (results.violations.length > 0) {
-        console.log(
-          `Found ${results.violations.length} accessibility violations:`,
-        );
+        console.log(`Found ${results.violations.length} accessibility violations:`);
         results.violations.forEach((violation) => {
-          console.log(
-            `- [${violation.impact}] ${violation.id}: ${violation.description}`,
-          );
+          console.log(`- [${violation.impact}] ${violation.id}: ${violation.description}`);
           console.log(`  Help: ${violation.helpUrl}`);
         });
 
-        throw new Error(
-          `Accessibility violations found: ${results.violations.length}`,
-        );
+        throw new Error(`Accessibility violations found: ${results.violations.length}`);
       }
     });
   },
@@ -389,10 +373,7 @@ Cypress.Commands.add("checkA11y", (context = null, options = {}) => {
     if (violations.length) {
       cy.task("log", `Found ${violations.length} accessibility violations`);
       violations.forEach((violation) => {
-        cy.task(
-          "log",
-          `- [${violation.impact}] ${violation.id}: ${violation.description}`,
-        );
+        cy.task("log", `- [${violation.impact}] ${violation.id}: ${violation.description}`);
       });
     }
   });

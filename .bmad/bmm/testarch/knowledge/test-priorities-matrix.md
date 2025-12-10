@@ -220,11 +220,7 @@ export function calculatePriority(factors: PriorityFactors): Priority {
   }
 
   // P0: High revenue + high complexity + frequent usage
-  if (
-    revenueImpact === "high" &&
-    complexity === "high" &&
-    usage === "frequent"
-  ) {
+  if (revenueImpact === "high" && complexity === "high" && usage === "frequent") {
     return "P0";
   }
 
@@ -259,8 +255,7 @@ export function justifyPriority(factors: PriorityFactors): string {
   const priority = calculatePriority(factors);
   const reasons: string[] = [];
 
-  if (factors.revenueImpact === "critical")
-    reasons.push("critical revenue impact");
+  if (factors.revenueImpact === "critical") reasons.push("critical revenue impact");
   if (factors.securityRisk) reasons.push("security-critical");
   if (factors.complianceRequired) reasons.push("compliance requirement");
   if (factors.previousFailure) reasons.push("regression prevention");
@@ -299,9 +294,7 @@ import { test, expect } from "@playwright/test";
 
 // Tag tests with priority for selective execution
 test.describe("Checkout Flow", () => {
-  test("valid payment completes successfully @p0 @smoke @revenue", async ({
-    page,
-  }) => {
+  test("valid payment completes successfully @p0 @smoke @revenue", async ({ page }) => {
     // P0: Revenue-critical happy path
     await page.goto("/checkout");
     await page.getByTestId("payment-method").selectOption("credit-card");
@@ -311,18 +304,14 @@ test.describe("Checkout Flow", () => {
     await expect(page.getByText("Order confirmed")).toBeVisible();
   });
 
-  test("expired card shows user-friendly error @p1 @error-handling", async ({
-    page,
-  }) => {
+  test("expired card shows user-friendly error @p1 @error-handling", async ({ page }) => {
     // P1: Core error scenario (frequent user impact)
     await page.goto("/checkout");
     await page.getByTestId("payment-method").selectOption("credit-card");
     await page.getByTestId("card-number").fill("4000000000000069"); // Test card: expired
     await page.getByRole("button", { name: "Place Order" }).click();
 
-    await expect(
-      page.getByText("Card expired. Please use a different card."),
-    ).toBeVisible();
+    await expect(page.getByText("Card expired. Please use a different card.")).toBeVisible();
   });
 
   test("coupon code applies discount correctly @p2", async ({ page }) => {
@@ -337,15 +326,11 @@ test.describe("Checkout Flow", () => {
   test("gift message formatting preserved @p3", async ({ page }) => {
     // P3: Cosmetic feature (rarely used)
     await page.goto("/checkout");
-    await page
-      .getByTestId("gift-message")
-      .fill("Happy Birthday!\n\nWith love.");
+    await page.getByTestId("gift-message").fill("Happy Birthday!\n\nWith love.");
     await page.getByRole("button", { name: "Place Order" }).click();
 
     // Message formatting preserved (linebreaks intact)
-    await expect(page.getByTestId("order-summary")).toContainText(
-      "Happy Birthday!",
-    );
+    await expect(page.getByTestId("order-summary")).toContainText("Happy Birthday!");
   });
 });
 ```

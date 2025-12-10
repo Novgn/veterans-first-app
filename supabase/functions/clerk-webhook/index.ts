@@ -63,13 +63,10 @@ serve(async (req: Request) => {
     const webhookSecret = Deno.env.get("CLERK_WEBHOOK_SECRET");
     if (!webhookSecret) {
       console.error("CLERK_WEBHOOK_SECRET not configured");
-      return new Response(
-        JSON.stringify({ error: "Webhook secret not configured" }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Get request body and headers
@@ -81,13 +78,10 @@ serve(async (req: Request) => {
     // Validate required Svix headers
     if (!svixId || !svixTimestamp || !svixSignature) {
       console.error("Missing Svix headers");
-      return new Response(
-        JSON.stringify({ error: "Missing webhook signature headers" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return new Response(JSON.stringify({ error: "Missing webhook signature headers" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Verify webhook signature using Svix
@@ -102,13 +96,10 @@ serve(async (req: Request) => {
       }) as WebhookEvent;
     } catch (err) {
       console.error("Webhook signature verification failed:", err);
-      return new Response(
-        JSON.stringify({ error: "Invalid webhook signature" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return new Response(JSON.stringify({ error: "Invalid webhook signature" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Initialize Supabase admin client
@@ -117,13 +108,10 @@ serve(async (req: Request) => {
 
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error("Supabase credentials not configured");
-      return new Response(
-        JSON.stringify({ error: "Database not configured" }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return new Response(JSON.stringify({ error: "Database not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
@@ -138,8 +126,7 @@ serve(async (req: Request) => {
 
     switch (event.type) {
       case "user.created": {
-        const { id, phone_numbers, email_addresses, first_name, last_name } =
-          event.data;
+        const { id, phone_numbers, email_addresses, first_name, last_name } = event.data;
 
         const userData = {
           clerk_id: id,
@@ -168,7 +155,7 @@ serve(async (req: Request) => {
               {
                 status: 500,
                 headers: { ...corsHeaders, "Content-Type": "application/json" },
-              },
+              }
             );
           }
         } else {
@@ -178,8 +165,7 @@ serve(async (req: Request) => {
       }
 
       case "user.updated": {
-        const { id, phone_numbers, email_addresses, first_name, last_name } =
-          event.data;
+        const { id, phone_numbers, email_addresses, first_name, last_name } = event.data;
 
         const updateData = {
           phone: phone_numbers?.[0]?.phone_number || null,
@@ -189,10 +175,7 @@ serve(async (req: Request) => {
           updated_at: new Date().toISOString(),
         };
 
-        const { error } = await supabase
-          .from("users")
-          .update(updateData)
-          .eq("clerk_id", id);
+        const { error } = await supabase.from("users").update(updateData).eq("clerk_id", id);
 
         if (error) {
           console.error("Error updating user:", error);
@@ -204,7 +187,7 @@ serve(async (req: Request) => {
             {
               status: 500,
               headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
+            }
           );
         }
 
@@ -235,7 +218,7 @@ serve(async (req: Request) => {
             {
               status: 500,
               headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
+            }
           );
         }
 
@@ -247,13 +230,10 @@ serve(async (req: Request) => {
         console.log(`Unhandled event type: ${event.type}`);
     }
 
-    return new Response(
-      JSON.stringify({ success: true, event_type: event.type }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return new Response(JSON.stringify({ success: true, event_type: event.type }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (err) {
     console.error("Unexpected error:", err);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

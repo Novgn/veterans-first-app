@@ -59,6 +59,7 @@ So that we can demonstrate HIPAA compliance and investigate incidents.
 ### Critical Architecture Requirements
 
 This story implements **FR54** and **FR55** as specified in the PRD and architecture document:
+
 - **FR54:** System logs all access to rider personal and medical information
 - **FR55:** System maintains audit trail of all ride modifications and status changes
 
@@ -69,15 +70,16 @@ This story implements **FR54** and **FR55** as specified in the PRD and architec
 
 ### Technical Stack (MUST USE)
 
-| Dependency | Version | Purpose |
-| --- | --- | --- |
-| Supabase | Latest | PostgreSQL + triggers |
-| PostgreSQL | 15+ | SECURITY DEFINER functions |
+| Dependency  | Version | Purpose                                 |
+| ----------- | ------- | --------------------------------------- |
+| Supabase    | Latest  | PostgreSQL + triggers                   |
+| PostgreSQL  | 15+     | SECURITY DEFINER functions              |
 | Drizzle ORM | ^0.38.x | Schema definitions (already configured) |
 
 ### What Already Exists (DO NOT RECREATE)
 
 **From Story 1.2 - audit_logs table:**
+
 ```sql
 audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -94,11 +96,13 @@ audit_logs (
 ```
 
 **From Story 1.4 - RLS policies on audit_logs:**
+
 - INSERT: All authenticated users can insert
 - SELECT: Only admin can read
 - UPDATE/DELETE: Denied (no policy = denied with RLS enabled)
 
 **From Story 1.4 - Helper functions:**
+
 - `get_user_role()` - Returns current user's role
 - `get_current_user_id()` - Returns current user's UUID from clerk_id
 - `is_family_linked(rider_uuid)` - Checks family link status
@@ -106,6 +110,7 @@ audit_logs (
 ### Clerk JWT Integration Pattern (FROM STORY 1.3 & 1.4)
 
 **CRITICAL:** Use `auth.jwt()->>'sub'` to get the Clerk user ID, NOT `auth.uid()`:
+
 ```sql
 -- Correct pattern for Clerk third-party auth
 (auth.jwt()->>'sub')
@@ -117,6 +122,7 @@ SELECT id FROM users WHERE clerk_id = (auth.jwt()->>'sub')
 ### Trigger Function Implementation
 
 **Required trigger function pattern:**
+
 ```sql
 CREATE OR REPLACE FUNCTION log_audit_event()
 RETURNS TRIGGER AS $$
@@ -147,13 +153,14 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ### Sensitive Tables Requiring Triggers
 
-| Table | Why Sensitive | Trigger Name |
-| --- | --- | --- |
-| `rides` | Core PHI - ride history, locations, times | `audit_rides_trigger` |
-| `users` | Personal data - name, phone, email | `audit_users_trigger` |
-| `family_links` | Access control relationships | `audit_family_links_trigger` |
+| Table          | Why Sensitive                             | Trigger Name                 |
+| -------------- | ----------------------------------------- | ---------------------------- |
+| `rides`        | Core PHI - ride history, locations, times | `audit_rides_trigger`        |
+| `users`        | Personal data - name, phone, email        | `audit_users_trigger`        |
+| `family_links` | Access control relationships              | `audit_family_links_trigger` |
 
 **Trigger Pattern:**
+
 ```sql
 CREATE TRIGGER audit_rides_trigger
   AFTER INSERT OR UPDATE OR DELETE ON rides
@@ -176,12 +183,14 @@ packages/shared/src/db/__tests__/
 ### Previous Story Intelligence (Story 1.4)
 
 **Key Learnings:**
+
 - `auth.jwt()->>'sub'` is the correct pattern for Clerk JWT (not `auth.uid()`)
 - SECURITY DEFINER functions bypass RLS - required for audit triggers
 - Helper functions exist and should be reused, not recreated
 - Test helpers exist for simulating JWT context in tests
 
 **Files from Story 1.4 (DO NOT MODIFY unless adding triggers):**
+
 - `supabase/migrations/0003_rls_helper_functions.sql` - Helper functions
 - `supabase/migrations/0004_rls_policies.sql` - RLS policies including audit_logs
 - `supabase/migrations/0005_rls_fixes_and_indexes.sql` - Performance indexes
@@ -199,6 +208,7 @@ ee796be feat(auth): implement Clerk authentication integration (Story 1.3)
 ### Testing Requirements
 
 **SQL Test Pattern (supabase/tests/audit-logging.test.sql):**
+
 ```sql
 -- Test: Verify trigger creates audit log on ride INSERT
 INSERT INTO rides (rider_id, status, pickup_address, dropoff_address, scheduled_pickup_time)
@@ -220,6 +230,7 @@ ORDER BY created_at DESC LIMIT 1;
 ```
 
 **TypeScript Test Pattern:**
+
 ```typescript
 describe('Audit Logging Triggers', () => {
   it('creates audit log when ride is inserted', async () => {
@@ -300,16 +311,18 @@ N/A - Implementation completed successfully without debugging issues.
 ### File List
 
 **New Files:**
+
 - supabase/migrations/0006_audit_logging_triggers.sql
 - supabase/migrations/0007_rls_test_helpers.sql (Added by code review - fixes broken RLS test infrastructure)
 - supabase/tests/audit-logging.test.sql
-- packages/shared/src/db/__tests__/audit-logging.test.ts
+- packages/shared/src/db/**tests**/audit-logging.test.ts
 - packages/shared/vitest.config.ts
 
 **Modified Files:**
+
 - supabase/tests/rls-policies.test.sql (Updated audit log count expectations)
-- packages/shared/src/db/__tests__/rls-policies.test.ts (Updated audit log count expectations, fixed broken RPC calls)
-- packages/shared/src/db/__tests__/schema.test.ts (Fixed Drizzle internal property tests)
+- packages/shared/src/db/**tests**/rls-policies.test.ts (Updated audit log count expectations, fixed broken RPC calls)
+- packages/shared/src/db/**tests**/schema.test.ts (Fixed Drizzle internal property tests)
 - packages/shared/package.json (Added vitest dependency and test scripts)
 - package-lock.json (Updated dependencies)
 
@@ -321,9 +334,9 @@ N/A - Implementation completed successfully without debugging issues.
 
 ## Change Log
 
-| Date | Change | Author |
-| --- | --- | --- |
-| 2025-12-07 | Story created with comprehensive developer context | Create-Story Workflow |
-| 2025-12-07 | Implemented audit logging triggers, all tests pass, ready for review | Dev-Story Workflow (Claude Opus 4.5) |
-| 2025-12-07 | Code review completed. Fixed: RLS test helper functions (migration 0007), test robustness improvements. All 35 TypeScript tests pass, all 15 SQL tests pass internally. | Code Review Workflow (Claude Opus 4.5) |
+| Date       | Change                                                                                                                                                                                     | Author                                 |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| 2025-12-07 | Story created with comprehensive developer context                                                                                                                                         | Create-Story Workflow                  |
+| 2025-12-07 | Implemented audit logging triggers, all tests pass, ready for review                                                                                                                       | Dev-Story Workflow (Claude Opus 4.5)   |
+| 2025-12-07 | Code review completed. Fixed: RLS test helper functions (migration 0007), test robustness improvements. All 35 TypeScript tests pass, all 15 SQL tests pass internally.                    | Code Review Workflow (Claude Opus 4.5) |
 | 2025-12-07 | Final review pass: Verified all ACs implemented, all tasks complete, triggers working. 0 HIGH, 4 MEDIUM (pgTAP migration needed), 3 LOW issues documented for follow-up. Ready for commit. | Code Review Workflow (Claude Opus 4.5) |

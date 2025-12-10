@@ -313,16 +313,13 @@ describe("RLS Policies", () => {
   });
 
   it("driver can only see assigned rides", async () => {
-    const driverClient = createSupabaseClient(() =>
-      Promise.resolve(driverToken),
-    );
+    const driverClient = createSupabaseClient(() => Promise.resolve(driverToken));
     const { data, error } = await driverClient.from("rides").select("*");
     expect(
       data?.every(
         (ride) =>
-          ride.driver_id === driverUserId &&
-          ["assigned", "in_progress"].includes(ride.status),
-      ),
+          ride.driver_id === driverUserId && ["assigned", "in_progress"].includes(ride.status)
+      )
     ).toBe(true);
   });
 
@@ -385,6 +382,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 - Task 8: Created RLS policy tests in both SQL and TypeScript formats
 
 **Code Review Fixes (0005 migration):**
+
 - Added riders UPDATE policy - riders can now update/cancel their own rides
 - Added 9 performance indexes for RLS FK columns (rides.rider_id, rides.driver_id, etc.)
 - Fixed TypeScript tests to use RPC-based JWT simulation instead of custom headers
@@ -394,7 +392,8 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 ### File List
 
 **New Files:**
-- packages/shared/src/db/__tests__/rls-policies.test.ts (TypeScript integration tests using RPC-based JWT simulation)
+
+- packages/shared/src/db/**tests**/rls-policies.test.ts (TypeScript integration tests using RPC-based JWT simulation)
 - supabase/migrations/0002_groovy_the_order.sql (rides + family_links tables)
 - supabase/migrations/0003_rls_helper_functions.sql (helper functions: get_user_role, is_family_linked, get_current_user_id)
 - supabase/migrations/0004_rls_policies.sql (all RLS policies for users, rides, family_links, audit_logs)
@@ -402,15 +401,16 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 - supabase/tests/rls-policies.test.sql (SQL-based RLS policy tests)
 
 **Modified Files:**
+
 - packages/shared/src/db/schema.ts (added rides, familyLinks tables and types)
-- packages/shared/src/db/__tests__/schema.test.ts (added tests for new tables, fixed deletedAt field)
+- packages/shared/src/db/**tests**/schema.test.ts (added tests for new tables, fixed deletedAt field)
 - supabase/seed.sql (comprehensive test data for RLS verification)
 - supabase/config.toml (fixed compatibility issues with local CLI)
 
 ## Change Log
 
-| Date       | Change                                             | Author                |
-| ---------- | -------------------------------------------------- | --------------------- |
-| 2025-12-06 | Story created with comprehensive developer context | Create-Story Workflow |
-| 2025-12-06 | Implemented RBAC with RLS policies, helper functions, seed data, and tests | Claude Opus 4.5 |
-| 2025-12-06 | Code review fixes: added riders UPDATE policy, performance indexes, fixed TS tests, fixed SQL test bug | Claude Opus 4.5 |
+| Date       | Change                                                                                                 | Author                |
+| ---------- | ------------------------------------------------------------------------------------------------------ | --------------------- |
+| 2025-12-06 | Story created with comprehensive developer context                                                     | Create-Story Workflow |
+| 2025-12-06 | Implemented RBAC with RLS policies, helper functions, seed data, and tests                             | Claude Opus 4.5       |
+| 2025-12-06 | Code review fixes: added riders UPDATE policy, performance indexes, fixed TS tests, fixed SQL test bug | Claude Opus 4.5       |

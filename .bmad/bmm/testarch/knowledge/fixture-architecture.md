@@ -99,13 +99,7 @@ import { test as authFixture } from "./auth-fixture";
 import { test as logFixture } from "./log-fixture";
 
 // Compose all fixtures for comprehensive capabilities
-export const test = mergeTests(
-  base,
-  apiRequestFixture,
-  networkFixture,
-  authFixture,
-  logFixture,
-);
+export const test = mergeTests(base, apiRequestFixture, networkFixture, authFixture, logFixture);
 
 export { expect } from "@playwright/test";
 
@@ -129,11 +123,7 @@ export const test = base.extend({
   network: async ({ page }, use) => {
     const interceptedRoutes = new Map();
 
-    const interceptRoute = async (
-      method: string,
-      url: string,
-      response: unknown,
-    ) => {
+    const interceptRoute = async (method: string, url: string, response: unknown) => {
       await page.route(url, (route) => {
         if (route.request().method() === method) {
           route.fulfill({ body: JSON.stringify(response) });
@@ -218,9 +208,7 @@ export async function makeHttpRequest({
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(
-      `HTTP ${method} ${url} failed: ${response.status} ${errorText}`,
-    );
+    throw new Error(`HTTP ${method} ${url} failed: ${response.status} ${errorText}`);
   }
 
   return response.json();

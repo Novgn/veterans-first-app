@@ -45,10 +45,7 @@ describe("Audit Logging Triggers", () => {
       // Cleanup test ride and its audit logs
       if (testRideId) {
         await serviceClient.from("rides").delete().eq("id", testRideId);
-        await serviceClient
-          .from("audit_logs")
-          .delete()
-          .eq("resource_id", testRideId);
+        await serviceClient.from("audit_logs").delete().eq("resource_id", testRideId);
       }
     });
 
@@ -61,9 +58,7 @@ describe("Audit Logging Triggers", () => {
           status: "pending",
           pickup_address: "100 Test St, Tampa FL",
           dropoff_address: "VA Hospital, Tampa FL",
-          scheduled_pickup_time: new Date(
-            Date.now() + 24 * 60 * 60 * 1000
-          ).toISOString(),
+          scheduled_pickup_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         })
         .select()
         .single();
@@ -126,9 +121,7 @@ describe("Audit Logging Triggers", () => {
           status: "cancelled",
           pickup_address: "Delete Test St, Tampa FL",
           dropoff_address: "VA Hospital, Tampa FL",
-          scheduled_pickup_time: new Date(
-            Date.now() + 24 * 60 * 60 * 1000
-          ).toISOString(),
+          scheduled_pickup_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         })
         .select()
         .single();
@@ -157,10 +150,7 @@ describe("Audit Logging Triggers", () => {
       expect(logs![0].new_values).toBeNull();
 
       // Cleanup
-      await serviceClient
-        .from("audit_logs")
-        .delete()
-        .eq("resource_id", deleteRideId);
+      await serviceClient.from("audit_logs").delete().eq("resource_id", deleteRideId);
     });
   });
 
@@ -220,10 +210,7 @@ describe("Audit Logging Triggers", () => {
       // Cleanup test link and its audit logs
       if (testLinkId) {
         await serviceClient.from("family_links").delete().eq("id", testLinkId);
-        await serviceClient
-          .from("audit_logs")
-          .delete()
-          .eq("resource_id", testLinkId);
+        await serviceClient.from("audit_logs").delete().eq("resource_id", testLinkId);
       }
     });
 

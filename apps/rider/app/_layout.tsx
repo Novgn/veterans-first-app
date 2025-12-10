@@ -1,8 +1,12 @@
 import '../global.css';
 
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
-import * as SecureStore from 'expo-secure-store';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { Stack } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+
+import { ErrorBoundary } from '../src/components';
+import { asyncStoragePersister, queryClient } from '../src/lib/queryClient';
 
 const tokenCache = {
   async getToken(key: string) {
@@ -26,13 +30,21 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <Stack>
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack>
-      </ClerkLoaded>
-    </ClerkProvider>
+    <ErrorBoundary>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <ClerkLoaded>
+          <PersistQueryClientProvider
+            client={queryClient}
+            persistOptions={{ persister: asyncStoragePersister }}>
+            <Stack>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="profile" options={{ headerShown: false }} />
+              <Stack.Screen name="rides/[id]" options={{ headerShown: false }} />
+            </Stack>
+          </PersistQueryClientProvider>
+        </ClerkLoaded>
+      </ClerkProvider>
+    </ErrorBoundary>
   );
 }

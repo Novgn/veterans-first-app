@@ -1848,7 +1848,7 @@ supabase
       schema: "public",
       table: "driver_locations",
     },
-    handleDriverLocationUpdate,
+    handleDriverLocationUpdate
   )
   .subscribe();
 
@@ -1863,7 +1863,7 @@ supabase
       table: "rides",
       filter: `id=eq.${rideId}`,
     },
-    handleRideUpdate,
+    handleRideUpdate
   )
   .subscribe();
 ```

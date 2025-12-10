@@ -16,8 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Veterans First Business",
-  description:
-    "Business operations portal for Veterans First transportation service",
+  description: "Business operations portal for Veterans First transportation service",
 };
 
 export default function RootLayout({
@@ -28,9 +27,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <header className="flex items-center justify-between p-4 border-b">
             <div className="font-semibold">Veterans First Business</div>
             <div>

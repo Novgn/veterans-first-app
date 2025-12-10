@@ -151,7 +151,7 @@ export function createSupabaseClient(getToken: () => Promise<string | null>) {
         const token = await getToken();
         return token ?? null;
       },
-    },
+    }
   );
 }
 ```
@@ -313,12 +313,11 @@ serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
     if (event.type === "user.created") {
-      const { id, phone_numbers, email_addresses, first_name, last_name } =
-        event.data;
+      const { id, phone_numbers, email_addresses, first_name, last_name } = event.data;
 
       await supabase.from("users").insert({
         clerk_id: id,
@@ -331,8 +330,7 @@ serve(async (req) => {
     }
 
     if (event.type === "user.updated") {
-      const { id, phone_numbers, email_addresses, first_name, last_name } =
-        event.data;
+      const { id, phone_numbers, email_addresses, first_name, last_name } = event.data;
 
       await supabase
         .from("users")
@@ -551,7 +549,7 @@ None
 - apps/business/src/app/sign-up/[[...sign-up]]/page.tsx
 - packages/shared/src/lib/supabase.ts
 - supabase/functions/clerk-webhook/index.ts
-- supabase/functions/clerk-webhook/__tests__/index.test.ts
+- supabase/functions/clerk-webhook/**tests**/index.test.ts
 - supabase/migrations/0001_pale_lila_cheney.sql (added deleted_at column)
 
 **Modified Files:**
@@ -574,7 +572,7 @@ None
 
 ## Change Log
 
-| Date       | Change                                                            | Author          |
-| ---------- | ----------------------------------------------------------------- | --------------- |
-| 2025-12-06 | Implemented Clerk authentication integration - Tasks 1-8 complete | Claude Opus 4.5 |
+| Date       | Change                                                                                  | Author          |
+| ---------- | --------------------------------------------------------------------------------------- | --------------- |
+| 2025-12-06 | Implemented Clerk authentication integration - Tasks 1-8 complete                       | Claude Opus 4.5 |
 | 2025-12-06 | Code review fixes: soft delete, CORS security, null checks, lint, tests, UI consistency | Claude Opus 4.5 |

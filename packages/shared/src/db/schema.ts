@@ -10,13 +10,15 @@ import {
   jsonb,
   check,
   unique,
+  decimal,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { sql, type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
 // Role enum as CHECK constraint (Architecture pattern)
 const roleCheck = check(
   "role_check",
-  sql`role IN ('rider', 'driver', 'family', 'dispatcher', 'admin')`,
+  sql`role IN ('rider', 'driver', 'family', 'dispatcher', 'admin')`
 );
 
 /**
@@ -38,7 +40,7 @@ export const users = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
   },
-  (_table) => [roleCheck],
+  (_table) => [roleCheck]
 );
 
 /**
@@ -62,12 +64,12 @@ export const auditLogs = pgTable("audit_logs", {
 // Status check constraints
 const rideStatusCheck = check(
   "ride_status_check",
-  sql`status IN ('pending', 'assigned', 'in_progress', 'completed', 'cancelled')`,
+  sql`status IN ('pending', 'assigned', 'in_progress', 'completed', 'cancelled')`
 );
 
 const familyLinkStatusCheck = check(
   "family_link_status_check",
-  sql`status IN ('pending', 'approved', 'revoked')`,
+  sql`status IN ('pending', 'approved', 'revoked')`
 );
 
 /**
@@ -91,7 +93,7 @@ export const rides = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
-  (_table) => [rideStatusCheck],
+  (_table) => [rideStatusCheck]
 );
 
 /**
@@ -115,8 +117,28 @@ export const familyLinks = pgTable(
   (table) => [
     familyLinkStatusCheck,
     unique("family_link_unique").on(table.riderId, table.familyMemberId),
-  ],
+  ]
 );
+
+/**
+ * Saved Destinations table - FR3: Save frequently used destinations
+ * Enables quick booking with custom-labeled locations
+ */
+export const savedDestinations = pgTable("saved_destinations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  label: text("label").notNull(),
+  address: text("address").notNull(),
+  lat: decimal("lat", { precision: 10, scale: 8 }).notNull(),
+  lng: decimal("lng", { precision: 11, scale: 8 }).notNull(),
+  placeId: text("place_id"),
+  isDefaultPickup: boolean("is_default_pickup").default(false),
+  isDefaultDropoff: boolean("is_default_dropoff").default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
 
 // Type exports (Architecture requirement)
 export type User = InferSelectModel<typeof users>;
@@ -127,3 +149,5 @@ export type Ride = InferSelectModel<typeof rides>;
 export type NewRide = InferInsertModel<typeof rides>;
 export type FamilyLink = InferSelectModel<typeof familyLinks>;
 export type NewFamilyLink = InferInsertModel<typeof familyLinks>;
+export type SavedDestination = InferSelectModel<typeof savedDestinations>;
+export type NewSavedDestination = InferInsertModel<typeof savedDestinations>;

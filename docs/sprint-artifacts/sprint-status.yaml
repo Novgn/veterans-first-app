@@ -56,12 +56,12 @@ development_status:
   # FR Coverage: FR1-FR6, FR9-FR12, FR71-FR73
   # Stories: 14
   # ============================================================
-  epic-2: backlog
-  2-1-create-rider-app-shell-and-navigation: backlog
-  2-2-implement-saved-destinations-management: backlog
-  2-3-implement-3-tap-booking-flow-destination-selection: backlog
-  2-4-implement-3-tap-booking-flow-time-selection: backlog
-  2-5-implement-3-tap-booking-flow-confirmation: backlog
+  epic-2: in-progress
+  2-1-create-rider-app-shell-and-navigation: done
+  2-2-implement-saved-destinations-management: done
+  2-3-implement-3-tap-booking-flow-destination-selection: done
+  2-4-implement-3-tap-booking-flow-time-selection: ready-for-dev
+  2-5-implement-3-tap-booking-flow-confirmation: ready-for-dev
   2-6-implement-ride-modification-and-cancellation: backlog
   2-7-implement-preferred-driver-selection: backlog
   2-8-implement-my-rides-screen-with-upcoming-rides: backlog

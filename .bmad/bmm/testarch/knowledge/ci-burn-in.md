@@ -367,14 +367,10 @@ function runShard(shardIndex) {
     const shardId = `${shardIndex}/${SHARD_COUNT}`;
     console.log(`\n📦 Starting shard ${shardId}...`);
 
-    const child = spawn(
-      "npx",
-      ["playwright", "test", `--shard=${shardId}`, "--reporter=json"],
-      {
-        env: { ...process.env, TEST_ENV, SHARD_INDEX: shardIndex },
-        stdio: "pipe",
-      },
-    );
+    const child = spawn("npx", ["playwright", "test", `--shard=${shardId}`, "--reporter=json"], {
+      env: { ...process.env, TEST_ENV, SHARD_INDEX: shardIndex },
+      stdio: "pipe",
+    });
 
     let stdout = "";
     let stderr = "";
@@ -398,10 +394,7 @@ function runShard(shardIndex) {
         console.log(`✅ Shard ${shardId} completed (exit code: ${code})`);
         resolve({ shardIndex, code, result });
       } catch (error) {
-        console.error(
-          `❌ Shard ${shardId} failed to parse results:`,
-          error.message,
-        );
+        console.error(`❌ Shard ${shardId} failed to parse results:`, error.message);
         reject({ shardIndex, code, error });
       }
     });
@@ -454,10 +447,7 @@ function aggregateResults() {
   };
 
   // Save aggregated summary
-  fs.writeFileSync(
-    path.join(RESULTS_DIR, "summary.json"),
-    JSON.stringify(summary, null, 2),
-  );
+  fs.writeFileSync(path.join(RESULTS_DIR, "summary.json"), JSON.stringify(summary, null, 2));
 
   console.log("\n━".repeat(50));
   console.log("📈 Test Results Summary");

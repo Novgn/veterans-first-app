@@ -120,9 +120,7 @@ type Order = {
   createdAt: Date;
 };
 
-export const createOrderItem = (
-  overrides: Partial<OrderItem> = {},
-): OrderItem => {
+export const createOrderItem = (overrides: Partial<OrderItem> = {}): OrderItem => {
   const product = overrides.product || createProduct();
   const quantity = overrides.quantity || faker.number.int({ min: 1, max: 5 });
 
@@ -195,14 +193,11 @@ test("user can view order details", async ({ page, apiRequest }) => {
 // playwright/support/helpers/seed-helpers.ts
 import { APIRequestContext } from "@playwright/test";
 import { User, createUser } from "../../test-utils/factories/user-factory";
-import {
-  Product,
-  createProduct,
-} from "../../test-utils/factories/product-factory";
+import { Product, createProduct } from "../../test-utils/factories/product-factory";
 
 export async function seedUser(
   request: APIRequestContext,
-  overrides: Partial<User> = {},
+  overrides: Partial<User> = {}
 ): Promise<User> {
   const user = createUser(overrides);
 
@@ -219,7 +214,7 @@ export async function seedUser(
 
 export async function seedProduct(
   request: APIRequestContext,
-  overrides: Partial<Product> = {},
+  overrides: Partial<Product> = {}
 ): Promise<Product> {
   const product = createProduct(overrides);
 
@@ -415,9 +410,7 @@ export const createProAccount = (overrides: Partial<Account> = {}): Account =>
     ...overrides,
   });
 
-export const createEnterpriseAccount = (
-  overrides: Partial<Account> = {},
-): Account =>
+export const createEnterpriseAccount = (overrides: Partial<Account> = {}): Account =>
   createAccount({
     plan: "enterprise",
     features: ["advanced-analytics", "priority-support", "sso", "audit-logs"],
@@ -496,7 +489,7 @@ When working with feature flags, layer them into factories:
 ```typescript
 export const createUserWithFlags = (
   overrides: Partial<User> = {},
-  flags: Record<string, boolean> = {},
+  flags: Record<string, boolean> = {}
 ): User & { flags: Record<string, boolean> } => ({
   ...createUser(overrides),
   flags: {
@@ -512,7 +505,7 @@ const user = createUserWithFlags(
   {
     "new-dashboard": true,
     "beta-features": true,
-  },
+  }
 );
 ```
 

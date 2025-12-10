@@ -16,10 +16,7 @@ interface ErrorResponse {
 export function createApiClient(config: ApiClientConfig) {
   const { baseUrl, headers = {} } = config;
 
-  async function request<T>(
-    endpoint: string,
-    options: RequestInit = {},
-  ): Promise<ApiResponse<T>> {
+  async function request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     try {
       const response = await fetch(`${baseUrl}${endpoint}`, {
         ...options,

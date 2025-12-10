@@ -28,9 +28,7 @@ import { test, expect } from "@playwright/test";
  */
 
 test.describe("API Error Handling", () => {
-  test("should display error message when API returns 500", async ({
-    page,
-  }) => {
+  test("should display error message when API returns 500", async ({ page }) => {
     // Scope error handling to THIS test only
     const consoleErrors: string[] = [];
     page.on("pageerror", (error) => {
@@ -52,7 +50,7 @@ test.describe("API Error Handling", () => {
           error: "Internal server error",
           code: "INTERNAL_ERROR",
         }),
-      }),
+      })
     );
 
     // Act: Navigate to page that fetches users
@@ -60,17 +58,13 @@ test.describe("API Error Handling", () => {
 
     // Assert: Error UI displayed
     await expect(page.getByTestId("error-message")).toBeVisible();
-    await expect(page.getByTestId("error-message")).toContainText(
-      /error.*loading|failed.*load/i,
-    );
+    await expect(page.getByTestId("error-message")).toContainText(/error.*loading|failed.*load/i);
 
     // Assert: Retry button visible
     await expect(page.getByTestId("retry-button")).toBeVisible();
 
     // Assert: NetworkError was thrown and caught
-    expect(consoleErrors).toContainEqual(
-      expect.stringContaining("NetworkError"),
-    );
+    expect(consoleErrors).toContainEqual(expect.stringContaining("NetworkError"));
   });
 
   test("should NOT swallow unexpected errors", async ({ page }) => {
@@ -228,21 +222,19 @@ test.describe("Network Retry Logic", () => {
     }
 
     // Assert: Telemetry logged retry events
-    const telemetryEvents = await page.evaluate(
-      () => (window as any).__TELEMETRY_EVENTS__ || [],
-    );
+    const telemetryEvents = await page.evaluate(() => (window as any).__TELEMETRY_EVENTS__ || []);
     expect(telemetryEvents).toContainEqual(
       expect.objectContaining({
         event: "api_retry",
         attempt: 1,
         endpoint: "/api/products",
-      }),
+      })
     );
     expect(telemetryEvents).toContainEqual(
       expect.objectContaining({
         event: "api_retry",
         attempt: 2,
-      }),
+      })
     );
   });
 
@@ -267,7 +259,7 @@ test.describe("Network Retry Logic", () => {
     // Assert: Error UI displayed after exhausting retries
     await expect(page.getByTestId("error-message")).toBeVisible();
     await expect(page.getByTestId("error-message")).toContainText(
-      /unable.*load|failed.*after.*retries/i,
+      /unable.*load|failed.*after.*retries/i
     );
 
     // Assert: Data not displayed
@@ -395,7 +387,7 @@ test.describe("Error Telemetry", () => {
       route.fulfill({
         status: 500,
         body: JSON.stringify({ error: "Payment processor unavailable" }),
-      }),
+      })
     );
 
     // Act: Trigger error
@@ -416,7 +408,7 @@ test.describe("Error Telemetry", () => {
           statusCode: 500,
           userId: expect.any(String),
         }),
-      }),
+      })
     );
 
     // Assert: Sensitive data NOT logged
@@ -433,8 +425,7 @@ test.describe("Error Telemetry", () => {
     await page.addInitScript(() => {
       (window as any).Sentry = {
         captureException: (error: Error, context?: any) => {
-          (window as any).__SENTRY_EVENTS__ =
-            (window as any).__SENTRY_EVENTS__ || [];
+          (window as any).__SENTRY_EVENTS__ = (window as any).__SENTRY_EVENTS__ || [];
           (window as any).__SENTRY_EVENTS__.push({
             error: error.message,
             context,
@@ -442,8 +433,7 @@ test.describe("Error Telemetry", () => {
           });
         },
         addBreadcrumb: (breadcrumb: any) => {
-          (window as any).__SENTRY_BREADCRUMBS__ =
-            (window as any).__SENTRY_BREADCRUMBS__ || [];
+          (window as any).__SENTRY_BREADCRUMBS__ = (window as any).__SENTRY_BREADCRUMBS__ || [];
           (window as any).__SENTRY_BREADCRUMBS__.push(breadcrumb);
         },
       };
@@ -451,7 +441,7 @@ test.describe("Error Telemetry", () => {
 
     // Mock failing API
     await page.route("**/api/users", (route) =>
-      route.fulfill({ status: 403, body: { error: "Forbidden" } }),
+      route.fulfill({ status: 403, body: { error: "Forbidden" } })
     );
 
     // Act
@@ -469,14 +459,12 @@ test.describe("Error Telemetry", () => {
     });
 
     // Assert: Breadcrumbs include user actions
-    const breadcrumbs = await page.evaluate(
-      () => (window as any).__SENTRY_BREADCRUMBS__,
-    );
+    const breadcrumbs = await page.evaluate(() => (window as any).__SENTRY_BREADCRUMBS__);
     expect(breadcrumbs).toContainEqual(
       expect.objectContaining({
         category: "navigation",
         message: "/users",
-      }),
+      })
     );
   });
 });
@@ -544,9 +532,7 @@ function redactSensitiveData(obj: any): any {
   const redacted = { ...obj };
 
   for (const key of Object.keys(redacted)) {
-    if (
-      SENSITIVE_KEYS.some((sensitive) => key.toLowerCase().includes(sensitive))
-    ) {
+    if (SENSITIVE_KEYS.some((sensitive) => key.toLowerCase().includes(sensitive))) {
       redacted[key] = "[REDACTED]";
     } else if (typeof redacted[key] === "object") {
       redacted[key] = redactSensitiveData(redacted[key]);
@@ -622,14 +608,14 @@ test.describe("Service Unavailability", () => {
             { id: 2, name: "Cached Product 2" },
           ],
           timestamp: Date.now(),
-        }),
+        })
       );
     });
 
     // Mock API unavailable
     await page.route(
       "**/api/products",
-      (route) => route.abort("connectionrefused"), // Simulate server down
+      (route) => route.abort("connectionrefused") // Simulate server down
     );
 
     // Act
@@ -641,20 +627,16 @@ test.describe("Service Unavailability", () => {
 
     // Assert: Stale data warning shown
     await expect(page.getByTestId("cache-warning")).toBeVisible();
-    await expect(page.getByTestId("cache-warning")).toContainText(
-      /showing.*cached|offline.*mode/i,
-    );
+    await expect(page.getByTestId("cache-warning")).toContainText(/showing.*cached|offline.*mode/i);
 
     // Assert: Retry button available
     await expect(page.getByTestId("refresh-button")).toBeVisible();
   });
 
-  test("should show fallback UI when analytics service fails", async ({
-    page,
-  }) => {
+  test("should show fallback UI when analytics service fails", async ({ page }) => {
     // Mock analytics service down (non-critical)
     await page.route("**/analytics/track", (route) =>
-      route.fulfill({ status: 503, body: "Service unavailable" }),
+      route.fulfill({ status: 503, body: "Service unavailable" })
     );
 
     // Act: Navigate normally
@@ -673,17 +655,13 @@ test.describe("Service Unavailability", () => {
     await page.getByTestId("track-action-button").click();
 
     // Analytics error logged
-    expect(consoleErrors).toContainEqual(
-      expect.stringContaining("Analytics service unavailable"),
-    );
+    expect(consoleErrors).toContainEqual(expect.stringContaining("Analytics service unavailable"));
 
     // But user doesn't see error
     await expect(page.getByTestId("error-message")).not.toBeVisible();
   });
 
-  test("should fallback to local validation when API is slow", async ({
-    page,
-  }) => {
+  test("should fallback to local validation when API is slow", async ({ page }) => {
     // Mock slow API (> 5 seconds)
     await page.route("**/api/validate-email", async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 6000)); // 6 second delay
@@ -709,9 +687,7 @@ test.describe("Service Unavailability", () => {
     });
   });
 
-  test("should maintain functionality with third-party script failure", async ({
-    page,
-  }) => {
+  test("should maintain functionality with third-party script failure", async ({ page }) => {
     // Block third-party scripts (Google Analytics, Intercom, etc.)
     await page.route("**/*.google-analytics.com/**", (route) => route.abort());
     await page.route("**/*.intercom.io/**", (route) => route.abort());

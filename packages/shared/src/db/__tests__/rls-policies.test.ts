@@ -62,10 +62,7 @@ async function queryAsUser<T>(
 /**
  * Counts visible records for a user in a specific table
  */
-async function countAsUser(
-  clerkId: string,
-  table: string
-): Promise<number> {
+async function countAsUser(clerkId: string, table: string): Promise<number> {
   const { data, error } = await serviceClient.rpc("test_count_as_user", {
     p_clerk_id: clerkId,
     p_table_name: table,
@@ -178,11 +175,7 @@ describe("RLS Policy Tests", () => {
     });
 
     it("driver can only see assigned or in_progress status rides", async () => {
-      const { data } = await queryAsUser<{ status: string }>(
-        TEST_USERS.driver1,
-        "rides",
-        "status"
-      );
+      const { data } = await queryAsUser<{ status: string }>(TEST_USERS.driver1, "rides", "status");
 
       expect(data).not.toBeNull();
       expect(data!.length).toBe(2);

@@ -60,9 +60,7 @@ export function extractSelector(errorMessage: string): string | null {
   if (playwrightMatch) return playwrightMatch[1];
 
   // Cypress: "Timed out retrying: Expected to find element: '.submit-button'"
-  const cypressMatch = errorMessage.match(
-    /Expected to find element: ['"]([^'"]+)['"]/i,
-  );
+  const cypressMatch = errorMessage.match(/Expected to find element: ['"]([^'"]+)['"]/i);
   if (cypressMatch) return cypressMatch[1];
 
   return null;
@@ -74,8 +72,7 @@ export function extractSelector(errorMessage: string): string | null {
 export function suggestBetterSelector(badSelector: string): string {
   // If using CSS class → suggest data-testid
   if (badSelector.startsWith(".") || badSelector.includes("class=")) {
-    const elementName =
-      badSelector.match(/class=["']([^"']+)["']/)?.[1] || badSelector.slice(1);
+    const elementName = badSelector.match(/class=["']([^"']+)["']/)?.[1] || badSelector.slice(1);
     return `page.getByTestId('${elementName}') // Prefer data-testid over CSS class`;
   }
 
@@ -118,9 +115,7 @@ test("heal stale selector failures automatically", async ({ page }) => {
   } catch (error: any) {
     if (isSelectorFailure(error)) {
       const badSelector = extractSelector(error.message);
-      const suggestion = badSelector
-        ? suggestBetterSelector(badSelector)
-        : null;
+      const suggestion = badSelector ? suggestBetterSelector(badSelector) : null;
 
       console.log("HEALING SUGGESTION:", suggestion);
 
@@ -240,10 +235,7 @@ import {
   suggestDeterministicWait,
 } from "../../src/testing/healing/timing-healing";
 
-test("heal race condition with network-first pattern", async ({
-  page,
-  context,
-}) => {
+test("heal race condition with network-first pattern", async ({ page, context }) => {
   // Setup interception BEFORE navigation (prevent race)
   await context.route("**/api/products", (route) => {
     route.fulfill({
@@ -537,9 +529,7 @@ test("heal 500 error with error state mocking", async ({ page, context }) => {
 /**
  * Detect hard wait anti-pattern in test code
  */
-export function detectHardWaits(
-  testCode: string,
-): Array<{ line: number; code: string }> {
+export function detectHardWaits(testCode: string): Array<{ line: number; code: string }> {
   const lines = testCode.split("\n");
   const violations: Array<{ line: number; code: string }> = [];
 
@@ -606,9 +596,7 @@ test("heal hard wait with deterministic wait", async ({ page }) => {
   await page.getByTestId("loading-spinner").waitFor({ state: "detached" });
 
   // OR wait for specific network response
-  await page.waitForResponse(
-    (resp) => resp.url().includes("/api/dashboard") && resp.ok(),
-  );
+  await page.waitForResponse((resp) => resp.url().includes("/api/dashboard") && resp.ok());
 
   await expect(page.getByText("Dashboard ready")).toBeVisible();
 });

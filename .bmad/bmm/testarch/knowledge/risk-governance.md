@@ -56,10 +56,7 @@ export type RiskScore = {
 };
 
 // Risk scoring rules
-export function calculateRiskScore(
-  probability: 1 | 2 | 3,
-  impact: 1 | 2 | 3,
-): number {
+export function calculateRiskScore(probability: 1 | 2 | 3, impact: 1 | 2 | 3): number {
   return probability * impact;
 }
 
@@ -71,9 +68,7 @@ export function isCriticalBlocker(score: number): boolean {
   return score === 9; // Probability=3 AND Impact=3 → FAIL gate
 }
 
-export function classifyRiskLevel(
-  score: number,
-): "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" {
+export function classifyRiskLevel(score: number): "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" {
   if (score === 9) return "CRITICAL";
   if (score >= 6) return "HIGH";
   if (score >= 4) return "MEDIUM";
@@ -157,12 +152,8 @@ export function evaluateGate(params: {
   const { risks, coverageGaps, waiverApprover } = params;
 
   // Categorize risks
-  const criticalRisks = risks.filter(
-    (r) => r.score === 9 && r.status === "OPEN",
-  );
-  const highRisks = risks.filter(
-    (r) => r.score >= 6 && r.score < 9 && r.status === "OPEN",
-  );
+  const criticalRisks = risks.filter((r) => r.score === 9 && r.status === "OPEN");
+  const highRisks = risks.filter((r) => r.score >= 6 && r.score < 9 && r.status === "OPEN");
   const unresolvedGaps = coverageGaps.filter((g) => !g.reason);
 
   // Decision logic
@@ -192,23 +183,17 @@ export function evaluateGate(params: {
   const recommendations: string[] = [];
   if (criticalRisks.length > 0) {
     recommendations.push(
-      `🚨 ${criticalRisks.length} CRITICAL risk(s) must be mitigated before release`,
+      `🚨 ${criticalRisks.length} CRITICAL risk(s) must be mitigated before release`
     );
   }
   if (unresolvedGaps.length > 0) {
-    recommendations.push(
-      `📋 ${unresolvedGaps.length} acceptance criteria lack test coverage`,
-    );
+    recommendations.push(`📋 ${unresolvedGaps.length} acceptance criteria lack test coverage`);
   }
   if (highRisks.some((r) => !r.mitigationPlan)) {
-    recommendations.push(
-      `⚠️  High risks without mitigation plans: assign owners and deadlines`,
-    );
+    recommendations.push(`⚠️  High risks without mitigation plans: assign owners and deadlines`);
   }
   if (decision === "PASS") {
-    recommendations.push(
-      `✅ All risks mitigated or acceptable. Ready for release.`,
-    );
+    recommendations.push(`✅ All risks mitigated or acceptable. Ready for release.`);
   }
 
   return {
@@ -222,11 +207,7 @@ export function evaluateGate(params: {
   };
 }
 
-function generateSummary(
-  decision: GateDecision,
-  risks: RiskScore[],
-  gaps: CoverageGap[],
-): string {
+function generateSummary(decision: GateDecision, risks: RiskScore[], gaps: CoverageGap[]): string {
   const total = risks.length;
   const critical = risks.filter((r) => r.score === 9).length;
   const high = risks.filter((r) => r.score >= 6 && r.score < 9).length;
@@ -312,22 +293,18 @@ export type MitigationAction = {
 export class RiskMitigationTracker {
   private risks: Map<string, RiskScore> = new Map();
   private actions: Map<string, MitigationAction[]> = new Map();
-  private history: Array<{ riskId: string; event: string; timestamp: Date }> =
-    [];
+  private history: Array<{ riskId: string; event: string; timestamp: Date }> = [];
 
   // Register a new risk
   addRisk(risk: RiskScore): void {
     this.risks.set(risk.id, risk);
-    this.logHistory(
-      risk.id,
-      `Risk registered: ${risk.title} (Score: ${risk.score})`,
-    );
+    this.logHistory(risk.id, `Risk registered: ${risk.title} (Score: ${risk.score})`);
 
     // Auto-assign mitigation requirements for score ≥6
     if (requiresMitigation(risk.score) && !risk.mitigationPlan) {
       this.logHistory(
         risk.id,
-        `⚠️  Mitigation required (score ${risk.score}). Assign owner and plan.`,
+        `⚠️  Mitigation required (score ${risk.score}). Assign owner and plan.`
       );
     }
   }
@@ -343,7 +320,7 @@ export class RiskMitigationTracker {
 
     this.logHistory(
       action.riskId,
-      `Mitigation action added: ${action.action} (Owner: ${action.owner})`,
+      `Mitigation action added: ${action.action} (Owner: ${action.owner})`
     );
   }
 
@@ -355,10 +332,7 @@ export class RiskMitigationTracker {
     actions[actionIndex].status = "COMPLETED";
     actions[actionIndex].completedAt = new Date();
 
-    this.logHistory(
-      riskId,
-      `Mitigation completed: ${actions[actionIndex].action}`,
-    );
+    this.logHistory(riskId, `Mitigation completed: ${actions[actionIndex].action}`);
 
     // If all actions completed, mark risk as MITIGATED
     if (actions.every((a) => a.status === "COMPLETED")) {
@@ -369,12 +343,7 @@ export class RiskMitigationTracker {
   }
 
   // Request waiver for a risk
-  requestWaiver(
-    riskId: string,
-    reason: string,
-    approver: string,
-    expiryDays: number,
-  ): void {
+  requestWaiver(riskId: string, reason: string, approver: string, expiryDays: number): void {
     const risk = this.risks.get(riskId);
     if (!risk) throw new Error(`Risk ${riskId} not found`);
 
@@ -383,21 +352,14 @@ export class RiskMitigationTracker {
     risk.waiverApprover = approver;
     risk.waiverExpiry = new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000);
 
-    this.logHistory(
-      riskId,
-      `⚠️  Waiver granted by ${approver}. Expires: ${risk.waiverExpiry}`,
-    );
+    this.logHistory(riskId, `⚠️  Waiver granted by ${approver}. Expires: ${risk.waiverExpiry}`);
   }
 
   // Generate risk report
   generateReport(): string {
     const allRisks = Array.from(this.risks.values());
-    const critical = allRisks.filter(
-      (r) => r.score === 9 && r.status === "OPEN",
-    );
-    const high = allRisks.filter(
-      (r) => r.score >= 6 && r.score < 9 && r.status === "OPEN",
-    );
+    const critical = allRisks.filter((r) => r.score === 9 && r.status === "OPEN");
+    const high = allRisks.filter((r) => r.score >= 6 && r.score < 9 && r.status === "OPEN");
     const mitigated = allRisks.filter((r) => r.status === "MITIGATED");
     const waived = allRisks.filter((r) => r.status === "WAIVED");
 
@@ -535,12 +497,10 @@ export type CoverageMatrix = {
 
 export function buildCoverageMatrix(
   criteria: AcceptanceCriterion[],
-  tests: TestCase[],
+  tests: TestCase[]
 ): CoverageMatrix[] {
   return criteria.map((criterion) => {
-    const matchingTests = tests.filter((t) =>
-      t.criteriaIds.includes(criterion.id),
-    );
+    const matchingTests = tests.filter((t) => t.criteriaIds.includes(criterion.id));
 
     return {
       criterion,

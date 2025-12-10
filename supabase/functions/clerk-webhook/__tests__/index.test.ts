@@ -40,10 +40,7 @@ const createMockClerkUser = (overrides = {}) => ({
   ...overrides,
 });
 
-const createMockRequest = (
-  eventType: string,
-  userData: ReturnType<typeof createMockClerkUser>,
-) => {
+const createMockRequest = (eventType: string, userData: ReturnType<typeof createMockClerkUser>) => {
   const body = JSON.stringify({
     type: eventType,
     data: userData,
@@ -121,8 +118,7 @@ describe("Clerk Webhook Handler", () => {
       const mockUser = createMockClerkUser({ phone_numbers: undefined });
 
       // With optional chaining, this should return null
-      const phone =
-        (mockUser.phone_numbers as unknown)?.[0]?.phone_number || null;
+      const phone = (mockUser.phone_numbers as unknown)?.[0]?.phone_number || null;
       expect(phone).toBeNull();
     });
 
@@ -181,17 +177,14 @@ describe("Clerk Webhook Handler", () => {
 
   describe("webhook signature verification", () => {
     it("should reject requests with missing svix headers", async () => {
-      const req = new Request(
-        "https://test.supabase.co/functions/v1/clerk-webhook",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Missing svix headers
-          },
-          body: JSON.stringify({}),
+      const req = new Request("https://test.supabase.co/functions/v1/clerk-webhook", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Missing svix headers
         },
-      );
+        body: JSON.stringify({}),
+      });
 
       // Request without svix headers should be rejected
       const hasSvixHeaders =
@@ -221,9 +214,7 @@ describe("Clerk Webhook Handler", () => {
         "Access-Control-Allow-Methods": "POST, OPTIONS",
       };
 
-      expect(corsHeaders["Access-Control-Allow-Origin"]).toBe(
-        "https://clerk.com",
-      );
+      expect(corsHeaders["Access-Control-Allow-Origin"]).toBe("https://clerk.com");
       expect(corsHeaders["Access-Control-Allow-Methods"]).toContain("POST");
     });
   });

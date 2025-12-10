@@ -12,7 +12,7 @@ const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error(
     "DATABASE_URL environment variable is required. " +
-      "See .env.example for the connection string format.",
+      "See .env.example for the connection string format."
   );
 }
 

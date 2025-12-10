@@ -104,10 +104,9 @@ test("admin actions", async ({ authToken, authOptions }) => {
   // Override default user
   authOptions.userIdentifier = "admin";
 
-  const { authToken: adminToken } =
-    await test.step("Get admin token", async () => {
-      return { authToken }; // Re-fetches with new identifier
-    });
+  const { authToken: adminToken } = await test.step("Get admin token", async () => {
+    return { authToken }; // Re-fetches with new identifier
+  });
 
   // Use admin token
   const response = await request.get("/api/admin/users", {

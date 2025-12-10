@@ -60,7 +60,7 @@ test("all utilities available", async ({
 
   await recurse(
     () => apiRequest({ method: "GET", path: `/status/${body.id}` }),
-    (res) => res.body.ready === true,
+    (res) => res.body.ready === true
   );
 });
 ```
@@ -111,7 +111,7 @@ import { test as customFixtures } from "./custom-fixtures";
 export const test = mergeTests(
   apiRequestFixture,
   authFixture,
-  customFixtures, // Your project fixtures
+  customFixtures // Your project fixtures
 );
 
 export { expect } from "@playwright/test";
@@ -173,7 +173,7 @@ export const test = mergeTests(
   interceptFixture,
   recurseFixture,
   networkRecorderFixture,
-  customFixtures,
+  customFixtures
 );
 
 export { expect } from "@playwright/test";
@@ -201,9 +201,7 @@ test("full integration", async ({
   await page.goto("/users");
   const { responseJson } = await usersCall;
 
-  expect(responseJson).toContainEqual(
-    expect.objectContaining({ id: testUser.id }),
-  );
+  expect(responseJson).toContainEqual(expect.objectContaining({ id: testUser.id }));
 });
 ```
 
@@ -391,10 +389,5 @@ test('my test', async ({ fixture1, fixture2, ..., fixture20 }) => {
 
 ```typescript
 // Merge the 4-6 fixtures your project actually needs
-const test = mergeTests(
-  apiRequestFixture,
-  authFixture,
-  recurseFixture,
-  customFixtures,
-);
+const test = mergeTests(apiRequestFixture, authFixture, recurseFixture, customFixtures);
 ```

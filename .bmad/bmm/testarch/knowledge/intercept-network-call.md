@@ -141,10 +141,7 @@ test("conditional mocking", async ({ page, interceptNetworkCall }) => {
 **Implementation**:
 
 ```typescript
-test("should handle API errors gracefully", async ({
-  page,
-  interceptNetworkCall,
-}) => {
+test("should handle API errors gracefully", async ({ page, interceptNetworkCall }) => {
   // Simulate 500 error
   const errorCall = interceptNetworkCall({
     url: "**/api/users",

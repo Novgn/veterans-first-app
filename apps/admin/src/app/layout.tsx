@@ -27,9 +27,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <header className="flex items-center justify-between p-4 border-b">
             <div className="font-semibold">Veterans First Admin</div>
             <div>

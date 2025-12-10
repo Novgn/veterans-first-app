@@ -38,9 +38,7 @@ const environment = process.env.TEST_ENV || "local";
 // Fail fast if environment not supported
 if (!Object.keys(envConfigMap).includes(environment)) {
   console.error(`❌ No configuration found for environment: ${environment}`);
-  console.error(
-    `   Available environments: ${Object.keys(envConfigMap).join(", ")}`,
-  );
+  console.error(`   Available environments: ${Object.keys(envConfigMap).join(", ")}`);
   process.exit(1);
 }
 

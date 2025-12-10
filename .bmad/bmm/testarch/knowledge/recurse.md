@@ -48,7 +48,7 @@ test("should wait for job completion", async ({ recurse, apiRequest }) => {
       timeout: 60000, // 60 seconds max
       interval: 2000, // Check every 2 seconds
       log: "Waiting for export job to complete",
-    },
+    }
   );
 
   expect(result.body.downloadUrl).toBeDefined();
@@ -91,7 +91,7 @@ test("should poll with assertions", async ({ recurse, apiRequest }) => {
       expect(event.timestamp).toBeDefined();
       // If assertions pass, predicate succeeds
     },
-    { timeout: 30000 },
+    { timeout: 30000 }
   );
 });
 ```
@@ -117,9 +117,8 @@ test("custom error on timeout", async ({ recurse, apiRequest }) => {
       (res) => res.body.ready === true,
       {
         timeout: 10000,
-        error:
-          "System failed to become ready within 10 seconds - check background workers",
-      },
+        error: "System failed to become ready within 10 seconds - check background workers",
+      }
     );
   } catch (error) {
     // Error message includes custom context
@@ -155,7 +154,7 @@ test("post-poll processing", async ({ recurse, apiRequest }) => {
         console.log(`Processed ${result.body.itemsProcessed} items`);
         return result.body;
       },
-    },
+    }
   );
 
   expect(finalResult.itemsProcessed).toBeGreaterThan(0);
@@ -201,7 +200,7 @@ test("end-to-end polling", async ({ apiRequest, recurse }) => {
       timeout: 120000, // 2 minutes for large imports
       interval: 5000, // Check every 5 seconds
       log: `Polling import ${createResp.importId}`,
-    },
+    }
   );
 
   expect(importResult.body.rowsImported).toBeGreaterThan(1000);
@@ -279,7 +278,7 @@ await page.click("#export");
 await recurse(
   () => page.textContent("#status"),
   (status) => status === "Ready",
-  { timeout: 10000 },
+  { timeout: 10000 }
 );
 ```
 
@@ -289,7 +288,7 @@ await recurse(
 await recurse(
   () => apiRequest({ method: "GET", path: "/status" }),
   (res) => res.body.ready,
-  { interval: 100 }, // Hammers API every 100ms!
+  { interval: 100 } // Hammers API every 100ms!
 );
 ```
 
@@ -299,6 +298,6 @@ await recurse(
 await recurse(
   () => apiRequest({ method: "GET", path: "/status" }),
   (res) => res.body.ready,
-  { interval: 2000 }, // Check every 2 seconds (reasonable)
+  { interval: 2000 } // Check every 2 seconds (reasonable)
 );
 ```

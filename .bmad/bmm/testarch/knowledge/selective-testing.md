@@ -32,9 +32,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Checkout Flow", () => {
   // P0 + Smoke: Must run on every commit
-  test("@smoke @p0 should complete purchase with valid payment", async ({
-    page,
-  }) => {
+  test("@smoke @p0 should complete purchase with valid payment", async ({ page }) => {
     await page.goto("/checkout");
     await page.getByTestId("card-number").fill("4242424242424242");
     await page.getByTestId("submit-payment").click();
@@ -43,9 +41,7 @@ test.describe("Checkout Flow", () => {
   });
 
   // P0 but not smoke: Run pre-merge
-  test("@regression @p0 should handle payment decline gracefully", async ({
-    page,
-  }) => {
+  test("@regression @p0 should handle payment decline gracefully", async ({ page }) => {
     await page.goto("/checkout");
     await page.getByTestId("card-number").fill("4000000000000002"); // Decline card
     await page.getByTestId("submit-payment").click();
@@ -64,21 +60,15 @@ test.describe("Checkout Flow", () => {
   });
 
   // P2: Run in full regression only
-  test("@regression @p2 should remember saved payment methods", async ({
-    page,
-  }) => {
+  test("@regression @p2 should remember saved payment methods", async ({ page }) => {
     await page.goto("/checkout");
     await expect(page.getByTestId("saved-cards")).toBeVisible();
   });
 
   // P3: Low priority, run nightly or weekly
-  test("@nightly @p3 should display checkout page analytics", async ({
-    page,
-  }) => {
+  test("@nightly @p3 should display checkout page analytics", async ({ page }) => {
     await page.goto("/checkout");
-    const analyticsEvents = await page.evaluate(
-      () => (window as any).__ANALYTICS__,
-    );
+    const analyticsEvents = await page.evaluate(() => (window as any).__ANALYTICS__);
     expect(analyticsEvents).toBeDefined();
   });
 });
@@ -502,12 +492,7 @@ jobs:
  * Defines which tests run at each stage of the development lifecycle
  */
 
-export type TestStage =
-  | "pre-commit"
-  | "ci-pr"
-  | "ci-merge"
-  | "staging"
-  | "production";
+export type TestStage = "pre-commit" | "ci-pr" | "ci-merge" | "staging" | "production";
 
 export type TestPromotion = {
   stage: TestStage;
@@ -571,10 +556,7 @@ export function getTestsForStage(stage: TestStage): TestPromotion {
 /**
  * Validate if tests can be promoted to next stage
  */
-export function canPromote(
-  currentStage: TestStage,
-  testsPassed: boolean,
-): boolean {
+export function canPromote(currentStage: TestStage, testsPassed: boolean): boolean {
   const promotion = TEST_PROMOTION_RULES[currentStage];
 
   if (!promotion.required) {

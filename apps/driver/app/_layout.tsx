@@ -1,8 +1,8 @@
 import '../global.css';
 
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
-import * as SecureStore from 'expo-secure-store';
 import { Stack } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 
 const tokenCache = {
   async getToken(key: string) {
@@ -30,7 +30,6 @@ export default function RootLayout() {
       <ClerkLoaded>
         <Stack>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack>
       </ClerkLoaded>
     </ClerkProvider>
