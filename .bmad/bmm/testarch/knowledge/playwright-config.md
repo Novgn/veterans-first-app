@@ -238,9 +238,7 @@ test("API returns quickly", async ({ page }) => {
   await expect(page.getByTestId("user-name")).toBeVisible({ timeout: 5000 }); // 5s instead of 10s
 
   // Override expect timeout for slow external API
-  await expect(page.getByTestId("weather-widget")).toBeVisible({
-    timeout: 20000,
-  }); // 20s instead of 10s
+  await expect(page.getByTestId("weather-widget")).toBeVisible({ timeout: 20000 }); // 20s instead of 10s
 });
 ```
 

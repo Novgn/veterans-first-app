@@ -303,10 +303,7 @@ describe("Network Retry Logic", () => {
       if (attemptCount <= 2) {
         req.reply({ statusCode: 500, body: { error: "Server error" } });
       } else {
-        req.reply({
-          statusCode: 200,
-          body: { products: [{ id: 1, name: "Product 1" }] },
-        });
+        req.reply({ statusCode: 200, body: { products: [{ id: 1, name: "Product 1" }] } });
       }
     }).as("getProducts");
 
@@ -677,14 +674,10 @@ test.describe("Service Unavailability", () => {
     await page.getByTestId("email-input").blur();
 
     // Assert: Client-side validation triggers immediately (doesn't wait for API)
-    await expect(page.getByTestId("email-valid-icon")).toBeVisible({
-      timeout: 1000,
-    });
+    await expect(page.getByTestId("email-valid-icon")).toBeVisible({ timeout: 1000 });
 
     // Assert: Eventually API validates too (but doesn't block UX)
-    await expect(page.getByTestId("email-validated-badge")).toBeVisible({
-      timeout: 7000,
-    });
+    await expect(page.getByTestId("email-validated-badge")).toBeVisible({ timeout: 7000 });
   });
 
   test("should maintain functionality with third-party script failure", async ({ page }) => {

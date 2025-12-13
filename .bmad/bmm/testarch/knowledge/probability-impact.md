@@ -534,13 +534,7 @@ export function evaluateGateFromRisks(risks: TrackedRisk[]): GateResult {
     decision = "PASS";
   }
 
-  const summary = generateGateSummary({
-    decision,
-    blockers,
-    concerns,
-    monitored,
-    documented,
-  });
+  const summary = generateGateSummary({ decision, blockers, concerns, monitored, documented });
 
   return { decision, blockers, concerns, monitored, documented, summary };
 }

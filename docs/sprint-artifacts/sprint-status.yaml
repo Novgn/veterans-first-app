@@ -60,15 +60,15 @@ development_status:
   2-1-create-rider-app-shell-and-navigation: done
   2-2-implement-saved-destinations-management: done
   2-3-implement-3-tap-booking-flow-destination-selection: done
-  2-4-implement-3-tap-booking-flow-time-selection: ready-for-dev
-  2-5-implement-3-tap-booking-flow-confirmation: ready-for-dev
-  2-6-implement-ride-modification-and-cancellation: backlog
-  2-7-implement-preferred-driver-selection: backlog
-  2-8-implement-my-rides-screen-with-upcoming-rides: backlog
-  2-9-implement-driver-info-display: backlog
-  2-10-implement-real-time-driver-tracking: backlog
-  2-11-implement-contact-driver-feature: backlog
-  2-12-implement-rider-profile-management: backlog
+  2-4-implement-3-tap-booking-flow-time-selection: done
+  2-5-implement-3-tap-booking-flow-confirmation: done
+  2-6-implement-ride-modification-and-cancellation: done
+  2-7-implement-preferred-driver-selection: done
+  2-8-implement-my-rides-screen-with-upcoming-rides: done
+  2-9-implement-driver-info-display: done # FR10 implemented as part of Story 2.8
+  2-10-implement-real-time-driver-tracking: done
+  2-11-implement-contact-driver-feature: done
+  2-12-implement-rider-profile-management: done
   2-13-implement-accessibility-preferences: backlog
   2-14-implement-comfort-preferences: backlog
   epic-2-retrospective: optional

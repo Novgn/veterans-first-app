@@ -81,6 +81,38 @@ jest.mock('expo-secure-store', () => ({
   deleteItemAsync: jest.fn(() => Promise.resolve()),
 }));
 
+// Mock expo-image-picker (Story 2.12)
+jest.mock(
+  'expo-image-picker',
+  () => ({
+    requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+    requestCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+    launchImageLibraryAsync: jest.fn(() =>
+      Promise.resolve({
+        canceled: false,
+        assets: [{ uri: 'file://test-image.jpg' }],
+      })
+    ),
+    launchCameraAsync: jest.fn(() =>
+      Promise.resolve({
+        canceled: false,
+        assets: [{ uri: 'file://test-camera.jpg' }],
+      })
+    ),
+  }),
+  { virtual: true }
+);
+
+// Mock expo-image-manipulator (Story 2.12)
+jest.mock(
+  'expo-image-manipulator',
+  () => ({
+    manipulateAsync: jest.fn(() => Promise.resolve({ uri: 'file://resized.jpg' })),
+    SaveFormat: { JPEG: 'jpeg', PNG: 'png' },
+  }),
+  { virtual: true }
+);
+
 // Mock expo-router
 jest.mock('expo-router', () => ({
   useLocalSearchParams: jest.fn(() => ({})),

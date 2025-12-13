@@ -515,9 +515,7 @@ await page.waitForTimeout(2000);
 await expect(page.locator('[data-testid="user-menu"]')).toBeVisible();
 
 // ✅ Good (recommended)
-await expect(page.locator('[data-testid="user-menu"]')).toBeVisible({
-  timeout: 10000,
-});
+await expect(page.locator('[data-testid="user-menu"]')).toBeVisible({ timeout: 10000 });
 ```
 ````
 
@@ -526,7 +524,7 @@ await expect(page.locator('[data-testid="user-menu"]')).toBeVisible({
 ### 1. Use Data Factory for Test User (Lines 23, 32, 41)
 
 **Severity**: P1 (High)
-**Issue**: Hardcoded email 'test@example.com' - maintainability risk
+**Issue**: Hardcoded email `test@example.com` - maintainability risk
 **Fix**: Create factory function for test users
 **Knowledge**: See data-factories.md
 

@@ -303,10 +303,7 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
   test("app remains functional when API returns 500 error", async ({ page, context }) => {
     // Mock API failure
     await context.route("**/api/products", (route) => {
-      route.fulfill({
-        status: 500,
-        body: JSON.stringify({ error: "Internal Server Error" }),
-      });
+      route.fulfill({ status: 500, body: JSON.stringify({ error: "Internal Server Error" }) });
     });
 
     await page.goto("/products");
@@ -328,15 +325,9 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
 
       // Fail first 2 attempts, succeed on 3rd
       if (attemptCount < 3) {
-        route.fulfill({
-          status: 503,
-          body: JSON.stringify({ error: "Service Unavailable" }),
-        });
+        route.fulfill({ status: 503, body: JSON.stringify({ error: "Service Unavailable" }) });
       } else {
-        route.fulfill({
-          status: 200,
-          body: JSON.stringify({ orderId: "12345" }),
-        });
+        route.fulfill({ status: 200, body: JSON.stringify({ orderId: "12345" }) });
       }
     });
 
@@ -396,10 +387,7 @@ test.describe("Reliability NFR: Error Handling & Recovery", () => {
 
     await context.route("**/api/recommendations", (route) => {
       failureCount++;
-      route.fulfill({
-        status: 500,
-        body: JSON.stringify({ error: "Service Error" }),
-      });
+      route.fulfill({ status: 500, body: JSON.stringify({ error: "Service Error" }) });
     });
 
     await page.goto("/product/123");
@@ -570,10 +558,7 @@ test.describe("Maintainability NFR: Observability Validation", () => {
 
     // Trigger error by mocking API failure
     await context.route("**/api/products", (route) => {
-      route.fulfill({
-        status: 500,
-        body: JSON.stringify({ error: "Database Error" }),
-      });
+      route.fulfill({ status: 500, body: JSON.stringify({ error: "Database Error" }) });
     });
 
     await page.goto("/products");

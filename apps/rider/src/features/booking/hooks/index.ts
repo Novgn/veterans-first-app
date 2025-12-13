@@ -1,2 +1,3 @@
 // Booking feature hooks exports
-// Hooks will be added in subsequent stories
+export { useBookRide } from './useBookRide';
+export type { BookingRequest, BookingResponse } from './useBookRide';

@@ -331,11 +331,7 @@ import { createUser } from "./factories";
 test("verbose", async ({ request }) => {
   const token = await getAuthToken();
   const user = await createUser();
-  const response = await apiRequest({
-    request,
-    method: "GET",
-    path: "/api/users",
-  });
+  const response = await apiRequest({ request, method: "GET", path: "/api/users" });
   // Manual wiring everywhere
 });
 

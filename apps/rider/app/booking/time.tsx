@@ -1,25 +1,55 @@
 /**
- * BookingWizard Step 2: Time Selection (Placeholder)
+ * BookingWizard Step 2: Time Selection
  *
  * Second step of the 3-tap booking flow.
  * Users select when they want to be picked up.
  *
- * Full implementation in Story 2.4.
+ * Features:
+ * - ASAP option for immediate rides
+ * - Date selection (Today, Tomorrow, custom)
+ * - Time slots from 8 AM to 6 PM in 30-min increments
+ * - Optional recurring ride configuration
  */
 
 import { router } from 'expo-router';
-import { View, Text, SafeAreaView, Pressable } from 'react-native';
+import { View, Text, SafeAreaView } from 'react-native';
 
 import { Header } from '../../src/components/Header';
-import { StepIndicator } from '../../src/features/booking';
+import { StepIndicator, TimePicker } from '../../src/features/booking';
 import { useBookingStore } from '../../src/stores/bookingStore';
 
 export default function BookingStep2() {
-  const { dropoffDestination, setCurrentStep } = useBookingStore();
+  const {
+    dropoffDestination,
+    selectedDate,
+    selectedTime,
+    isRecurring,
+    recurringFrequency,
+    recurringDays,
+    recurringEndDate,
+    setCurrentStep,
+    setSelectedDate,
+    setSelectedTime,
+    setIsRecurring,
+    setRecurringFrequency,
+    setRecurringDays,
+    setRecurringEndDate,
+  } = useBookingStore();
 
   const handleBack = () => {
     setCurrentStep(1);
     router.back();
+  };
+
+  const handleTimeSelect = (time: string | null) => {
+    setSelectedTime(time);
+    // Advance to Step 3 (Confirmation)
+    setCurrentStep(3);
+    router.push('/booking/confirm');
+  };
+
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
   };
 
   return (
@@ -28,14 +58,12 @@ export default function BookingStep2() {
       <View className="flex-1 px-6 pt-4">
         <StepIndicator currentStep={2} totalSteps={3} />
 
-        <Text className="mt-6 text-2xl font-bold text-foreground">
-          When do you need to be picked up?
-        </Text>
+        <Text className="mt-6 text-2xl font-bold text-foreground">When do you need a ride?</Text>
         <Text className="mt-1 text-lg text-gray-700">Select your pickup time</Text>
 
         {/* Show selected destination */}
         {dropoffDestination && (
-          <View className="mt-6 rounded-xl bg-gray-100 p-4">
+          <View className="mt-4 rounded-xl bg-gray-100 p-4">
             <Text className="text-sm font-medium text-gray-500">Going to:</Text>
             <Text className="mt-1 text-lg font-semibold text-foreground">
               {dropoffDestination.name}
@@ -44,19 +72,22 @@ export default function BookingStep2() {
           </View>
         )}
 
-        {/* Placeholder content */}
-        <View className="mt-8 flex-1 items-center justify-center">
-          <Text className="text-center text-lg text-gray-500">
-            Time selection will be available in the next update.
-          </Text>
-          <Pressable
-            onPress={handleBack}
-            className="mt-4 rounded-xl bg-primary px-6 py-3"
-            accessibilityLabel="Go back to destination selection"
-            accessibilityRole="button">
-            <Text className="text-lg font-bold text-white">Go Back</Text>
-          </Pressable>
-        </View>
+        {/* Time Selection */}
+        <TimePicker
+          onTimeSelect={handleTimeSelect}
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+          isRecurring={isRecurring}
+          recurringFrequency={recurringFrequency}
+          recurringDays={recurringDays}
+          recurringEndDate={recurringEndDate}
+          onDateSelect={handleDateSelect}
+          onRecurringToggle={setIsRecurring}
+          onFrequencyChange={setRecurringFrequency}
+          onDaysChange={setRecurringDays}
+          onEndDateChange={setRecurringEndDate}
+          className="mt-4"
+        />
       </View>
     </SafeAreaView>
   );

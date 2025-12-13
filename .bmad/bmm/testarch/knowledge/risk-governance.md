@@ -581,12 +581,7 @@ export function generateTraceabilityReport(matrix: CoverageMatrix[]): string {
 ```typescript
 // Define acceptance criteria
 const criteria: AcceptanceCriterion[] = [
-  {
-    id: "AC-001",
-    story: "US-123",
-    criterion: "User can login with email",
-    priority: "P0",
-  },
+  { id: "AC-001", story: "US-123", criterion: "User can login with email", priority: "P0" },
   {
     id: "AC-002",
     story: "US-123",
@@ -599,12 +594,7 @@ const criteria: AcceptanceCriterion[] = [
     criterion: "User receives password reset email",
     priority: "P1",
   },
-  {
-    id: "AC-004",
-    story: "US-125",
-    criterion: "User can update profile",
-    priority: "P2",
-  }, // NO TEST
+  { id: "AC-004", story: "US-125", criterion: "User can update profile", priority: "P2" }, // NO TEST
 ];
 
 // Extract tests

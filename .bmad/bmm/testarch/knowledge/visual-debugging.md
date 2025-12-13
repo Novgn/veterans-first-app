@@ -180,11 +180,7 @@ type DebugFixture = {
 export const test = base.extend<DebugFixture>({
   captureDebugArtifacts: async ({ page }, use, testInfo) => {
     const consoleLogs: string[] = [];
-    const networkRequests: Array<{
-      url: string;
-      status: number;
-      method: string;
-    }> = [];
+    const networkRequests: Array<{ url: string; status: number; method: string }> = [];
 
     // Capture console messages
     page.on("console", (msg) => {
@@ -245,9 +241,7 @@ test("payment flow captures debug artifacts on failure", async ({
 
   // Test will automatically capture console + network on failure
   await page.getByTestId("submit-payment").click();
-  await expect(page.getByTestId("success-message")).toBeVisible({
-    timeout: 5000,
-  });
+  await expect(page.getByTestId("success-message")).toBeVisible({ timeout: 5000 });
 
   // If this fails, console.log and network.json saved automatically
 });

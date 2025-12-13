@@ -33,6 +33,10 @@ describe("Database Schema", () => {
       expect(columnNames).toContain("lastName");
       expect(columnNames).toContain("role");
       expect(columnNames).toContain("profilePhotoUrl");
+      // Emergency contact fields (FR71 - Story 2.12)
+      expect(columnNames).toContain("emergencyContactName");
+      expect(columnNames).toContain("emergencyContactPhone");
+      expect(columnNames).toContain("emergencyContactRelationship");
       expect(columnNames).toContain("createdAt");
       expect(columnNames).toContain("updatedAt");
     });
@@ -48,6 +52,10 @@ describe("Database Schema", () => {
         lastName: "Doe",
         role: "rider",
         profilePhotoUrl: null,
+        // Emergency contact fields (FR71 - Story 2.12)
+        emergencyContactName: "Jane Doe",
+        emergencyContactPhone: "+15559876543",
+        emergencyContactRelationship: "spouse",
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -113,6 +121,7 @@ describe("Database Schema", () => {
       expect(columnNames).toContain("id");
       expect(columnNames).toContain("riderId");
       expect(columnNames).toContain("driverId");
+      expect(columnNames).toContain("preferredDriverId");
       expect(columnNames).toContain("status");
       expect(columnNames).toContain("pickupAddress");
       expect(columnNames).toContain("dropoffAddress");
@@ -126,6 +135,7 @@ describe("Database Schema", () => {
         id: "123e4567-e89b-12d3-a456-426614174003",
         riderId: "123e4567-e89b-12d3-a456-426614174000",
         driverId: "123e4567-e89b-12d3-a456-426614174004",
+        preferredDriverId: null,
         status: "pending",
         pickupAddress: "123 Main St",
         dropoffAddress: "456 Oak Ave",

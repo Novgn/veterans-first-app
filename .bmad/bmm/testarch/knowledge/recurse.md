@@ -79,10 +79,7 @@ test("should poll with assertions", async ({ recurse, apiRequest }) => {
   // Poll with assertions in predicate
   await recurse(
     async () => {
-      const { body } = await apiRequest({
-        method: "GET",
-        path: "/api/events/123",
-      });
+      const { body } = await apiRequest({ method: "GET", path: "/api/events/123" });
       return body;
     },
     (event) => {
@@ -187,11 +184,7 @@ test("end-to-end polling", async ({ apiRequest, recurse }) => {
 
   // Poll until import completes
   const importResult = await recurse(
-    () =>
-      apiRequest({
-        method: "GET",
-        path: `/api/data-import/${createResp.importId}`,
-      }),
+    () => apiRequest({ method: "GET", path: `/api/data-import/${createResp.importId}` }),
     (response) => {
       const { status, rowsImported } = response.body;
       return status === "completed" && rowsImported > 0;

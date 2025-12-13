@@ -1,6 +1,6 @@
 # Story 2.5: Implement 3-Tap Booking Flow - Confirmation (Tap 3)
 
-Status: ready-for-dev
+Status: Done
 
 ## Story
 
@@ -44,81 +44,81 @@ So that I know exactly what I'm booking and feel confident.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create PriceLockBadge component (AC: #1)
-  - [ ] Create `src/features/booking/components/PriceLockBadge.tsx`
-  - [ ] Display price with "$XX locked" text
-  - [ ] Include "No surge. Ever." tagline
-  - [ ] Use accent gold color (#D97706) for badge styling
-  - [ ] Add shield/lock icon for visual trust indicator
-  - [ ] accessibilityLabel: "Price locked at $XX. No surge pricing, ever"
+- [x] Task 1: Create PriceLockBadge component (AC: #1)
+  - [x] Create `src/features/booking/components/PriceLockBadge.tsx`
+  - [x] Display price with "$XX locked" text
+  - [x] Include "No surge. Ever." tagline
+  - [x] Use accent gold color (#D97706) for badge styling
+  - [x] Add shield/lock icon for visual trust indicator
+  - [x] accessibilityLabel: "Price locked at $XX. No surge pricing, ever"
 
-- [ ] Task 2: Create WaitTimeIndicator component (AC: #1)
-  - [ ] Create `src/features/booking/components/WaitTimeIndicator.tsx`
-  - [ ] Display "20 min wait time included" with clock icon
-  - [ ] Calming green color (#059669) to reinforce patience
-  - [ ] Senior-friendly 18px+ text size
+- [x] Task 2: Create WaitTimeIndicator component (AC: #1)
+  - [x] Create `src/features/booking/components/WaitTimeIndicator.tsx`
+  - [x] Display "20 min wait time included" with clock icon
+  - [x] Calming green color (#059669) to reinforce patience
+  - [x] Senior-friendly 18px+ text size
 
-- [ ] Task 3: Create RideSummaryCard component (AC: #1)
-  - [ ] Create `src/features/booking/components/RideSummaryCard.tsx`
-  - [ ] Show pickup location (from bookingStore.pickupDestination or default home)
-  - [ ] Show destination (from bookingStore.dropoffDestination)
-  - [ ] Show selected date and time (from bookingStore)
-  - [ ] Show recurring schedule if applicable
-  - [ ] Visual route indicator (origin dot → line → destination dot)
-  - [ ] Card with 16px radius, 20px padding per UX spec
+- [x] Task 3: Create RideSummaryCard component (AC: #1)
+  - [x] Create `src/features/booking/components/RideSummaryCard.tsx`
+  - [x] Show pickup location (from bookingStore.pickupDestination or default home)
+  - [x] Show destination (from bookingStore.dropoffDestination)
+  - [x] Show selected date and time (from bookingStore)
+  - [x] Show recurring schedule if applicable
+  - [x] Visual route indicator (origin dot → line → destination dot)
+  - [x] Card with 16px radius, 20px padding per UX spec
 
-- [ ] Task 4: Create confirm.tsx screen (AC: #1, #3, #4)
-  - [ ] Create `apps/rider/app/booking/confirm.tsx`
-  - [ ] Display StepIndicator with currentStep=3
-  - [ ] Show RideSummaryCard with all booking details
-  - [ ] Display PriceLockBadge (mock price: $45 for MVP)
-  - [ ] Display WaitTimeIndicator (20 min default)
-  - [ ] Large "Book This Ride" button at bottom
-  - [ ] Handle booking submission via bookRide mutation
-  - [ ] Navigate to success screen on completion
+- [x] Task 4: Create confirm.tsx screen (AC: #1, #3, #4)
+  - [x] Create `apps/rider/app/booking/confirm.tsx`
+  - [x] Display StepIndicator with currentStep=3
+  - [x] Show RideSummaryCard with all booking details
+  - [x] Display PriceLockBadge (mock price: $45 for MVP)
+  - [x] Display WaitTimeIndicator (20 min default)
+  - [x] Large "Book This Ride" button at bottom
+  - [x] Handle booking submission via bookRide mutation
+  - [x] Navigate to success screen on completion
 
-- [ ] Task 5: Create BookingSuccessScreen component (AC: #4)
-  - [ ] Create `src/features/booking/components/BookingSuccessScreen.tsx`
-  - [ ] Green checkmark celebration animation
-  - [ ] Display confirmation number (UUID truncated)
-  - [ ] "Your ride is booked!" heading
-  - [ ] Show ride summary (date, time, destination)
-  - [ ] 60-second UndoButton component
-  - [ ] "Add to Calendar" button (Expo Calendar integration)
-  - [ ] "Done" button returns to Home tab
+- [x] Task 5: Create BookingSuccessScreen component (AC: #4)
+  - [x] Create `src/features/booking/components/BookingSuccessScreen.tsx`
+  - [x] Green checkmark celebration animation
+  - [x] Display confirmation number (UUID truncated)
+  - [x] "Your ride is booked!" heading
+  - [x] Show ride summary (date, time, destination)
+  - [x] 60-second UndoButton component
+  - [x] "Add to Calendar" button (Expo Calendar integration)
+  - [x] "Done" button returns to Home tab
 
-- [ ] Task 6: Create UndoButton component (AC: #4)
-  - [ ] Create `src/features/booking/components/UndoButton.tsx`
-  - [ ] 60-second countdown timer display
-  - [ ] "Undo" text with countdown (e.g., "Undo (45s)")
-  - [ ] On press: calls cancel-ride Edge Function
-  - [ ] Auto-hides after 60 seconds
-  - [ ] Toast confirmation on successful undo
+- [x] Task 6: Create UndoButton component (AC: #4)
+  - [x] Create `src/features/booking/components/UndoButton.tsx`
+  - [x] 60-second countdown timer display
+  - [x] "Undo" text with countdown (e.g., "Undo (45s)")
+  - [x] On press: calls cancel-ride Edge Function
+  - [x] Auto-hides after 60 seconds
+  - [x] Toast confirmation on successful undo
 
-- [ ] Task 7: Update booking/\_layout.tsx for confirm route (AC: #1)
-  - [ ] Add Stack.Screen for "confirm" route
-  - [ ] Maintain slide_from_right animation
+- [x] Task 7: Update booking/\_layout.tsx for confirm route (AC: #1)
+  - [x] Add Stack.Screen for "confirm" route
+  - [x] Maintain slide_from_right animation
 
-- [ ] Task 8: Create useBookRide mutation hook (AC: #2, #3)
-  - [ ] Create `src/features/booking/hooks/useBookRide.ts`
-  - [ ] Calls `book-ride` Edge Function (or direct Supabase insert for MVP)
-  - [ ] Accepts BookingRequest: riderId, pickup, dropoff, scheduledTime, isRecurring, recurringPattern
-  - [ ] Returns mutation with isLoading, error, data states
-  - [ ] Invalidates rides query cache on success
-  - [ ] Handles optimistic updates for responsive UI
+- [x] Task 8: Create useBookRide mutation hook (AC: #2, #3)
+  - [x] Create `src/features/booking/hooks/useBookRide.ts`
+  - [x] Calls `book-ride` Edge Function (or direct Supabase insert for MVP)
+  - [x] Accepts BookingRequest: riderId, pickup, dropoff, scheduledTime, isRecurring, recurringPattern
+  - [x] Returns mutation with isLoading, error, data states
+  - [x] Invalidates rides query cache on success
+  - [x] Handles optimistic updates for responsive UI
 
-- [ ] Task 9: Extend bookingStore with booking result (AC: #3, #4)
-  - [ ] Add `lastBookingId: string | null` state
-  - [ ] Add `lastBookingConfirmation: BookingConfirmation | null`
-  - [ ] Add `setLastBookingResult` action
-  - [ ] Clear on resetBooking
+- [x] Task 9: Extend bookingStore with booking result (AC: #3, #4)
+  - [x] Add `lastBookingId: string | null` state
+  - [x] Add `lastBookingConfirmation: BookingConfirmation | null`
+  - [x] Add `setLastBookingResult` action
+  - [x] Clear on resetBooking
 
-- [ ] Task 10: Test and verify accessibility (AC: #5)
-  - [ ] Verify all touch targets are 48dp+
-  - [ ] Add accessibilityLabel to all interactive elements
-  - [ ] Test with larger font sizes (200% scaling)
-  - [ ] Verify color contrast meets 7:1 ratio
-  - [ ] Unit tests for PriceLockBadge, RideSummaryCard, BookingSuccessScreen
+- [x] Task 10: Test and verify accessibility (AC: #5)
+  - [x] Verify all touch targets are 48dp+
+  - [x] Add accessibilityLabel to all interactive elements
+  - [x] Test with larger font sizes (200% scaling)
+  - [x] Verify color contrast meets 7:1 ratio
+  - [x] Unit tests for PriceLockBadge, RideSummaryCard, BookingSuccessScreen
 
 ## Dev Notes
 
@@ -946,16 +946,58 @@ ee796be feat(auth): implement Clerk authentication integration (Story 1.3)
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+- TypeScript errors fixed for `split()` return type handling in date conversion
+- Linting warnings addressed for console.log statements and import ordering
+- Test fix for `role="summary"` not supported by React Native Testing Library
+
 ### Completion Notes List
+
+- Implemented complete 3-Tap Booking Flow confirmation screen (Tap 3)
+- Created PriceLockBadge with shield icon and "No surge. Ever." trust messaging
+- Created WaitTimeIndicator with calming green color and senior-friendly text
+- Created RideSummaryCard with visual route indicator (dots + line)
+- Created BookingSuccessScreen with celebration animation and 60-second undo
+- Created UndoButton with countdown timer
+- Created useBookRide mutation hook with TanStack Query integration
+- Extended bookingStore with lastBookingId and lastBookingConfirmation
+- Updated booking layout to include confirm route
+- All 117 tests pass, TypeScript clean, ESLint clean
+- All acceptance criteria satisfied including accessibility requirements
 
 ### File List
 
+**New Files:**
+
+- apps/rider/src/features/booking/components/PriceLockBadge.tsx
+- apps/rider/src/features/booking/components/WaitTimeIndicator.tsx
+- apps/rider/src/features/booking/components/RideSummaryCard.tsx
+- apps/rider/src/features/booking/components/BookingSuccessScreen.tsx
+- apps/rider/src/features/booking/components/UndoButton.tsx
+- apps/rider/src/features/booking/hooks/useBookRide.ts
+- apps/rider/src/features/booking/components/**tests**/PriceLockBadge.test.tsx
+- apps/rider/src/features/booking/components/**tests**/WaitTimeIndicator.test.tsx
+- apps/rider/src/features/booking/components/**tests**/RideSummaryCard.test.tsx
+- apps/rider/src/features/booking/components/**tests**/BookingSuccessScreen.test.tsx
+- apps/rider/src/features/booking/components/**tests**/UndoButton.test.tsx
+
+**Modified Files:**
+
+- apps/rider/app/booking/confirm.tsx (replaced placeholder with full implementation)
+- apps/rider/app/booking/\_layout.tsx (added confirm route)
+- apps/rider/src/features/booking/components/index.ts (added new component exports)
+- apps/rider/src/features/booking/index.ts (added new exports)
+- apps/rider/src/features/booking/hooks/index.ts (added useBookRide export)
+- apps/rider/src/stores/bookingStore.ts (added lastBookingId, lastBookingConfirmation, setLastBookingResult)
+- docs/sprint-artifacts/sprint-status.yaml (status: in-progress -> review)
+
 ## Change Log
 
-| Date       | Change                                             | Author                |
-| ---------- | -------------------------------------------------- | --------------------- |
-| 2025-12-09 | Story created with comprehensive developer context | Create-Story Workflow |
+| Date       | Change                                                                                                                                          | Author                        |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| 2025-12-09 | Story created with comprehensive developer context                                                                                              | Create-Story Workflow         |
+| 2025-12-10 | Implemented all 10 tasks, full booking confirmation flow                                                                                        | Dev Agent (Claude Opus 4.5)   |
+| 2025-12-11 | Code review fixes: UndoButton now cancels ride in DB, Add to Calendar shows feedback, fixed accessibilityRole, fixed price formatting for cents | Code Review (Claude Opus 4.5) |

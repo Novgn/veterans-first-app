@@ -32,6 +32,11 @@ export interface SavedDestinationRef {
   is_default_dropoff: boolean;
 }
 
+/**
+ * Recurring ride frequency type
+ */
+export type RecurringFrequency = 'daily' | 'weekly' | 'custom' | null;
+
 interface BookingState {
   // Booking flow state
   currentStep: number;
@@ -41,8 +46,22 @@ interface BookingState {
   selectedTime: string | null;
   notes: string;
 
+  // Recurring ride state
+  isRecurring: boolean;
+  recurringFrequency: RecurringFrequency;
+  recurringDays: string[]; // e.g., ['mon', 'wed', 'fri']
+  recurringEndDate: string | null; // null = ongoing
+
+  // Preferred driver state (Story 2.7)
+  preferredDriverId: string | null;
+  preferredDriverName: string | null;
+
   // Saved destinations cache for booking wizard
   savedDestinations: Destination[];
+
+  // Booking result state (Story 2.5)
+  lastBookingId: string | null;
+  lastBookingConfirmation: string | null;
 
   // Actions
   setCurrentStep: (step: number) => void;
@@ -53,6 +72,18 @@ interface BookingState {
   setNotes: (notes: string) => void;
   loadSavedDestinations: (destinations: SavedDestinationRef[]) => void;
   resetBooking: () => void;
+
+  // Recurring ride actions
+  setIsRecurring: (isRecurring: boolean) => void;
+  setRecurringFrequency: (frequency: RecurringFrequency) => void;
+  setRecurringDays: (days: string[]) => void;
+  setRecurringEndDate: (date: string | null) => void;
+
+  // Preferred driver action (Story 2.7)
+  setPreferredDriver: (driverId: string | null, driverName: string | null) => void;
+
+  // Booking result action (Story 2.5)
+  setLastBookingResult: (id: string, confirmation: string) => void;
 }
 
 const initialState = {
@@ -63,6 +94,17 @@ const initialState = {
   selectedTime: null,
   notes: '',
   savedDestinations: [],
+  // Recurring ride state
+  isRecurring: false,
+  recurringFrequency: null as RecurringFrequency,
+  recurringDays: [] as string[],
+  recurringEndDate: null as string | null,
+  // Preferred driver state (Story 2.7)
+  preferredDriverId: null as string | null,
+  preferredDriverName: null as string | null,
+  // Booking result state (Story 2.5)
+  lastBookingId: null as string | null,
+  lastBookingConfirmation: null as string | null,
 };
 
 /**
@@ -103,7 +145,32 @@ export const useBookingStore = create<BookingState>()(
           selectedDate: null,
           selectedTime: null,
           notes: '',
+          // Reset recurring ride state
+          isRecurring: false,
+          recurringFrequency: null,
+          recurringDays: [],
+          recurringEndDate: null,
+          // Reset preferred driver state (Story 2.7)
+          preferredDriverId: null,
+          preferredDriverName: null,
+          // Reset booking result state (Story 2.5)
+          lastBookingId: null,
+          lastBookingConfirmation: null,
           // Note: savedDestinations is NOT reset to preserve cache
+        }),
+      // Recurring ride actions
+      setIsRecurring: (isRecurring) => set({ isRecurring }),
+      setRecurringFrequency: (frequency) => set({ recurringFrequency: frequency }),
+      setRecurringDays: (days) => set({ recurringDays: days }),
+      setRecurringEndDate: (date) => set({ recurringEndDate: date }),
+      // Preferred driver action (Story 2.7)
+      setPreferredDriver: (driverId, driverName) =>
+        set({ preferredDriverId: driverId, preferredDriverName: driverName }),
+      // Booking result action (Story 2.5)
+      setLastBookingResult: (id, confirmation) =>
+        set({
+          lastBookingId: id,
+          lastBookingConfirmation: confirmation,
         }),
     }),
     {

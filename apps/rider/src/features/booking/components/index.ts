@@ -1,6 +1,20 @@
 // Booking feature component exports
 export { AddressSearchInput } from './AddressSearchInput';
+export { ASAPButton } from './ASAPButton';
+export { BookingSuccessScreen } from './BookingSuccessScreen';
 export { CurrentLocationButton } from './CurrentLocationButton';
+export { DateSelector } from './DateSelector';
+export { DaySelector } from './DaySelector';
 export { DestinationPicker } from './DestinationPicker';
+export { EndDateSelector } from './EndDateSelector';
+export { FrequencySelector } from './FrequencySelector';
+export type { RecurringFrequency } from './FrequencySelector';
+export { PriceLockBadge } from './PriceLockBadge';
+export { RecurringRideToggle } from './RecurringRideToggle';
+export { RideSummaryCard } from './RideSummaryCard';
 export { SelectableDestinationCard } from './SelectableDestinationCard';
 export { StepIndicator } from './StepIndicator';
+export { TimePicker } from './TimePicker';
+export { TimeSlot } from './TimeSlot';
+export { UndoButton } from './UndoButton';
+export { WaitTimeIndicator } from './WaitTimeIndicator';

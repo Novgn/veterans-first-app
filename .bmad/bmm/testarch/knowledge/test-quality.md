@@ -69,10 +69,7 @@ test("user can view dashboard", async ({ page, apiRequest }) => {
 // Cypress equivalent
 describe("Dashboard", () => {
   it("should display user dashboard", () => {
-    const user = createUser({
-      email: "test@example.com",
-      hasSeenWelcome: true,
-    });
+    const user = createUser({ email: "test@example.com", hasSeenWelcome: true });
 
     // Setup via task (fast, controlled)
     cy.task("db:seed", { users: [user] });

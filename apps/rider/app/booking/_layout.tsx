@@ -29,6 +29,12 @@ export default function BookingLayout() {
           title: 'Select Time',
         }}
       />
+      <Stack.Screen
+        name="confirm"
+        options={{
+          title: 'Confirm Booking',
+        }}
+      />
     </Stack>
   );
 }

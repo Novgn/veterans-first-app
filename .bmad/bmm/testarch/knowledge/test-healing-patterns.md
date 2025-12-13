@@ -494,10 +494,7 @@ test("heal network failure with route mocking", async ({ page, context }) => {
 test("heal 500 error with error state mocking", async ({ page, context }) => {
   // Mock API failure scenario
   await context.route("**/api/products", (route) => {
-    route.fulfill({
-      status: 500,
-      body: JSON.stringify({ error: "Internal Server Error" }),
-    });
+    route.fulfill({ status: 500, body: JSON.stringify({ error: "Internal Server Error" }) });
   });
 
   await page.goto("/products");

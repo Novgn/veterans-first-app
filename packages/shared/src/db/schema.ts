@@ -36,6 +36,10 @@ export const users = pgTable(
     lastName: text("last_name").notNull(),
     role: text("role").notNull(),
     profilePhotoUrl: text("profile_photo_url"),
+    // Emergency contact fields (FR71 - Story 2.12)
+    emergencyContactName: text("emergency_contact_name"),
+    emergencyContactPhone: text("emergency_contact_phone"),
+    emergencyContactRelationship: text("emergency_contact_relationship"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
@@ -62,15 +66,53 @@ export const auditLogs = pgTable("audit_logs", {
 });
 
 // Status check constraints
+// Ride status progression: pending (booked) -> confirmed -> assigned -> in_progress (en route) -> arrived -> completed
 const rideStatusCheck = check(
   "ride_status_check",
-  sql`status IN ('pending', 'assigned', 'in_progress', 'completed', 'cancelled')`
+  sql`status IN ('pending', 'confirmed', 'assigned', 'in_progress', 'arrived', 'completed', 'cancelled')`
 );
 
 const familyLinkStatusCheck = check(
   "family_link_status_check",
   sql`status IN ('pending', 'approved', 'revoked')`
 );
+
+/**
+ * Driver Profiles table - FR6: Vehicle and driver info for preferred driver feature
+ * Stores vehicle information and driver-specific data
+ */
+export const driverProfiles = pgTable("driver_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .unique()
+    .notNull(),
+  vehicleMake: text("vehicle_make").notNull(),
+  vehicleModel: text("vehicle_model").notNull(),
+  vehicleYear: text("vehicle_year"),
+  vehicleColor: text("vehicle_color").notNull(),
+  vehiclePlate: text("vehicle_plate").notNull(),
+  bio: text("bio"),
+  yearsExperience: text("years_experience"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+/**
+ * Rider Preferences table - FR6: Preferred driver settings
+ * Stores rider's default preferred driver preference
+ */
+export const riderPreferences = pgTable("rider_preferences", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .unique()
+    .notNull(),
+  defaultPreferredDriverId: uuid("default_preferred_driver_id").references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
 
 /**
  * Rides table - Core ride data for RBAC testing and future epics
@@ -84,6 +126,7 @@ export const rides = pgTable(
       .notNull()
       .references(() => users.id),
     driverId: uuid("driver_id").references(() => users.id),
+    preferredDriverId: uuid("preferred_driver_id").references(() => users.id),
     status: text("status").notNull(),
     pickupAddress: text("pickup_address").notNull(),
     dropoffAddress: text("dropoff_address").notNull(),
@@ -151,3 +194,27 @@ export type FamilyLink = InferSelectModel<typeof familyLinks>;
 export type NewFamilyLink = InferInsertModel<typeof familyLinks>;
 export type SavedDestination = InferSelectModel<typeof savedDestinations>;
 export type NewSavedDestination = InferInsertModel<typeof savedDestinations>;
+export type DriverProfile = InferSelectModel<typeof driverProfiles>;
+export type NewDriverProfile = InferInsertModel<typeof driverProfiles>;
+export type RiderPreference = InferSelectModel<typeof riderPreferences>;
+export type NewRiderPreference = InferInsertModel<typeof riderPreferences>;
+
+/**
+ * Driver Locations table - FR11: Real-time driver tracking
+ * Stores GPS location data for drivers during active rides
+ * Used for rider tracking and fleet management
+ */
+export const driverLocations = pgTable("driver_locations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  driverId: uuid("driver_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }).notNull(),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }).notNull(),
+  heading: decimal("heading", { precision: 5, scale: 2 }), // Direction in degrees (0-360)
+  accuracy: decimal("accuracy", { precision: 6, scale: 2 }), // GPS accuracy in meters
+  recordedAt: timestamp("recorded_at", { withTimezone: true }).defaultNow(),
+});
+
+export type DriverLocation = InferSelectModel<typeof driverLocations>;
+export type NewDriverLocation = InferInsertModel<typeof driverLocations>;

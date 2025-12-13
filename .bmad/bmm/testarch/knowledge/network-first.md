@@ -220,9 +220,7 @@ test("order times out after 10 seconds", async ({ page }) => {
   await page.click('[data-testid="submit-order"]');
 
   // App should show timeout message after configured timeout
-  await expect(page.getByText("Request timed out")).toBeVisible({
-    timeout: 15000,
-  });
+  await expect(page.getByText("Request timed out")).toBeVisible({ timeout: 15000 });
 });
 
 // Test partial data response
