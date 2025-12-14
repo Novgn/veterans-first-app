@@ -5,8 +5,8 @@
  * Story 2.7: Implement Preferred Driver Selection
  */
 
-import { renderHook, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
 import { driverHistoryKeys, useDriverHistory } from '../useDriverHistory';

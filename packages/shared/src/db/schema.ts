@@ -100,8 +100,8 @@ export const driverProfiles = pgTable("driver_profiles", {
 });
 
 /**
- * Rider Preferences table - FR6: Preferred driver settings
- * Stores rider's default preferred driver preference
+ * Rider Preferences table - FR6: Preferred driver settings, FR72: Accessibility preferences
+ * Stores rider's default preferred driver preference and accessibility needs
  */
 export const riderPreferences = pgTable("rider_preferences", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -110,6 +110,17 @@ export const riderPreferences = pgTable("rider_preferences", {
     .unique()
     .notNull(),
   defaultPreferredDriverId: uuid("default_preferred_driver_id").references(() => users.id),
+  // Accessibility preferences (FR72 - Story 2.13)
+  mobilityAid: text("mobility_aid"), // 'none', 'cane', 'walker', 'manual_wheelchair', 'power_wheelchair'
+  needsDoorAssistance: boolean("needs_door_assistance").default(false),
+  needsPackageAssistance: boolean("needs_package_assistance").default(false),
+  extraVehicleSpace: boolean("extra_vehicle_space").default(false),
+  specialEquipmentNotes: text("special_equipment_notes"),
+  // Comfort preferences (FR73 - Story 2.14)
+  comfortTemperature: text("comfort_temperature"), // 'cool', 'normal', 'warm'
+  conversationPreference: text("conversation_preference"), // 'quiet', 'some', 'chatty'
+  musicPreference: text("music_preference"), // 'none', 'soft', 'any'
+  otherNotes: text("other_notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });

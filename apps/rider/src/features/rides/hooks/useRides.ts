@@ -20,8 +20,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { useSupabase } from '../../../lib/supabase';
-import type { Ride } from './useRide';
 import type { RideWithDriver, DriverInfo } from '../components/RideCard';
+
+import type { Ride } from './useRide';
 
 /**
  * Raw ride data with driver join from database

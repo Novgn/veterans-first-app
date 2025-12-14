@@ -8,14 +8,13 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
+import { useDriverHistory } from '../../hooks/useDriverHistory';
 import { DriverSelectionSheet } from '../DriverSelectionSheet';
 
 // Mock the hooks
 jest.mock('../../hooks/useDriverHistory', () => ({
   useDriverHistory: jest.fn(),
 }));
-
-import { useDriverHistory } from '../../hooks/useDriverHistory';
 
 const mockUseDriverHistory = useDriverHistory as jest.MockedFunction<typeof useDriverHistory>;
 

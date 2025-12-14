@@ -6,8 +6,8 @@
 
 import { render, screen } from '@testing-library/react-native';
 
-import { RideDetailCard } from '../RideDetailCard';
 import type { Ride } from '../../hooks/useRide';
+import { RideDetailCard } from '../RideDetailCard';
 
 describe('RideDetailCard', () => {
   const mockRide: Ride = {

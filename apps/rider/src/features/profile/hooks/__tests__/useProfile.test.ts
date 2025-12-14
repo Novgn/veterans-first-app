@@ -5,8 +5,8 @@
  * Story 2.12: Implement Rider Profile Management (FR71)
  */
 
-import { renderHook, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
 import { profileKeys, useProfile } from '../useProfile';

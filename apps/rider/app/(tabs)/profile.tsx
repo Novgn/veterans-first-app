@@ -31,7 +31,12 @@ import {
 import { Header } from '../../src/components/Header';
 import { DriverSelectionSheet, usePreferredDriver } from '../../src/features/drivers';
 import { EditProfileSheet, type EditProfileData } from '../../src/features/profile/components';
-import { useProfile, useUpdateProfile } from '../../src/features/profile/hooks';
+import {
+  useProfile,
+  useUpdateProfile,
+  useAccessibilityPreferences,
+  useComfortPreferences,
+} from '../../src/features/profile/hooks';
 
 export default function Profile() {
   const { signOut, userId } = useAuth();
@@ -42,6 +47,12 @@ export default function Profile() {
   // Fetch user's profile data - Story 2.12
   const { data: profile, isLoading: isLoadingProfile } = useProfile();
   const updateProfile = useUpdateProfile();
+
+  // Fetch user's accessibility preferences - Story 2.13
+  const { data: accessibilityPrefs } = useAccessibilityPreferences();
+
+  // Fetch user's comfort preferences - Story 2.14
+  const { data: comfortPrefs } = useComfortPreferences();
 
   // Fetch user's default preferred driver - Story 2.7
   const {
@@ -193,27 +204,99 @@ export default function Profile() {
             </Pressable>
           </Link>
 
-          {/* Accessibility Preferences - Story 2.13 placeholder */}
-          <View className="h-[56px] flex-row items-center justify-between border-b border-gray-100 px-4 opacity-50">
-            <View className="flex-row items-center">
-              <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-purple-100">
-                <Ionicons name="accessibility" size={20} color="#7C3AED" />
+          {/* Accessibility Preferences - Story 2.13 */}
+          <Link href="/profile/accessibility-preferences" asChild>
+            <Pressable
+              className="min-h-[56px] flex-row items-center justify-between border-b border-gray-100 px-4"
+              accessibilityLabel="Accessibility Preferences"
+              accessibilityRole="button"
+              accessibilityHint="Navigate to accessibility preferences">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-purple-100">
+                  <Ionicons name="accessibility" size={20} color="#7C3AED" />
+                </View>
+                <View>
+                  <Text className="text-lg font-medium text-foreground">
+                    Accessibility Preferences
+                  </Text>
+                  {accessibilityPrefs?.mobilityAid && accessibilityPrefs.mobilityAid !== 'none' ? (
+                    <Text className="text-sm text-gray-500">
+                      {accessibilityPrefs.mobilityAid
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (c) => c.toUpperCase())}
+                      {accessibilityPrefs.needsDoorAssistance && ' + door help'}
+                    </Text>
+                  ) : accessibilityPrefs?.needsDoorAssistance ||
+                    accessibilityPrefs?.needsPackageAssistance ||
+                    accessibilityPrefs?.extraVehicleSpace ? (
+                    <Text className="text-sm text-gray-500">Assistance configured</Text>
+                  ) : null}
+                </View>
               </View>
-              <Text className="text-lg font-medium text-gray-600">Accessibility Preferences</Text>
-            </View>
-            <Text className="text-sm text-gray-400">Coming Soon</Text>
-          </View>
+              <View className="flex-row items-center">
+                {(accessibilityPrefs?.mobilityAid ||
+                  accessibilityPrefs?.needsDoorAssistance ||
+                  accessibilityPrefs?.needsPackageAssistance ||
+                  accessibilityPrefs?.extraVehicleSpace) && (
+                  <Ionicons name="checkmark-circle" size={20} color="#059669" />
+                )}
+                <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+              </View>
+            </Pressable>
+          </Link>
 
-          {/* Comfort Preferences - Story 2.14 placeholder */}
-          <View className="h-[56px] flex-row items-center justify-between border-b border-gray-100 px-4 opacity-50">
-            <View className="flex-row items-center">
-              <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-green-100">
-                <Ionicons name="heart" size={20} color="#059669" />
+          {/* Comfort Preferences - Story 2.14 */}
+          <Link href="/profile/comfort-preferences" asChild>
+            <Pressable
+              className="min-h-[56px] flex-row items-center justify-between border-b border-gray-100 px-4"
+              accessibilityLabel="Comfort Preferences"
+              accessibilityRole="button"
+              accessibilityHint="Navigate to comfort preferences">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                  <Ionicons name="heart" size={20} color="#059669" />
+                </View>
+                <View>
+                  <Text className="text-lg font-medium text-foreground">Comfort Preferences</Text>
+                  {comfortPrefs?.comfortTemperature ||
+                  comfortPrefs?.conversationPreference ||
+                  comfortPrefs?.musicPreference ? (
+                    <Text className="text-sm text-gray-500">
+                      {[
+                        comfortPrefs.comfortTemperature &&
+                          comfortPrefs.comfortTemperature.charAt(0).toUpperCase() +
+                            comfortPrefs.comfortTemperature.slice(1),
+                        comfortPrefs.conversationPreference === 'quiet'
+                          ? 'Quiet'
+                          : comfortPrefs.conversationPreference === 'chatty'
+                            ? 'Chatty'
+                            : comfortPrefs.conversationPreference === 'some'
+                              ? 'Some chat'
+                              : null,
+                        comfortPrefs.musicPreference === 'none'
+                          ? 'No music'
+                          : comfortPrefs.musicPreference === 'soft'
+                            ? 'Soft music'
+                            : comfortPrefs.musicPreference === 'any'
+                              ? 'Any music'
+                              : null,
+                      ]
+                        .filter(Boolean)
+                        .join(' • ')}
+                    </Text>
+                  ) : null}
+                </View>
               </View>
-              <Text className="text-lg font-medium text-gray-600">Comfort Preferences</Text>
-            </View>
-            <Text className="text-sm text-gray-400">Coming Soon</Text>
-          </View>
+              <View className="flex-row items-center">
+                {(comfortPrefs?.comfortTemperature ||
+                  comfortPrefs?.conversationPreference ||
+                  comfortPrefs?.musicPreference) && (
+                  <Ionicons name="checkmark-circle" size={20} color="#059669" />
+                )}
+                <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+              </View>
+            </Pressable>
+          </Link>
 
           {/* Family Access - Epic 4 placeholder */}
           <View className="h-[56px] flex-row items-center justify-between border-b border-gray-100 px-4 opacity-50">

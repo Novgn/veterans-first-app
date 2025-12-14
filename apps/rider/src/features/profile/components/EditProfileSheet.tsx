@@ -12,6 +12,7 @@
  * - Accessibility support
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import {
   View,
@@ -24,14 +25,13 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
-import { ProfilePhotoUpload } from './ProfilePhotoUpload';
 import {
   EmergencyContactForm,
   validateEmergencyContact,
   type EmergencyContactFormValues,
 } from './EmergencyContactForm';
+import { ProfilePhotoUpload } from './ProfilePhotoUpload';
 
 interface EditProfileSheetProps {
   /** Whether the sheet is visible */

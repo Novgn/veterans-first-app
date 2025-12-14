@@ -25,6 +25,7 @@ import { useState } from 'react';
 import { View, Text, SafeAreaView, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 
 import { Header } from '../../src/components/Header';
+import { DriverCard } from '../../src/features/drivers';
 import {
   useRide,
   useCancelRide,
@@ -33,7 +34,6 @@ import {
   ContactDriverSheet,
   RideDetailCard,
 } from '../../src/features/rides';
-import { DriverCard } from '../../src/features/drivers';
 import {
   DriverTrackingMap,
   ETADisplay,

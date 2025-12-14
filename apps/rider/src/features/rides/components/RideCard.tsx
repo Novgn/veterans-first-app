@@ -19,8 +19,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Pressable, Image } from 'react-native';
 
-import { StatusTimeline, type RideStatus } from './StatusTimeline';
 import type { Ride } from '../hooks/useRide';
+
+import { StatusTimeline, type RideStatus } from './StatusTimeline';
 
 /**
  * Driver information included with ride data

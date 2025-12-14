@@ -10,6 +10,7 @@ import { useUser } from '@clerk/clerk-expo';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useSupabase } from '../../../lib/supabase';
+
 import { profileKeys, type RiderProfile } from './useProfile';
 
 // Input type for profile updates

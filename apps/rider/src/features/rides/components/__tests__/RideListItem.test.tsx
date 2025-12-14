@@ -6,8 +6,8 @@
 
 import { render, screen, fireEvent } from '@testing-library/react-native';
 
-import { RideListItem } from '../RideListItem';
 import type { Ride } from '../../hooks/useRide';
+import { RideListItem } from '../RideListItem';
 
 describe('RideListItem', () => {
   const mockOnPress = jest.fn();

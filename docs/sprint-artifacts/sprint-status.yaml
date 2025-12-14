@@ -69,8 +69,8 @@ development_status:
   2-10-implement-real-time-driver-tracking: done
   2-11-implement-contact-driver-feature: done
   2-12-implement-rider-profile-management: done
-  2-13-implement-accessibility-preferences: backlog
-  2-14-implement-comfort-preferences: backlog
+  2-13-implement-accessibility-preferences: done
+  2-14-implement-comfort-preferences: done
   epic-2-retrospective: optional
 
   # ============================================================
@@ -79,10 +79,10 @@ development_status:
   # FR Coverage: FR7, FR8, FR19-FR53, FR74
   # Stories: 19
   # ============================================================
-  epic-3: backlog
-  3-1-create-driver-app-shell-and-navigation: backlog
-  3-2-implement-driver-trip-queue: backlog
-  3-3-implement-accept-decline-rides: backlog
+  epic-3: in-progress
+  3-1-create-driver-app-shell-and-navigation: ready-for-dev
+  3-2-implement-driver-trip-queue: ready-for-dev
+  3-3-implement-accept-decline-rides: ready-for-dev
   3-4-implement-trip-status-transitions: backlog
   3-5-implement-integrated-navigation: backlog
   3-6-implement-driver-contact-rider: backlog

@@ -18,6 +18,7 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -26,7 +27,6 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { useMemo, useCallback } from 'react';
 
 import { Header } from '../../src/components/Header';
 import { useRides, RideCard, RideListItem, type RideWithDriver } from '../../src/features/rides';

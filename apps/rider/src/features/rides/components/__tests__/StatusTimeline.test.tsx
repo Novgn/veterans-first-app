@@ -7,8 +7,8 @@
  * Story 2.8: Implement My Rides Screen with Upcoming Rides
  */
 
-import React from 'react';
 import { render, screen } from '@testing-library/react-native';
+import React from 'react';
 
 import { StatusTimeline } from '../StatusTimeline';
 

@@ -10,8 +10,8 @@
  * Story 2.8: Implement My Rides Screen with Upcoming Rides
  */
 
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react-native';
+import React from 'react';
 
 import { RideCard } from '../RideCard';
 import type { RideWithDriver } from '../RideCard';
