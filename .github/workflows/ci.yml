@@ -85,9 +85,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # Clerk secrets required for Next.js builds (use placeholder for CI if not set)
-      # Placeholder keys follow Clerk's expected format for CI builds only
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2ktcGxhY2Vob2xkZXI' }}
-      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY || 'sk_test_Y2ktcGxhY2Vob2xkZXI' }}
+      # Placeholder must contain "placeholder" so layout.tsx can detect CI builds
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_placeholder_ci_build' }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY || 'sk_test_placeholder_ci_build' }}
       # Supabase env vars for Next.js builds (use placeholder for CI if not set)
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
