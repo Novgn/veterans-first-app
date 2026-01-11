@@ -1,5 +1,5 @@
 import { useSignIn } from '@clerk/clerk-expo';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   View,
@@ -65,11 +65,11 @@ export default function SignIn() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-[#FAFAF9]">
+      className="flex-1 bg-background">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View className="flex-1 justify-center px-6 py-8">
           <View className="mb-8">
-            <Text className="mb-2 text-center text-3xl font-bold text-gray-900">
+            <Text className="mb-2 text-center text-3xl font-bold text-foreground">
               Driver Sign In
             </Text>
             <Text className="text-center text-lg text-gray-600">
@@ -77,19 +77,21 @@ export default function SignIn() {
             </Text>
           </View>
 
-          <View className="space-y-4">
+          <View className="gap-4">
             <View>
               <Text className="mb-2 text-base font-medium text-gray-700">Phone Number</Text>
-              <View className="flex-row items-center rounded-lg border border-gray-300 bg-white">
+              <View className="flex-row items-center rounded-xl border border-gray-300 bg-white">
                 <Text className="pl-4 pr-2 text-lg text-gray-500">+1</Text>
                 <TextInput
-                  className="h-14 flex-1 px-2 text-lg"
+                  className="min-h-[56px] flex-1 px-2 text-lg"
                   placeholder="(555) 123-4567"
                   keyboardType="phone-pad"
                   autoComplete="tel"
                   value={phone}
                   onChangeText={setPhone}
                   editable={!isLoading}
+                  accessibilityLabel="Phone number input"
+                  accessibilityHint="Enter your phone number to receive a verification code"
                 />
               </View>
             </View>
@@ -99,24 +101,18 @@ export default function SignIn() {
             <Pressable
               onPress={onSendCode}
               disabled={isLoading || !phone}
-              className={`h-14 items-center justify-center rounded-lg ${
-                isLoading || !phone ? 'bg-gray-400' : 'bg-[#1E40AF]'
-              }`}>
+              className={`min-h-[56px] items-center justify-center rounded-xl ${
+                isLoading || !phone ? 'bg-gray-400' : 'bg-primary'
+              }`}
+              accessibilityLabel="Send verification code"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isLoading || !phone }}>
               {isLoading ? (
                 <ActivityIndicator color="white" />
               ) : (
                 <Text className="text-lg font-semibold text-white">Send Verification Code</Text>
               )}
             </Pressable>
-
-            <View className="mt-4 flex-row justify-center">
-              <Text className="text-base text-gray-600">Don&apos;t have an account? </Text>
-              <Link href="/(auth)/sign-up" asChild>
-                <Pressable>
-                  <Text className="text-base font-semibold text-[#1E40AF]">Sign Up</Text>
-                </Pressable>
-              </Link>
-            </View>
           </View>
         </View>
       </ScrollView>

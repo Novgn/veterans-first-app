@@ -1,4 +1,4 @@
-import { useSignIn, useSignUp } from '@clerk/clerk-expo';
+import { useSignIn } from '@clerk/clerk-expo';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState, useRef, useEffect } from 'react';
 import {
@@ -13,8 +13,7 @@ import {
 
 export default function Verify() {
   const { signIn, setActive: setSignInActive } = useSignIn();
-  const { signUp, setActive: setSignUpActive } = useSignUp();
-  const { phone, mode } = useLocalSearchParams<{ phone: string; mode: 'sign-in' | 'sign-up' }>();
+  const { phone, mode } = useLocalSearchParams<{ phone: string; mode: 'sign-in' }>();
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -75,16 +74,7 @@ export default function Verify() {
 
         if (result.status === 'complete') {
           await setSignInActive({ session: result.createdSessionId });
-          router.replace('/(app)');
-        }
-      } else if (mode === 'sign-up' && signUp) {
-        const result = await signUp.attemptPhoneNumberVerification({
-          code: codeToVerify,
-        });
-
-        if (result.status === 'complete') {
-          await setSignUpActive({ session: result.createdSessionId });
-          router.replace('/(app)');
+          router.replace('/(tabs)');
         }
       }
     } catch (err: unknown) {
@@ -121,8 +111,6 @@ export default function Verify() {
             phoneNumberId: phoneCodeFactor.phoneNumberId,
           });
         }
-      } else if (mode === 'sign-up' && signUp) {
-        await signUp.preparePhoneNumberVerification();
       }
       setResendCooldown(60);
     } catch (err: unknown) {
@@ -136,28 +124,32 @@ export default function Verify() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-[#FAFAF9]">
+      className="flex-1 bg-background">
       <View className="flex-1 justify-center px-6 py-8">
-        <Pressable onPress={() => router.back()} className="absolute left-4 top-12">
-          <Text className="text-lg text-[#1E40AF]">← Back</Text>
+        <Pressable
+          onPress={() => router.back()}
+          className="absolute left-4 top-12 min-h-[48px] min-w-[48px] items-center justify-center"
+          accessibilityLabel="Go back"
+          accessibilityRole="button">
+          <Text className="text-lg text-primary">← Back</Text>
         </Pressable>
 
         <View className="mb-8">
-          <Text className="mb-2 text-center text-3xl font-bold text-gray-900">
+          <Text className="mb-2 text-center text-3xl font-bold text-foreground">
             Verify Your Phone
           </Text>
           <Text className="text-center text-lg text-gray-600">Enter the 6-digit code sent to</Text>
-          <Text className="text-center text-lg font-semibold text-gray-900">{phone}</Text>
+          <Text className="text-center text-lg font-semibold text-foreground">{phone}</Text>
         </View>
 
-        <View className="mb-6 flex-row justify-center space-x-2">
+        <View className="mb-6 flex-row justify-center gap-2">
           {code.map((digit, index) => (
             <TextInput
               key={index}
               ref={(ref) => {
                 inputRefs.current[index] = ref;
               }}
-              className="h-14 w-12 rounded-lg border border-gray-300 bg-white text-center text-2xl font-semibold"
+              className="min-h-[56px] w-12 rounded-xl border border-gray-300 bg-white text-center text-2xl font-semibold"
               keyboardType="number-pad"
               maxLength={1}
               value={digit}
@@ -165,6 +157,7 @@ export default function Verify() {
               onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
               editable={!isLoading}
               autoFocus={index === 0}
+              accessibilityLabel={`Digit ${index + 1} of 6`}
             />
           ))}
         </View>
@@ -174,9 +167,12 @@ export default function Verify() {
         <Pressable
           onPress={() => onVerify()}
           disabled={isLoading || code.join('').length !== 6}
-          className={`mb-4 h-14 items-center justify-center rounded-lg ${
-            isLoading || code.join('').length !== 6 ? 'bg-gray-400' : 'bg-[#1E40AF]'
-          }`}>
+          className={`mb-4 min-h-[56px] items-center justify-center rounded-xl ${
+            isLoading || code.join('').length !== 6 ? 'bg-gray-400' : 'bg-primary'
+          }`}
+          accessibilityLabel="Verify code"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: isLoading || code.join('').length !== 6 }}>
           {isLoading ? (
             <ActivityIndicator color="white" />
           ) : (
@@ -184,10 +180,20 @@ export default function Verify() {
           )}
         </Pressable>
 
-        <Pressable onPress={onResendCode} disabled={resendCooldown > 0 || isLoading}>
+        <Pressable
+          onPress={onResendCode}
+          disabled={resendCooldown > 0 || isLoading}
+          className="min-h-[48px] items-center justify-center"
+          accessibilityLabel={
+            resendCooldown > 0
+              ? `Resend code available in ${resendCooldown} seconds`
+              : 'Resend verification code'
+          }
+          accessibilityRole="button"
+          accessibilityState={{ disabled: resendCooldown > 0 || isLoading }}>
           <Text
             className={`text-center text-base ${
-              resendCooldown > 0 ? 'text-gray-400' : 'text-[#1E40AF]'
+              resendCooldown > 0 ? 'text-gray-400' : 'text-primary'
             }`}>
             {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend verification code'}
           </Text>

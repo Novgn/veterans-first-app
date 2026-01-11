@@ -1,26 +1,27 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Link, Stack } from 'expo-router';
-
-import { Text, View } from 'react-native';
-
-import { Container } from '@/components/Container';
+import { View, Text, Pressable, SafeAreaView } from 'react-native';
 
 export default function NotFoundScreen() {
   return (
-    <View className={styles.container}>
+    <SafeAreaView className="flex-1 bg-background">
       <Stack.Screen options={{ title: 'Oops!' }} />
-      <Container>
-        <Text className={styles.title}>{"This screen doesn't exist."}</Text>
-        <Link href="/" className={styles.link}>
-          <Text className={styles.linkText}>Go to home screen!</Text>
+      <View className="flex-1 items-center justify-center px-6">
+        <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-gray-100">
+          <Ionicons name="alert-circle-outline" size={40} color="#9CA3AF" />
+        </View>
+        <Text className="text-xl font-bold text-foreground">Page Not Found</Text>
+        <Text className="mt-2 text-center text-gray-600">This screen doesn&apos;t exist.</Text>
+        <Link href="/" asChild>
+          <Pressable
+            className="mt-8 min-h-[56px] flex-row items-center justify-center rounded-xl bg-primary px-8"
+            accessibilityLabel="Go to home screen"
+            accessibilityRole="button">
+            <Ionicons name="home" size={20} color="white" />
+            <Text className="ml-2 text-lg font-semibold text-white">Go to Home</Text>
+          </Pressable>
         </Link>
-      </Container>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
-
-const styles = {
-  container: `flex flex-1 bg-white`,
-  title: `text-xl font-bold`,
-  link: `mt-4 pt-4`,
-  linkText: `text-base text-[#2e78b7]`,
-};
