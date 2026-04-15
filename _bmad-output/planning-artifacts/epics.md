@@ -227,23 +227,24 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 **PRD Coverage:** FR54, FR55, FR68, FR69, FR70
 
-**Technical Context (Architecture):**
+**Technical Context (Architecture — REVISED 2026-04-15):**
 
-- Turborepo monorepo initialization with apps/ and packages/ structure
+- Scaffold via `npx create-rell-app@latest veterans-first --template monolith` (apps/mobile, apps/web, packages/shared, packages/config)
 - Supabase project setup with PostgreSQL + Realtime
-- Drizzle ORM schema foundation (users, audit_logs tables)
-- Clerk authentication integration with Supabase JWT template
-- Row Level Security (RLS) policies for role-based access
-- Shared packages: `@veterans-first/shared` for types, utils, API client
+- Drizzle ORM schema foundation (users, audit_logs tables) in `packages/shared/db/`
+- Clerk authentication with Supabase JWT template + role claims (rider, driver, family, dispatcher, admin)
+- Role-gated route groups: `apps/mobile/app/(rider|driver|family)/_layout.tsx` + `apps/web/app/{dispatch,admin,business}/layout.tsx` using rell `RoleGate`
+- Row Level Security (RLS) policies for role-based data access
+- Shared package: `@veterans-first/shared` exports db client, schema, queries, validation
 
-**UX Integration:** N/A (infrastructure epic)
+**UX Integration:** Role Switcher component for multi-role users (see UX Spec)
 
 **Foundation Epic Guidelines:**
 
-- Project setup and build system
+- Monolith scaffold and migration of in-flight work
 - Core infrastructure and deployment pipeline
-- Database schema setup with audit logging
-- Authentication foundation (Clerk + Supabase JWT)
+- Database schema setup with audit logging (in `packages/shared/db/`)
+- Authentication foundation (Clerk + Supabase JWT + role claims + RoleGate)
 - API framework setup (Edge Functions structure)
 
 ---
@@ -254,13 +255,13 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 **PRD Coverage:** FR1, FR2, FR3, FR4, FR5, FR6, FR9, FR10, FR11, FR12, FR71, FR72, FR73
 
-**Technical Context (Architecture):**
+**Technical Context (Architecture — REVISED 2026-04-15):**
 
-- `apps/rider/` Expo app with feature-first organization
-- `features/booking/` with BookingWizard component
-- `features/profile/` for rider preferences
-- `features/rides/` for ride list and tracking
-- Supabase tables: `rides`, `saved_destinations`, `rider_preferences`
+- `apps/mobile/app/(rider)/` Expo route group, gated by Clerk `role=rider`
+- `apps/mobile/features/rider/booking/` with BookingWizard component
+- `apps/mobile/features/rider/profile/` for rider preferences
+- `apps/mobile/features/rider/rides/` for ride list and tracking
+- Supabase tables: `rides`, `saved_destinations`, `rider_preferences` (defined in `packages/shared/db/schema.ts`)
 - Edge Functions: `book-ride`, `cancel-ride`, `calculate-price`
 - TanStack Query for ride data caching + real-time subscriptions
 - Zustand for booking wizard state
@@ -284,17 +285,17 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 **PRD Coverage:** FR7, FR8, FR19-FR53, FR74
 
-**Technical Context (Architecture):**
+**Technical Context (Architecture — REVISED 2026-04-15):**
 
-- `apps/driver/` Expo app with driver-specific features
-- `apps/admin/` Next.js app for dispatch operations
-- `features/trips/` for driver queue and trip management
-- `features/dispatch/` for fleet map and ride assignment
-- `features/riders/` for rider database management
-- Supabase tables: `driver_profiles`, `driver_locations`, `ride_events`, `no_shows`
+- `apps/mobile/app/(driver)/` Expo route group, gated by Clerk `role=driver`
+- `apps/web/app/dispatch/` Next.js section, gated by Clerk `role=dispatcher|admin`
+- `apps/mobile/features/driver/trips/` for driver queue and trip management
+- `apps/web/app/dispatch/` for fleet map and ride assignment
+- `apps/web/app/dispatch/riders/` for rider database management
+- Supabase tables: `driver_profiles`, `driver_locations`, `ride_events`, `no_shows` (in `packages/shared/db/schema.ts`)
 - Supabase Realtime channels: `fleet:active`, `driver:{id}:location`, `ride:{id}`
 - Edge Functions: `assign-driver`, `complete-ride`, `process-no-show`
-- Google Maps integration for navigation
+- Google Maps / Expo Maps integration for navigation
 - Photo upload to Supabase Storage for arrival confirmation
 
 **UX Integration (UX Design):**
@@ -315,11 +316,13 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 **PRD Coverage:** FR13, FR14, FR15, FR16, FR17, FR18, FR75, FR76, FR77, FR78, FR79, FR80, FR81, FR82
 
-**Technical Context (Architecture):**
+**Technical Context (Architecture — REVISED 2026-04-15):**
 
-- `features/family/` in rider app for family linking
-- `features/notifications/` across all apps
-- Supabase tables: `family_links`, `notification_preferences`, `notification_logs`
+- `apps/mobile/app/(family)/` Expo route group, gated by Clerk `role=family` (or rider with linked family role)
+- `apps/mobile/features/family/` for linking + linked-rider view
+- `apps/mobile/features/rider/family/` for rider-side consent management
+- `apps/mobile/features/notifications/` + `apps/web/features/notifications/` for prefs UI
+- Supabase tables: `family_links`, `notification_preferences`, `notification_logs` (in `packages/shared/db/schema.ts`)
 - Edge Functions: `send-notification`, `link-family-member`
 - Expo Notifications for push (via Expo Push API)
 - Twilio for SMS notifications
@@ -342,14 +345,15 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 **PRD Coverage:** FR42, FR43, FR44, FR56, FR57, FR58, FR59, FR60, FR61, FR62, FR63, FR64, FR65, FR66, FR67, FR83, FR84, FR85, FR86, FR87
 
-**Technical Context (Architecture):**
+**Technical Context (Architecture — REVISED 2026-04-15):**
 
-- `apps/business/` Next.js app for business operations
-- `features/billing/` for invoicing and payments
-- `features/compliance/` for reporting and audits
-- `features/credentials/` for driver credential management
-- `features/settings/` for system configuration
-- Supabase tables: `invoices`, `payments`, `driver_credentials`, `system_config`
+- `apps/web/app/business/` Next.js section, gated by Clerk `role=admin`
+- `apps/web/app/admin/` Next.js section for driver roster + credentials + settings
+- `apps/web/app/business/billing/` for invoicing and payments
+- `apps/web/app/admin/compliance/` for reporting and audits
+- `apps/web/app/admin/credentials/` for driver credential management
+- `apps/web/app/admin/settings/` for system configuration
+- Supabase tables: `invoices`, `payments`, `driver_credentials`, `system_config` (in `packages/shared/db/schema.ts`)
 - Stripe integration for payment processing
 - Edge Functions: `process-payment`, `generate-invoice`, `webhook-stripe`
 - Scheduled functions for credential expiration alerts
@@ -372,44 +376,83 @@ This document provides the complete epic and story breakdown for veterans-first-
 
 ---
 
-### Story 1.1: Initialize Monorepo Structure
+### Story 1.1: Scaffold create-rell-app Monolith
 
 As a developer,
-I want a properly configured Turborepo monorepo with all apps and packages scaffolded,
-So that I can begin building features with shared code and consistent tooling.
+I want the repo scaffolded from the create-rell-app monolith template,
+So that we have a single role-aware mobile app, a single role-aware web app, and a shared db/validation package — aligned with our canonical starter.
 
 **Acceptance Criteria:**
 
-**Given** a new project directory
-**When** the monorepo is initialized
+**Given** a new project directory (or in-place migration of current tree)
+**When** `npx create-rell-app@latest veterans-first --template monolith` is run
 **Then** the following structure exists:
 
-- `apps/rider/` - Expo app scaffolded with create-expo-stack (expo-router, nativewind, npm)
-- `apps/driver/` - Expo app scaffolded with create-expo-stack (expo-router, nativewind, npm)
-- `apps/admin/` - Next.js app scaffolded with create-next-app (ts, tailwind, eslint, app, src-dir, npm)
-- `apps/business/` - Next.js app scaffolded with create-next-app (ts, tailwind, eslint, app, src-dir, npm)
-- `packages/shared/` - TypeScript package for shared types, utils, API client
-- `packages/config/` - ESLint, TypeScript, Prettier configurations
-- `supabase/` - Migrations and functions directories
+- `apps/mobile/` — Expo + Expo Router + NativeWind + Clerk + Supabase (role-gated route groups)
+- `apps/web/` — Next.js + Tailwind + shadcn/ui + Clerk + Supabase
+- `packages/shared/` — Drizzle schema, queries, validation, drizzle.config
+- `packages/config/` — ESLint, TypeScript, Prettier
+- `supabase/` — Edge Functions only (migrations live in `packages/shared/db/migrations/`)
+- Husky pre-commit hook installed
 
-**And** Turborepo is configured with:
+**And** Turborepo is configured with build, dev, lint, test pipelines.
 
-- `turbo.json` with build, dev, lint, test pipelines
-- Dependency graph properly configured
-- Environment variable inheritance
+**And** both apps run independently with `npm run dev`.
 
-**And** all apps can run independently with `npm run dev`
-
-**And** shared package is importable as `@veterans-first/shared`
+**And** shared package is importable as `@veterans-first/shared` from both apps.
 
 **Technical Notes:**
 
-- Follow Architecture section "Monorepo Structure" exactly
-- Use npm as package manager (per Architecture)
+- Use npm (matches rell default)
 - Configure `.nvmrc` with Node 20 LTS
-- Add `.env.example` with all required environment variables
+- Populate `.env.example` with Clerk, Supabase, Stripe, Twilio, Google Maps keys
 
 **Prerequisites:** None (first story)
+
+---
+
+### Story 1.2: Migrate Completed Rider & Driver Code
+
+As a developer,
+I want Stories 2.13–2.14 (rider accessibility/comfort prefs) and StatusToggle (driver) relocated into the new structure,
+So that no completed work is lost and tests still pass in the new tree.
+
+**Acceptance Criteria:**
+
+**Given** the rell monolith is scaffolded
+**When** migration runs
+**Then**:
+
+- `apps/rider/src/features/*` → `apps/mobile/features/rider/*` (via `git mv`)
+- `apps/driver/src/features/*` → `apps/mobile/features/driver/*` (via `git mv`)
+- `apps/admin/*` → `apps/web/app/dispatch/` + `apps/web/app/admin/`
+- `apps/business/*` → `apps/web/app/business/`
+- `supabase/migrations/*` → `packages/shared/db/migrations/*`
+- `drizzle.config.ts` → `packages/shared/drizzle.config.ts`
+- Imports rewired to `@veterans-first/shared`
+- All existing tests green (StatusToggle tests, rider preference tests)
+- CI workflows (`.github/workflows/*`) path-updated
+
+**Prerequisites:** Story 1.1
+
+---
+
+### Story 1.3: Configure Clerk Role Claims and Route-Group Guards
+
+As a developer,
+I want Clerk issuing role claims (rider, driver, family, dispatcher, admin) and route-group layouts enforcing them,
+So that signing in routes a user to the correct surface and unauthorized access is blocked.
+
+**Acceptance Criteria:**
+
+- Clerk custom JWT template includes `role` claim (read from user metadata)
+- Supabase JWT template consumes Clerk role for RLS
+- `apps/mobile/app/(rider)/_layout.tsx`, `(driver)/_layout.tsx`, `(family)/_layout.tsx` use rell `RoleGate` to enforce role
+- `apps/web/app/dispatch/layout.tsx`, `admin/layout.tsx`, `business/layout.tsx` use `RoleGate`
+- Multi-role users see a Role Switcher component (per UX spec); single-role users auto-route post sign-in
+- Unauthorized route access redirects to a "not permitted" page
+
+**Prerequisites:** Story 1.1, Story 1.2
 
 ---
 

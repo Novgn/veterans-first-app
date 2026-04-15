@@ -41,3 +41,6 @@ workflow_status:
 
   # Phase 3: Implementation
   sprint-planning: "sprint-status.yaml" # Completed 2025-12-06
+
+  # Phase 4: Course Corrections
+  correct-course-2026-04-15: "sprint-change-proposal-2026-04-15.md" # MAJOR: collapse 4-app to role-gated mobile+web; adopt create-rell-app monolith; Stitch MCP brand + mocks track

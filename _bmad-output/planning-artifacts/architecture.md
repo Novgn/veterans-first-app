@@ -49,9 +49,10 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 **Scale & Complexity:**
 
-- Primary domain: Full-Stack Mobile + Web (Multi-App Ecosystem)
+- Primary domain: Full-Stack Mobile + Web (Role-aware consolidated apps)
 - Complexity level: HIGH
 - Estimated architectural components: 15-20 major modules
+- **Revision 2026-04-15:** Collapsed 4-app ecosystem (rider, driver, admin, business) into 2 role-gated apps (`apps/mobile`, `apps/web`) aligned with [create-rell-app monolith template](https://github.com/Novgn/create-rell-app).
 
 ### Technical Constraints & Dependencies
 
@@ -110,7 +111,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 ### Primary Technology Domain
 
-**Full-Stack Mobile + Web (Multi-App Ecosystem)** — 4 applications requiring shared code and consistent patterns.
+**Full-Stack Mobile + Web (Role-Aware Consolidated)** — 2 role-gated applications + shared package, aligned with create-rell-app monolith template.
 
 ### Starter Options Considered
 
@@ -120,65 +121,50 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 | **create-expo-app**   | Mobile   | Base Expo, TypeScript            | Official but requires more manual setup                 |
 | **create-next-app**   | Web      | App Router, TypeScript, Tailwind | Official, production-ready, App Router default          |
 
-### Selected Starters
+### Selected Starter
 
-#### Mobile Apps (Rider + Driver): Create Expo Stack
+#### create-rell-app (monolith template)
 
-**Initialization Commands:**
-
-```bash
-# Rider App
-npx create-expo-stack@latest rider-app --expo-router --nativewind --npm
-
-# Driver App
-npx create-expo-stack@latest driver-app --expo-router --nativewind --npm
-```
-
-**Additional Dependencies:**
+**Initialization Command:**
 
 ```bash
-# Core dependencies
-npx expo install @clerk/clerk-expo @supabase/supabase-js @react-native-async-storage/async-storage
-
-# State management
-npm install @tanstack/react-query zustand
-
-# Persistence
-npm install @tanstack/query-async-storage-persister @tanstack/react-query-persist-client
+npx create-rell-app@latest veterans-first --template monolith
 ```
 
-#### Web Apps (Admin Console + Business Ops): create-next-app + shadcn/ui
+**What the template provides:**
 
-**Initialization Commands:**
+- `apps/mobile` — Expo + Expo Router + NativeWind + Clerk + Supabase + Drizzle
+- `apps/web` — Next.js + Tailwind + shadcn/ui + Clerk + Supabase + Drizzle
+- `packages/shared` — Drizzle schema, queries, validation, drizzle.config (single source of truth)
+- `packages/config` — eslint, tsconfig, prettier
+- Clerk role-gating primitives (`use-role`, `RoleGate`, billing webhooks)
+- Husky pre-commit hook
+
+**Additional Dependencies (beyond template defaults):**
 
 ```bash
-# Admin Console
-npx create-next-app@latest admin-console --ts --tailwind --eslint --app --src-dir --use-npm
+# Mobile-specific
+npx expo install expo-notifications expo-location expo-maps
 
-# Business Ops
-npx create-next-app@latest business-ops --ts --tailwind --eslint --app --src-dir --use-npm
+# State persistence (both apps)
+npm install @tanstack/react-query zustand @tanstack/query-async-storage-persister @tanstack/react-query-persist-client
+
+# Integrations
+npm install stripe twilio
 ```
 
-**Additional Setup:**
+### Architectural Decisions Provided by Starter
 
-```bash
-# Add shadcn/ui
-npx shadcn@latest init
-
-# Add dependencies
-npm install @clerk/nextjs @supabase/supabase-js @tanstack/react-query zustand
-```
-
-### Architectural Decisions Provided by Starters
-
-| Category            | Mobile (Expo Stack)          | Web (Next.js)            |
-| ------------------- | ---------------------------- | ------------------------ |
-| **Language**        | TypeScript                   | TypeScript               |
-| **Routing**         | Expo Router (file-based)     | App Router (file-based)  |
-| **Styling**         | NativeWind (Tailwind for RN) | Tailwind CSS + shadcn/ui |
-| **Build Tool**      | Metro + EAS                  | Turbopack                |
-| **Linting**         | ESLint                       | ESLint                   |
-| **Package Manager** | npm                          | npm                      |
+| Category            | Mobile (rell mobile)                            | Web (rell web)                  |
+| ------------------- | ----------------------------------------------- | ------------------------------- |
+| **Language**        | TypeScript                                      | TypeScript                      |
+| **Routing**         | Expo Router (file-based, route groups per role) | App Router (file-based)         |
+| **Styling**         | NativeWind (Tailwind for RN)                    | Tailwind CSS + shadcn/ui        |
+| **Auth**            | Clerk + role claims                             | Clerk + role claims             |
+| **DB**              | Drizzle via `packages/shared`                   | Drizzle via `packages/shared`   |
+| **Build Tool**      | Metro + EAS                                     | Turbopack                       |
+| **Linting**         | ESLint (from `packages/config`)                 | ESLint (from `packages/config`) |
+| **Package Manager** | npm                                             | npm                             |
 
 **Note:** Project initialization using these commands should be the first implementation story.
 
@@ -266,23 +252,35 @@ npm install @clerk/nextjs @supabase/supabase-js @tanstack/react-query zustand
 | **Environment Config**   | `.env.local` + Turborepo env inheritance       | Consistent across apps, secrets in CI/CD                              |
 | **Monitoring**           | Sentry + Supabase Dashboard + Vercel Analytics | Error tracking, database metrics, web analytics                       |
 
-### Monorepo Structure
+### Monorepo Structure (create-rell-app monolith aligned)
 
 ```
 veterans-first/
 ├── apps/
-│   ├── rider/              # Expo - Rider mobile app
-│   ├── driver/             # Expo - Driver mobile app
-│   ├── admin/              # Next.js - Admin Console
-│   └── business/           # Next.js - Business Ops
+│   ├── mobile/             # Expo - role-gated (rider | driver | family)
+│   │   └── app/
+│   │       ├── (auth)/     # sign-in, sign-up
+│   │       ├── (rider)/    # booking, rides, profile, family access
+│   │       ├── (driver)/   # trip queue, navigation, earnings, availability
+│   │       └── (family)/   # linked rider view, notifications, bookings-on-behalf
+│   └── web/                # Next.js - role-gated (dispatch | admin | business)
+│       └── app/
+│           ├── (auth)/
+│           ├── dispatch/   # fleet map, assignments, call log
+│           ├── admin/      # driver roster, credentials, compliance
+│           └── business/   # billing, invoices, financial reports
 ├── packages/
-│   ├── shared/             # Types, utils, API client, Supabase config
-│   ├── ui/                 # Shared UI components (adapted per platform)
-│   └── config/             # ESLint, TypeScript configs
+│   ├── shared/             # Drizzle schema, queries, validation, drizzle.config
+│   │   └── db/
+│   │       ├── schema.ts
+│   │       ├── queries.ts
+│   │       ├── client.ts
+│   │       └── migrations/
+│   └── config/             # ESLint, TypeScript, Prettier configs
 ├── supabase/
-│   ├── migrations/         # Drizzle migrations
-│   ├── functions/          # Edge Functions
-│   └── seed.sql            # Development seed data
+│   ├── config.toml
+│   ├── functions/          # Edge Functions (migrations moved to packages/shared/db)
+│   └── seed.sql
 ├── turbo.json
 ├── package.json
 └── .github/workflows/
@@ -292,14 +290,14 @@ veterans-first/
 
 **Implementation Sequence:**
 
-1. Initialize Turborepo monorepo structure
-2. Set up Supabase project + Drizzle schema
-3. Configure Clerk + Supabase JWT integration
-4. Create `packages/shared` with types and API client
-5. Initialize mobile apps (Rider, Driver)
-6. Initialize web apps (Admin, Business)
-7. Implement core Edge Functions
-8. Set up CI/CD pipelines
+1. Scaffold via `npx create-rell-app@latest veterans-first --template monolith`
+2. Set up Supabase project + wire Drizzle in `packages/shared/db`
+3. Configure Clerk + Supabase JWT integration + role claims (rider, driver, family, dispatcher, admin)
+4. Add route-group guards in `apps/mobile/app/(role)/_layout.tsx` and `apps/web/app/{section}/layout.tsx` using rell `RoleGate`
+5. Migrate completed rider + driver feature code into `apps/mobile/features/{rider,driver}/`
+6. Consolidate dispatch + admin + business sections in `apps/web/app/`
+7. Implement core Edge Functions (book-ride, assign-driver, process-payment, send-notification)
+8. Set up CI/CD pipelines (mobile via EAS, web via Vercel)
 
 **Cross-Component Dependencies:**
 
@@ -688,17 +686,17 @@ supabase/
 
 ### FR Category to Structure Mapping
 
-| FR Category                     | Primary Location                                                    |
-| ------------------------------- | ------------------------------------------------------------------- |
-| Ride Booking & Management       | `apps/rider/src/features/booking/`, `supabase/functions/book-ride/` |
-| Family & Caregiver Support      | `apps/rider/src/features/family/`                                   |
-| Driver Operations               | `apps/driver/src/features/`                                         |
-| Dispatch & Admin Operations     | `apps/admin/src/features/dispatch/`                                 |
-| Trip Documentation & Compliance | `supabase/migrations/*audit*`                                       |
-| Business Operations             | `apps/business/src/features/`                                       |
-| User Account Management         | Clerk + `packages/shared/src/api/users.ts`                          |
-| Notifications & Communications  | `supabase/functions/send-notification/`                             |
-| System Administration           | `apps/admin/src/app/settings/`                                      |
+| FR Category                     | Primary Location                                                                 |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| Ride Booking & Management       | `apps/mobile/features/rider/booking/`, `supabase/functions/book-ride/`           |
+| Family & Caregiver Support      | `apps/mobile/features/family/`                                                   |
+| Driver Operations               | `apps/mobile/features/driver/`                                                   |
+| Dispatch & Admin Operations     | `apps/web/app/dispatch/`                                                         |
+| Trip Documentation & Compliance | `packages/shared/db/migrations/*audit*`, `apps/mobile/features/driver/trip-doc/` |
+| Business Operations             | `apps/web/app/business/`                                                         |
+| User Account Management         | Clerk + `packages/shared/db/queries.ts`                                          |
+| Notifications & Communications  | `supabase/functions/send-notification/`                                          |
+| System Administration           | `apps/web/app/admin/settings/`                                                   |
 
 ### Integration Points
 
@@ -881,18 +879,18 @@ No blocking issues found. The architecture is coherent, complete, and ready for 
 **First Implementation Priority:**
 
 ```bash
-# 1. Initialize Turborepo monorepo
-npx create-turbo@latest veterans-first
+# 1. Scaffold monolith (creates apps/mobile, apps/web, packages/shared, packages/config)
+npx create-rell-app@latest veterans-first --template monolith
 
-# 2. Initialize mobile apps
-npx create-expo-stack@latest rider-app --expo-router --nativewind --npm
-npx create-expo-stack@latest driver-app --expo-router --nativewind --npm
+# 2. Migrate completed rider + driver code into apps/mobile/features/{rider,driver}/
+#    (Stories 2.13–2.14, StatusToggle — preserved via git mv)
 
-# 3. Initialize web apps
-npx create-next-app@latest admin-console --ts --tailwind --eslint --app --src-dir --use-npm
-npx create-next-app@latest business-ops --ts --tailwind --eslint --app --src-dir --use-npm
+# 3. Consolidate admin + business into apps/web/app/{dispatch,admin,business}/
 
-# 4. Set up shared packages and Supabase project
+# 4. Relocate Supabase migrations into packages/shared/db/migrations/
+#    and drizzle.config.ts into packages/shared/
+
+# 5. Configure Clerk role claims + RoleGate guards on route-group layouts
 ```
 
 ## Architecture Completion Summary

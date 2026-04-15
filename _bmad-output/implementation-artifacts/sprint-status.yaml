@@ -29,12 +29,43 @@
 # - Dev moves story to 'review', dev reviews, then Dev moves to 'done'
 
 generated: 2025-12-06
+revised: 2026-04-15 # Course correction: 4-app -> role-gated mobile+web via create-rell-app monolith
 project: veterans-first-app
 project_key: veterans-first
 tracking_system: file-system
 story_location: "docs/sprint-artifacts"
 
+# ==========================================================================
+# REVISION NOTE (2026-04-15)
+# ==========================================================================
+# Sprint change proposal approved 2026-04-15 collapsed 4 apps (rider, driver,
+# admin, business) into apps/mobile (role-gated route groups) and apps/web
+# (role-gated sections), aligned with create-rell-app monolith template.
+#
+# Status of the revision:
+# - Epic 1 (already 'done') stays 'done' for historical accuracy, but an
+#   "Epic 1.5: Architectural Migration" block is injected below to capture
+#   the new work required to realize the consolidated structure.
+# - All downstream 'backlog' / 'ready-for-dev' stories keep their IDs and
+#   acceptance criteria; only their target paths change. The story files
+#   themselves will be updated by the story writer as each is picked up.
+# - 'done' stories (Stories 2.1-2.14, 3.1, 3.2) will have their code
+#   relocated during Epic 1.5; no story rework required.
+# ==========================================================================
+
 development_status:
+  # ============================================================
+  # EPIC 1.5: Architectural Migration (NEW - 2026-04-15)
+  # Goal: Migrate 4-app tree into create-rell-app monolith structure
+  # Stories: 4 (blocks all Epic 3+ backlog work)
+  # ============================================================
+  epic-1-5: backlog
+  1-5-1-scaffold-create-rell-app-monolith: backlog
+  1-5-2-migrate-rider-and-driver-code-to-apps-mobile: backlog
+  1-5-3-migrate-admin-and-business-code-to-apps-web: backlog
+  1-5-4-configure-clerk-role-claims-and-role-gate-guards: backlog
+  epic-1-5-retrospective: optional
+
   # ============================================================
   # EPIC 1: Foundation & Infrastructure
   # Goal: Establish technical foundation with security, compliance, and DX
@@ -78,12 +109,16 @@ development_status:
   # Goal: Enable driver trip management and dispatcher fleet coordination
   # FR Coverage: FR7, FR8, FR19-FR53, FR74
   # Stories: 19
+  # Path revision (2026-04-15):
+  #   - Driver stories (3-1..3-11, 3-19 driver portion) target apps/mobile (driver)
+  #   - Dispatch stories (3-12..3-18) target apps/web (dispatch section)
+  # Blocked on: epic-1-5 (migration)
   # ============================================================
   epic-3: in-progress
   3-1-create-driver-app-shell-and-navigation: done
-  3-2-implement-driver-trip-queue: ready-for-dev
-  3-3-implement-accept-decline-rides: ready-for-dev
-  3-4-implement-trip-status-transitions: backlog
+  3-2-implement-driver-trip-queue: done
+  3-3-implement-accept-decline-rides: review
+  3-4-implement-trip-status-transitions: ready-for-dev
   3-5-implement-integrated-navigation: backlog
   3-6-implement-driver-contact-rider: backlog
   3-7-implement-driver-availability-schedule: backlog
@@ -106,6 +141,10 @@ development_status:
   # Goal: Enable family monitoring with consent, timely notifications for all
   # FR Coverage: FR13-FR18, FR75-FR82
   # Stories: 10
+  # Path revision (2026-04-15):
+  #   - Family stories target apps/mobile (family route group)
+  #   - Cross-cutting notification prefs target apps/mobile + apps/web shared UI
+  # Blocked on: epic-1-5 (migration)
   # ============================================================
   epic-4: backlog
   4-1-implement-family-member-linking: backlog
@@ -125,6 +164,10 @@ development_status:
   # Goal: Enable billing, payroll, compliance, and system configuration
   # FR Coverage: FR42-FR44, FR56-FR67, FR83-FR87
   # Stories: 16
+  # Path revision (2026-04-15):
+  #   - All stories target apps/web (admin + business sections, role-gated)
+  #   - Story 5-1 "Create business operations app shell" becomes "Add business section to apps/web"
+  # Blocked on: epic-1-5 (migration)
   # ============================================================
   epic-5: backlog
   5-1-create-business-operations-app-shell: backlog

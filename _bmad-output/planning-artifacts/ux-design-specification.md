@@ -16,8 +16,11 @@ date: "2025-12-05"
 
 **Author:** Wayne
 **Date:** 2025-12-05
+**Revised:** 2026-04-15 (app consolidation + Stitch brand identity)
 
 ---
+
+> **Revision note (2026-04-15):** Following the sprint change proposal, the 4-app ecosystem has been consolidated into `apps/mobile` (rider | driver | family route groups) and `apps/web` (dispatch | admin | business sections). This revision adds: (1) a **Role Switcher** pattern for multi-role users, and (2) a **Stitch-generated brand identity** ("Warm & Minimal") with reference mocks for all primary surfaces. See §Role Switcher Pattern and §Stitch Brand Identity + Screen Mocks at the end of this document.
 
 <!-- UX design content will be appended sequentially through collaborative workflow steps -->
 
@@ -891,6 +894,100 @@ Using Tailwind standard breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280p
 | Component Strategy         | ✅ Complete |
 | UX Consistency Patterns    | ✅ Complete |
 | Responsive & Accessibility | ✅ Complete |
+
+---
+
+## Role Switcher Pattern (Added 2026-04-15)
+
+With the consolidated `apps/mobile` and `apps/web`, a single signed-in user may legitimately hold multiple roles (e.g., a rider who also drives part-time; a dispatcher who is also an admin). The Role Switcher resolves this without fragmenting the experience into separate apps.
+
+### Behavior
+
+- **Single-role user** → No switcher shown. Sign-in auto-routes to the correct route group (e.g., `apps/mobile/app/(rider)`).
+- **Multi-role user** → A chip-style switcher is visible in the header. Tapping it opens a compact role list with the user's current role pre-selected; selecting another role navigates to that route group and persists the choice for the session.
+- **Role gating** → Each route-group `_layout.tsx` (mobile) and `layout.tsx` (web) uses the rell `RoleGate` primitive to enforce the Clerk `role` claim. Unauthorized access redirects to a "not permitted" page.
+
+### Component Spec
+
+| Property           | Value                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| **Surface**        | Header right-adjacent to profile avatar; mobile = 40dp chip, web = 36dp chip                                             |
+| **Label**          | Current role name + chevron (e.g., "Rider ▾")                                                                            |
+| **Colors**         | Teal border, cream fill; active chip inverts (teal fill, cream text)                                                     |
+| **Sheet (mobile)** | Bottom sheet with role list; 56dp row height                                                                             |
+| **Popover (web)**  | Anchored popover, 8px offset; same role list                                                                             |
+| **Icons**          | Per-role glyph (rider: person; driver: steering wheel; family: heart; dispatcher: radio; admin: shield; business: chart) |
+| **Accessibility**  | Labeled "Switch role"; ARIA expanded state; keyboard-nav; VoiceOver/TalkBack                                             |
+| **Empty state**    | Not rendered for single-role users                                                                                       |
+
+### Visual Coexistence
+
+Both rider and driver flows coexist within `apps/mobile` via route-group theming:
+
+- Shared design system (Warm & Minimal — see next section) applies universally
+- Rider surfaces emphasize **Teal + Amber** (warmth, relationship)
+- Driver surfaces emphasize **Teal + Sage Green** (status, availability)
+- Family surfaces emphasize **Teal + Cream** (calm, peace of mind)
+
+No role ever sees another role's navigation chrome — the Role Switcher is the only cross-role UI element.
+
+---
+
+## Stitch Brand Identity + Screen Mocks (Added 2026-04-15)
+
+Brand identity and reference mocks were generated via Stitch MCP and live in the Stitch project for iteration.
+
+### Brand: "Warm & Minimal"
+
+**Ethos:** _"It's not about the miles. It's about the service."_
+
+| Token                  | Value                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| **Primary**            | Deep Teal `#1B4B5A` — trust, calm authority                                     |
+| **Secondary**          | Warm Amber `#C6864C` — hearth, hospitality                                      |
+| **Tertiary**           | Sage Green `#4A7C59` — independence                                             |
+| **Neutral bg**         | Cream `#F7F3EC` (never stark white)                                             |
+| **Error (muted)**      | `#B84A3E`                                                                       |
+| **Headline/Body font** | Lexend — chosen for reading comprehension; excellent for older adults           |
+| **Roundness**          | 12px (soft, approachable, not playful)                                          |
+| **Min touch target**   | 48dp (primary CTAs 56dp+)                                                       |
+| **Motion**             | Gentle 300–400ms easing; no bounces/parallax; respects `prefers-reduced-motion` |
+
+**What this brand is NOT:** not rideshare aesthetic (no surge, no map-first hero); not clinical/medical (no white-coat austerity); not playful/trendy (no gradients/glassmorphism/cartoon-senior illustrations).
+
+### Stitch References
+
+- **Project:** `projects/14131698140478497261` (title: "Veterans 1st — Transportation")
+- **Design system asset:** `assets/16986676201942963086` ("Veterans 1st — Warm & Minimal")
+
+### Generated Mocks
+
+| Surface                                | Role           | Platform | Stitch Screen ID                         |
+| -------------------------------------- | -------------- | -------- | ---------------------------------------- |
+| Sign In (phone-first)                  | Auth           | Mobile   | `7a3000a2fa1143479375c0cea088f82e`       |
+| Rider Home                             | Rider          | Mobile   | `c6699830222b4e75b99136925835b495`       |
+| 3-Tap Booking — Step 2 (When)          | Rider          | Mobile   | `71cae5b7a29d48ffb4f83bde621cd69f`       |
+| Ride Tracking                          | Rider          | Mobile   | `c748ec307c1d4e92a3f45ea66a0dbb68`       |
+| Driver Trip Queue                      | Driver         | Mobile   | `61501393e9a341889fc36dc9fed753ed`       |
+| Confirm Safe Arrival (trip completion) | Driver         | Mobile   | `f0b8b11a3f774a1f821c5257349b581e`       |
+| Family Dashboard                       | Family         | Mobile   | `6728adba9ee94ff9afed574cf2d20970`       |
+| Dispatch Fleet View                    | Dispatcher     | Web      | `b3f5a3e897684ce8865b8b0fb81f198a`       |
+| Business Operations Dashboard          | Admin/Business | Web      | `40bdee89112f49bd865c025a00240073`       |
+| **Admin Driver Roster**                | Admin          | Web      | ⚠ Pending retry (Stitch service timeout) |
+
+### How to Use These Mocks
+
+- **As implementation reference:** Engineers load the Stitch screen (via project ID above) to inspect layout, spacing, color application before implementing in `apps/mobile` or `apps/web`.
+- **As QA reference:** UX reviewers compare built surfaces against the approved mock.
+- **As evolution baseline:** Variants are generated off these via Stitch `generate_variants`; the design system applies uniformly via `apply_design_system`.
+- **Not authoritative for copy:** Final microcopy owned by PM/UX; mocks carry placeholder copy that matches brand voice.
+
+### Next Iterations
+
+1. Retry Admin Driver Roster mock (Stitch service was timing out during initial generation)
+2. Add variants for high-contrast and large-text accessibility modes
+3. Add dark-mode exploration for driver night shifts
+4. Generate Role Switcher component mock (bottom sheet + web popover)
 
 ---
 

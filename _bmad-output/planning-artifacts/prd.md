@@ -53,12 +53,18 @@ completedAt: "2025-12-05"
 
 ## Project Classification
 
-**Technical Type:** Mobile App + Web App (Multi-App Ecosystem)
+**Technical Type:** Role-Aware Mobile App + Role-Aware Web App
 
-- Rider App (iOS/Android) — Booking, tracking, payments
-- Driver App (iOS/Android) — Trip management, navigation, earnings
-- Admin Console (Web) — Dispatch, fleet management, customer service
-- Business Operations (Web) — Billing, compliance, reporting
+- **Mobile App** (iOS/Android, Expo) — Single binary with Clerk-gated route groups for:
+  - Rider flow — Booking, tracking, payments, preferences
+  - Driver flow — Trip queue, navigation, trip documentation, earnings
+  - Family flow — Ride visibility, pickup/arrival notifications
+- **Web App** (Next.js) — Single deployment with Clerk-gated sections for:
+  - Dispatch — Real-time fleet, manual assignment, call handling
+  - Admin — Driver roster, credentials, compliance reports
+  - Business — Billing, invoicing, financial reports
+
+**Architecture basis:** [create-rell-app monolith template](https://github.com/Novgn/create-rell-app) — `apps/mobile`, `apps/web`, `packages/shared` (db/schema, queries, validation). Roles enforced via Clerk claims + Supabase RLS.
 
 **Domain:** Healthcare / Non-Emergency Medical Transportation (NEMT)
 
