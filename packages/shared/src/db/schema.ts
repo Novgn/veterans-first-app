@@ -66,10 +66,11 @@ export const auditLogs = pgTable("audit_logs", {
 });
 
 // Status check constraints
-// Ride status progression: pending (booked) -> confirmed -> assigned -> in_progress (en route) -> arrived -> completed
+// Ride status progression: pending (booked) -> confirmed -> pending_acceptance -> assigned -> in_progress (en route) -> arrived -> completed
+// pending_acceptance: ride offered to driver, awaiting accept/decline
 const rideStatusCheck = check(
   "ride_status_check",
-  sql`status IN ('pending', 'confirmed', 'assigned', 'in_progress', 'arrived', 'completed', 'cancelled')`
+  sql`status IN ('pending', 'confirmed', 'pending_acceptance', 'assigned', 'in_progress', 'arrived', 'completed', 'cancelled')`
 );
 
 const familyLinkStatusCheck = check(
@@ -229,3 +230,37 @@ export const driverLocations = pgTable("driver_locations", {
 
 export type DriverLocation = InferSelectModel<typeof driverLocations>;
 export type NewDriverLocation = InferInsertModel<typeof driverLocations>;
+
+// Ride offer status check constraint
+const rideOfferStatusCheck = check(
+  "ride_offer_status_check",
+  sql`status IN ('pending', 'accepted', 'declined', 'expired')`
+);
+
+/**
+ * Ride Offers table - FR21: Accept/Decline ride assignments
+ * Tracks ride offers to drivers with expiration and response handling
+ * Enables two-step assignment: dispatch offers -> driver accepts/declines
+ */
+export const rideOffers = pgTable(
+  "ride_offers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    rideId: uuid("ride_id")
+      .references(() => rides.id, { onDelete: "cascade" })
+      .notNull(),
+    driverId: uuid("driver_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    offeredAt: timestamp("offered_at", { withTimezone: true }).defaultNow().notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    status: text("status").notNull().default("pending"),
+    declineReason: text("decline_reason"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+  (_table) => [rideOfferStatusCheck]
+);
+
+export type RideOffer = InferSelectModel<typeof rideOffers>;
+export type NewRideOffer = InferInsertModel<typeof rideOffers>;
