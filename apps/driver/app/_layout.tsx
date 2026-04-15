@@ -1,11 +1,12 @@
 import '../global.css';
 
-import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
+import { ClerkProvider, ClerkLoaded, useAuth } from '@clerk/clerk-expo';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { Stack } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
 import { ErrorBoundary } from '../src/components';
+import { RideOfferModal } from '../src/features/trips/components';
 import { asyncStoragePersister, queryClient } from '../src/lib/queryClient';
 
 const tokenCache = {
@@ -19,6 +20,26 @@ const tokenCache = {
     return SecureStore.deleteItemAsync(key);
   },
 };
+
+/**
+ * Inner layout that has access to auth context
+ * Renders the RideOfferModal only when user is authenticated
+ */
+function AuthenticatedLayout() {
+  const { isSignedIn } = useAuth();
+
+  return (
+    <>
+      <Stack>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="trips/[id]" options={{ headerShown: false }} />
+      </Stack>
+      {/* RideOfferModal shows automatically when there's a pending offer */}
+      {isSignedIn && <RideOfferModal testID="ride-offer-modal" />}
+    </>
+  );
+}
 
 export default function RootLayout() {
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -36,11 +57,7 @@ export default function RootLayout() {
           <PersistQueryClientProvider
             client={queryClient}
             persistOptions={{ persister: asyncStoragePersister }}>
-            <Stack>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="trips/[id]" options={{ headerShown: false }} />
-            </Stack>
+            <AuthenticatedLayout />
           </PersistQueryClientProvider>
         </ClerkLoaded>
       </ClerkProvider>

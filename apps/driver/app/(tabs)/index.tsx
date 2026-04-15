@@ -1,13 +1,31 @@
+/**
+ * Driver Home Screen
+ *
+ * Main dashboard showing:
+ * - Personalized greeting
+ * - Driver status toggle
+ * - Trip queue with assigned rides
+ * - Quick stats
+ */
+
 import { useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, SafeAreaView, ScrollView } from 'react-native';
+import { useCallback } from 'react';
+import { View, Text, SafeAreaView, ScrollView, RefreshControl } from 'react-native';
 
-import { StatusToggle } from '../../src/features/trips/components';
+import {
+  StatusToggle,
+  TripCard,
+  EmptyTripQueue,
+  TripQueueSkeleton,
+} from '../../src/features/trips/components';
+import { useDriverTrips } from '../../src/features/trips/hooks';
 import { useTripStore } from '../../src/stores/tripStore';
 
 export default function HomeScreen() {
   const { user } = useUser();
   const { status, setStatus } = useTripStore();
+  const { data: trips, isLoading, refetch, isRefetching } = useDriverTrips();
 
   // Get greeting based on time of day
   const getGreeting = () => {
@@ -17,15 +35,27 @@ export default function HomeScreen() {
     return 'Good evening';
   };
 
+  const onRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const tripCount = trips?.length ?? 0;
+
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="flex-1 px-6 pt-4">
+      <ScrollView
+        className="flex-1 px-6 pt-4"
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />}>
         {/* Header */}
-        <View className="mb-6">
+        <View className="mb-4">
           <Text className="text-2xl font-bold text-foreground">
             {getGreeting()}, {user?.firstName || 'Driver'}
           </Text>
-          <Text className="text-gray-600">Ready to start driving?</Text>
+          <Text className="text-gray-600">
+            {tripCount > 0
+              ? `${tripCount} ride${tripCount !== 1 ? 's' : ''} assigned`
+              : 'Ready to start driving?'}
+          </Text>
         </View>
 
         {/* Status Toggle */}
@@ -33,22 +63,26 @@ export default function HomeScreen() {
           <StatusToggle value={status} onChange={setStatus} testID="driver-status-toggle" />
         </View>
 
-        {/* Trip Queue Placeholder */}
-        <View className="mb-6 items-center justify-center rounded-xl bg-white p-8 shadow-sm">
-          <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-            <Ionicons name="car" size={32} color="#1E40AF" />
-          </View>
-          <Text className="text-lg font-semibold text-foreground">Trip Queue</Text>
-          <Text className="mt-2 text-center text-gray-600">
-            Your assigned trips will appear here. Coming in Story 3.2.
-          </Text>
+        {/* Trip Queue */}
+        <View className="mb-6">
+          <Text className="mb-3 text-lg font-semibold text-foreground">Your Trips</Text>
+
+          {isLoading ? (
+            <TripQueueSkeleton count={3} testID="trip-queue-skeleton" />
+          ) : trips && trips.length > 0 ? (
+            trips.map((trip) => (
+              <TripCard key={trip.id} trip={trip} testID={`trip-card-${trip.id}`} />
+            ))
+          ) : (
+            <EmptyTripQueue testID="empty-trip-queue" />
+          )}
         </View>
 
-        {/* Quick Stats Placeholder */}
+        {/* Quick Stats */}
         <View className="mb-6 flex-row gap-4">
           <View className="flex-1 items-center rounded-xl bg-white p-4 shadow-sm">
-            <Text className="text-2xl font-bold text-primary">0</Text>
-            <Text className="text-sm text-gray-600">Today&apos;s Trips</Text>
+            <Text className="text-2xl font-bold text-primary">{tripCount}</Text>
+            <Text className="text-sm text-gray-600">Assigned</Text>
           </View>
           <View className="flex-1 items-center rounded-xl bg-white p-4 shadow-sm">
             <Text className="text-2xl font-bold text-green-600">$0</Text>
@@ -83,6 +117,9 @@ export default function HomeScreen() {
             </Text>
           </View>
         )}
+
+        {/* Bottom spacer */}
+        <View className="h-4" />
       </ScrollView>
     </SafeAreaView>
   );
