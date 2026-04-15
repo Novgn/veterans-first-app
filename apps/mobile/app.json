@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Veterans 1st",
+    "slug": "veterans-first-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "veterans-first",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.veteransfirst.mobile"
+    },
+    "android": {
+      "package": "com.veteransfirst.mobile"
+    },
+    "plugins": ["expo-router", "expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
