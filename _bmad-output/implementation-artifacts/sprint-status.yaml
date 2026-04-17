@@ -117,8 +117,8 @@ development_status:
   epic-3: in-progress
   3-1-create-driver-app-shell-and-navigation: done
   3-2-implement-driver-trip-queue: done
-  3-3-implement-accept-decline-rides: review
-  3-4-implement-trip-status-transitions: ready-for-dev
+  3-3-implement-accept-decline-rides: done
+  3-4-implement-trip-status-transitions: done
   3-5-implement-integrated-navigation: backlog
   3-6-implement-driver-contact-rider: backlog
   3-7-implement-driver-availability-schedule: backlog

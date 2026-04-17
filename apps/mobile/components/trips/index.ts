@@ -8,3 +8,5 @@ export { TripQueueSkeleton } from './TripQueueSkeleton';
 export { RideOfferModal } from './RideOfferModal';
 export { DeclineReasonSheet } from './DeclineReasonSheet';
 export { CountdownTimer } from './CountdownTimer';
+export { StatusActionButton, type StatusActionButtonProps } from './StatusActionButton';
+export { TripStatusBadge, type TripStatusBadgeProps, type RideStatusKey } from './TripStatusBadge';

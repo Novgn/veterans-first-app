@@ -57,3 +57,17 @@ export {
 export { useUpdateAccessibilityPreferences } from './useUpdateAccessibilityPreferences';
 export { useUpdateComfortPreferences } from './useUpdateComfortPreferences';
 export { useUpdateProfile, type UpdateProfileInput } from './useUpdateProfile';
+export {
+  useTripStatus,
+  STATUS_TO_EVENT,
+  VALID_TRANSITIONS,
+  isValidTransition,
+  type RideStatus,
+  type RideEventType,
+  type TripStatusInput,
+} from './useTripStatus';
+export {
+  useLocationCapture,
+  type LocationResult,
+  type UseLocationCaptureResult,
+} from './useLocationCapture';

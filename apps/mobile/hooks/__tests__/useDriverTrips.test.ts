@@ -162,7 +162,7 @@ describe('useDriverTrips', () => {
       expect(result.current.data).toEqual([]);
     });
 
-    it('only fetches assigned and confirmed rides', async () => {
+    it('fetches rides across all active driver statuses (Story 3.4)', async () => {
       const mockInFn = jest.fn().mockReturnValue({
         order: jest.fn().mockResolvedValue({ data: [], error: null }),
       });
@@ -202,7 +202,13 @@ describe('useDriverTrips', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockInFn).toHaveBeenCalledWith('status', ['assigned', 'confirmed']);
+      expect(mockInFn).toHaveBeenCalledWith('status', [
+        'assigned',
+        'confirmed',
+        'en_route',
+        'arrived',
+        'in_progress',
+      ]);
     });
   });
 

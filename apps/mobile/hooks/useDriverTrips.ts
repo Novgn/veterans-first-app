@@ -163,7 +163,7 @@ export function useDriverTrips() {
         `
         )
         .eq('driver_id', driverUser.id)
-        .in('status', ['assigned', 'confirmed'])
+        .in('status', ['assigned', 'confirmed', 'en_route', 'arrived', 'in_progress'])
         .order('scheduled_pickup_time', { ascending: true });
 
       if (error) {

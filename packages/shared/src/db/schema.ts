@@ -66,11 +66,12 @@ export const auditLogs = pgTable("audit_logs", {
 });
 
 // Status check constraints
-// Ride status progression: pending (booked) -> confirmed -> pending_acceptance -> assigned -> in_progress (en route) -> arrived -> completed
+// Ride status progression: pending (booked) -> confirmed -> pending_acceptance -> assigned -> en_route -> arrived -> in_progress -> completed
 // pending_acceptance: ride offered to driver, awaiting accept/decline
+// en_route: driver heading to pickup (Story 3.4)
 const rideStatusCheck = check(
   "ride_status_check",
-  sql`status IN ('pending', 'confirmed', 'pending_acceptance', 'assigned', 'in_progress', 'arrived', 'completed', 'cancelled')`
+  sql`status IN ('pending', 'confirmed', 'pending_acceptance', 'assigned', 'en_route', 'in_progress', 'arrived', 'completed', 'cancelled')`
 );
 
 const familyLinkStatusCheck = check(
@@ -264,3 +265,34 @@ export const rideOffers = pgTable(
 
 export type RideOffer = InferSelectModel<typeof rideOffers>;
 export type NewRideOffer = InferInsertModel<typeof rideOffers>;
+
+// Ride event type check constraint
+const rideEventTypeCheck = check(
+  "ride_event_type_check",
+  sql`event_type IN ('en_route', 'arrived', 'trip_started', 'trip_completed', 'no_show', 'cancelled')`
+);
+
+/**
+ * Ride Events table - FR22, FR47, FR48 (Story 3.4)
+ * Records every trip status transition with timestamp + GPS location.
+ * Used for audit, driver timeline, and dispatcher fleet view.
+ */
+export const rideEvents = pgTable(
+  "ride_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    rideId: uuid("ride_id")
+      .references(() => rides.id, { onDelete: "cascade" })
+      .notNull(),
+    eventType: text("event_type").notNull(),
+    driverId: uuid("driver_id").references(() => users.id),
+    lat: decimal("lat", { precision: 10, scale: 8 }),
+    lng: decimal("lng", { precision: 11, scale: 8 }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  },
+  (_table) => [rideEventTypeCheck]
+);
+
+export type RideEvent = InferSelectModel<typeof rideEvents>;
+export type NewRideEvent = InferInsertModel<typeof rideEvents>;

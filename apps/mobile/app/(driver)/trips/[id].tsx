@@ -1,23 +1,36 @@
 /**
- * Trip Detail Screen
+ * Trip Detail / Active Trip Screen (driver)
  *
- * Displays full trip details including:
- * - RiderProfileCard with full rider info
- * - Pickup and dropoff addresses with map preview
- * - Navigation button (placeholder for Story 3.5)
+ * Shows the assigned trip with rider info, route, and the primary status
+ * action (Start Route → Arrived → Start Trip → Complete Trip). Each tap
+ * captures GPS and writes a ride_event.
+ *
+ * Stories wiring in here:
+ *   3.2 — rider profile & trip fetch (already present)
+ *   3.4 — status transitions + location capture (this story)
+ *   3.5 — map/navigation placeholder remains
  */
 
 import { Ionicons } from '@expo/vector-icons';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View, Text, SafeAreaView, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
-import { RiderProfileCard } from '@/components/trips';
-import { useTrip, useRiderHistory } from '@/hooks';
+import { RiderProfileCard, StatusActionButton, TripStatusBadge } from '@/components/trips';
+import type { RideStatusKey } from '@/components/trips/TripStatusBadge';
+import { useLocationCapture, useTrip, useRiderHistory, useTripStatus } from '@/hooks';
+import type { RideStatus } from '@/hooks/useTripStatus';
 
-/**
- * Formats pickup time with smart date labels
- */
 function formatPickupTime(dateString: string): string {
   const date = new Date(dateString);
   const time = format(date, 'h:mm a');
@@ -27,6 +40,17 @@ function formatPickupTime(dateString: string): string {
   return format(date, 'EEEE, MMMM d') + ` at ${time}`;
 }
 
+const DRIVER_TRANSITIONABLE: readonly RideStatus[] = [
+  'assigned',
+  'en_route',
+  'arrived',
+  'in_progress',
+] as const;
+
+function isDriverTransitionable(status: string): status is RideStatus {
+  return (DRIVER_TRANSITIONABLE as readonly string[]).includes(status);
+}
+
 export default function TripDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -34,7 +58,55 @@ export default function TripDetailScreen() {
   const { data: trip, isLoading, error } = useTrip(id ?? '');
   const { data: relationshipCount = 0 } = useRiderHistory(trip?.rider?.id ?? '');
 
-  // Loading state
+  const tripStatus = useTripStatus();
+  const { captureLocation } = useLocationCapture();
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleTransition = async (nextStatus: RideStatus) => {
+    if (!trip) return;
+
+    if (nextStatus === 'completed') {
+      Alert.alert('Complete Trip?', 'This will mark the trip as completed. Continue?', [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Complete',
+          style: 'default',
+          onPress: () => void performTransition(nextStatus),
+        },
+      ]);
+      return;
+    }
+
+    await performTransition(nextStatus);
+  };
+
+  const performTransition = async (nextStatus: RideStatus) => {
+    if (!trip) return;
+    setIsTransitioning(true);
+    try {
+      const location = await captureLocation();
+      await tripStatus.mutateAsync({
+        rideId: trip.id,
+        newStatus: nextStatus,
+        location,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Could not update trip status';
+      Alert.alert('Update Failed', message);
+    } finally {
+      setIsTransitioning(false);
+    }
+  };
+
+  const handleContactRider = () => {
+    const phone = trip?.rider?.phone;
+    if (!phone) {
+      Alert.alert('Unavailable', 'Rider phone number is not available.');
+      return;
+    }
+    void Linking.openURL(`tel:${phone}`);
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-background">
@@ -56,7 +128,6 @@ export default function TripDetailScreen() {
     );
   }
 
-  // Error state
   if (error || !trip) {
     return (
       <SafeAreaView className="flex-1 bg-background">
@@ -91,6 +162,9 @@ export default function TripDetailScreen() {
     );
   }
 
+  const currentStatus = trip.status as RideStatusKey;
+  const showActionButton = isDriverTransitionable(trip.status);
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       {/* Header */}
@@ -108,21 +182,29 @@ export default function TripDetailScreen() {
             {formatPickupTime(trip.scheduledPickupTime)}
           </Text>
         </View>
-        <View className="rounded-full bg-blue-100 px-3 py-1">
-          <Text className="text-xs font-semibold text-blue-700">
-            {trip.status.replace('_', ' ').toUpperCase()}
-          </Text>
-        </View>
+        <TripStatusBadge status={currentStatus} testID="trip-status-badge" />
       </View>
 
       <ScrollView className="flex-1 px-4 py-4">
-        {/* Rider Profile Card */}
         <RiderProfileCard
           rider={trip.rider}
           preferences={trip.riderPreferences}
           relationshipCount={relationshipCount}
           testID="rider-profile-card"
         />
+
+        {/* Contact Rider */}
+        <View className="mt-4 flex-row gap-3">
+          <Pressable
+            onPress={handleContactRider}
+            className="min-h-[48px] flex-1 flex-row items-center justify-center rounded-xl border-2 border-primary bg-white"
+            accessibilityLabel="Call rider"
+            accessibilityRole="button"
+            testID="contact-rider-button">
+            <Ionicons name="call" size={20} color="#1E40AF" />
+            <Text className="ml-2 font-semibold text-primary">Call Rider</Text>
+          </Pressable>
+        </View>
 
         {/* Addresses Section */}
         <View className="mt-4 rounded-xl bg-white p-4 shadow-sm">
@@ -158,26 +240,29 @@ export default function TripDetailScreen() {
           </View>
         </View>
 
-        {/* Navigation Button - Placeholder for Story 3.5 */}
-        <View className="mt-4">
-          <Pressable
-            className="min-h-[56px] flex-row items-center justify-center rounded-xl bg-blue-600"
-            accessibilityLabel="Start navigation to pickup"
-            accessibilityRole="button"
-            accessibilityHint="Navigation coming in Story 3.5"
-            disabled
-            style={{ opacity: 0.6 }}>
-            <Ionicons name="navigate" size={24} color="white" />
-            <Text className="ml-2 text-lg font-semibold text-white">Start Navigation</Text>
-          </Pressable>
-          <Text className="mt-2 text-center text-xs text-gray-500">
-            Navigation integration coming in Story 3.5
+        {/* Map placeholder — Story 3.5 */}
+        <View className="mt-4 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-8">
+          <Ionicons name="map-outline" size={32} color="#9CA3AF" />
+          <Text className="mt-2 text-center text-sm text-gray-500">
+            Integrated navigation coming in Story 3.5
           </Text>
         </View>
 
-        {/* Spacer for bottom */}
-        <View className="h-8" />
+        {/* Spacer so sticky action doesn't cover content */}
+        <View className="h-24" />
       </ScrollView>
+
+      {/* Sticky primary action */}
+      {showActionButton ? (
+        <View className="border-t border-gray-200 bg-white p-4">
+          <StatusActionButton
+            currentStatus={trip.status as RideStatus}
+            onPress={handleTransition}
+            isLoading={isTransitioning || tripStatus.isPending}
+            testID="status-action-button"
+          />
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }

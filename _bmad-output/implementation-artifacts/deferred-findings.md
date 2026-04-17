@@ -1,0 +1,20 @@
+# Deferred Review Findings — Epic 3 Full-Auto Pipeline
+
+Tracks Low/Info findings deferred during autonomous story execution. Organized chronologically.
+
+## Pre-Pipeline Baseline (2026-04-17)
+
+### [Info] Pre-existing test failure: ConfirmationModal.test.tsx
+
+- **File:** `apps/mobile/components/rides/__tests__/ConfirmationModal.test.tsx`
+- **Failure:** `TypeError: Cannot read properties of undefined (reading 'alert')` at `EditProfileSheet.tsx:86`
+- **Origin:** Introduced during Story 2.12 (rider profile management); environment/mock issue unrelated to Epic 3.
+- **Recommendation:** Add Alert mock to `jest.setup.js` or clear barrel re-export coupling between `components/rides` and `components/profile`.
+- **Action:** Not fixed in this pipeline; scope is Epic 3 only.
+
+### [Info] RLS policy tests fail without local Supabase
+
+- **Files:** `packages/shared/src/db/__tests__/rls-policies.test.ts`, `audit-logging.test.ts`
+- **Failure:** "Failed to connect to Supabase. Is local Supabase running?"
+- **Origin:** Tests require local Supabase running via `supabase start`.
+- **Recommendation:** Environmental — tests pass when Supabase is live. Skip in CI without Supabase.
