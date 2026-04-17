@@ -29,3 +29,26 @@ links to the originating story for context.
 - **Where:** Both files exist. The root `lib/queryClient.ts` is what the new root `_layout.tsx` uses; the `features/rider/lib/queryClient.ts` is still imported by tests (`createTestWrapper`) and possibly by some legacy code paths.
 - **Suggested fix:** in a follow-up, delete `apps/mobile/features/rider/lib/queryClient.ts` and `apps/mobile/features/driver/lib/queryClient.ts`, repoint test wrappers and any leftover imports to `@/lib/queryClient`.
 - **Risk if not fixed:** Two QueryClient instances are created at runtime if any feature code still imports the rider/driver-local one. The root layout uses the consolidated one, but feature-local hooks may still see a separate cache.
+
+---
+
+## From Story 1.5.3 (apps/admin + apps/business → apps/web)
+
+### LOW — `apps/web/components/auth/RoleGate.tsx` and `eslint.config.mjs` carry pre-existing import-order warnings
+
+- **Where:** RoleGate has 3 `import/order` warnings inherited from the 1.5.1 scaffold; `eslint.config.mjs` has 1 inherited from admin's original config.
+- **Pre-existing:** Yes — present in 1.5.1 scaffold and the admin app before migration.
+- **Suggested fix:** `npx eslint --fix apps/web/**/*.{ts,tsx,mjs}`.
+- **Risk if not fixed:** None — warnings, exit 0.
+
+### INFO — Section layouts double-fetch `getCurrentUserWithRole()` when navigating from `/`
+
+- **Where:** `apps/web/app/page.tsx` calls `getCurrentUserWithRole()` to role-route, then redirects to (e.g.) `/admin`, where `apps/web/app/admin/layout.tsx` calls it again.
+- **Suggested fix:** Wrap `getCurrentUserWithRole` in React's `cache()` so it dedupes within a single request. (Story 1.5.4 should incorporate this when wiring the real Clerk + Drizzle lookup.)
+- **Risk if not fixed:** One extra DB hit + one extra Clerk call per navigation. Negligible in dev, undesirable in prod under load.
+
+### INFO — 'business' is not a UserRole; admins own the section
+
+- **Where:** `apps/web/app/business/layout.tsx` checks `user.role !== 'admin'`. The `UserRole` type set is `rider | driver | family | dispatcher | admin` — there's no `business` role. Until / unless a `business` role is introduced (Story 5.1+), admins own all business operations.
+- **Suggested fix:** None now. If a separate business-staff role is needed in Story 5, expand `UserRole` in `packages/shared/src/types/index.ts` and update this gate.
+- **Risk if not fixed:** None.

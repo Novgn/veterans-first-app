@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUserWithRole } from "@/lib/auth/current-user";
 
+// Auth-dependent: must run at request time, not build time.
+export const dynamic = "force-dynamic";
+
 // Detect placeholder Clerk keys used in CI builds; without a real key the
 // server-side currentUser lookup is unavailable, so render a static landing
 // page rather than crashing.
