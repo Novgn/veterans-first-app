@@ -11,11 +11,19 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-import { familyLinks, getDb, rideOffers, rides, users } from '@veterans-first/shared/db';
+import {
+  familyLinks,
+  getDb,
+  rideEvents,
+  rideOffers,
+  rides,
+  users,
+} from '@veterans-first/shared/db';
 import {
   buildDriverStatusMessage,
   buildFamilyArrivalMessage,
   buildFamilyPickupMessage,
+  pickArrivalPhotoUrl,
 } from '@veterans-first/shared';
 
 import { getCurrentUserId } from '@/lib/auth/roles';
@@ -90,6 +98,26 @@ async function fanOutToFamily(
     driverFirstName = driver?.firstName ?? null;
   }
 
+  // Resolve arrival photo URL for ride_completed events (Story 4.10).
+  let photoUrl: string | null = null;
+  if (event === 'ride_completed') {
+    const events = await db
+      .select({
+        eventType: rideEvents.eventType,
+        photoUrl: rideEvents.photoUrl,
+        createdAt: rideEvents.createdAt,
+      })
+      .from(rideEvents)
+      .where(eq(rideEvents.rideId, rideId));
+    photoUrl = pickArrivalPhotoUrl(
+      events.map((e) => ({
+        eventType: e.eventType,
+        photoUrl: e.photoUrl,
+        createdAt: e.createdAt ?? new Date(0),
+      })),
+    );
+  }
+
   // Approved family links with receive_notifications enabled.
   const familyRows = await db
     .select({
@@ -125,7 +153,8 @@ async function fanOutToFamily(
         : buildFamilyArrivalMessage({
             riderFirstName,
             arrivalAddress: ride.dropoffAddress,
-            hasPhoto: hasArrivalPhoto,
+            hasPhoto: hasArrivalPhoto || Boolean(photoUrl),
+            photoUrl: photoUrl ?? undefined,
           });
 
     await dispatchNotification(
@@ -135,6 +164,7 @@ async function fanOutToFamily(
         notificationType: event === 'ride_in_progress' ? 'family_pickup' : 'family_arrival',
         title: message.title,
         body: message.body,
+        imageUrl: event === 'ride_completed' && photoUrl ? photoUrl : undefined,
       },
       row.phone ?? null,
     );

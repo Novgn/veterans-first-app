@@ -181,18 +181,25 @@ export async function dispatchNotification(
     if (status === 'sent') sent.push(channel);
     else skipped.push(channel);
 
-    const [log] = await db
+    // Short-term: serialize imageUrl into content so the mobile history
+    // view can surface the arrival photo without a schema change.
+    // Tracked in deferred-findings for a proper `metadata jsonb` column.
+    const contentWithImage = payload.imageUrl
+      ? `${payload.title}\n${payload.body}\nphoto:${payload.imageUrl}`
+      : `${payload.title}\n${payload.body}`;
+
+    const [logRow] = await db
       .insert(notificationLogs)
       .values({
         userId: payload.userId,
         rideId: payload.rideId ?? null,
         notificationType: payload.notificationType,
         channel,
-        content: `${payload.title}\n${payload.body}`,
+        content: contentWithImage,
         status,
       })
       .returning();
-    if (log) logs.push(log);
+    if (logRow) logs.push(logRow);
   }
 
   return { attempted, sent, skipped, logs };

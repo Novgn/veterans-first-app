@@ -51,3 +51,8 @@ Tracks Low/Info findings deferred during autonomous story execution. Organized c
 
 - **Medium:** No caller actually invokes `/api/notifications/driver` yet — dispatch console's ride-assignment page needs a post-assign hook. Route is ready and tested via the shared message builder; wiring deferred to Epic 5 dispatch UI work.
 - **Medium:** Driver push token capture on sign-in is not implemented; requires `expo-notifications.getExpoPushTokenAsync()` at driver onboarding. Adds value only once transports are wired (see Story 4-6 finding).
+
+### Story 4-10
+
+- **Medium:** `notification_logs.content` stores the arrival photo URL as an unstructured suffix (`\nphoto:<url>`). A proper `metadata jsonb` column would be cleaner. Tracked for Epic 5 cleanup.
+- **Low:** The fan-out does a photo lookup on every `ride_completed` call; one extra query per ride. Fine at MVP scale; batch or pre-aggregate if ride_events grows large.

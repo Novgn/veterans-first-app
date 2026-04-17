@@ -146,7 +146,7 @@ development_status:
   #   - Cross-cutting notification prefs target apps/mobile + apps/web shared UI
   # Blocked on: epic-1-5 (migration)
   # ============================================================
-  epic-4: in-progress
+  epic-4: done
   4-1-implement-family-member-linking: done
   4-2-implement-family-access-revocation: done
   4-3-implement-family-member-dashboard: done
@@ -156,7 +156,7 @@ development_status:
   4-7-implement-driver-status-notifications: done
   4-8-implement-driver-notifications: done
   4-9-implement-family-pickup-notifications: done
-  4-10-implement-family-arrival-notifications-with-photo: backlog
+  4-10-implement-family-arrival-notifications-with-photo: done
   epic-4-retrospective: optional
 
   # ============================================================

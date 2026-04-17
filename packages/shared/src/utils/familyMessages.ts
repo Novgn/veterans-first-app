@@ -12,6 +12,27 @@ export interface FamilyArrivalContext {
   riderFirstName: string;
   arrivalAddress: string;
   hasPhoto: boolean;
+  photoUrl?: string | null;
+}
+
+export interface RideEventLike {
+  eventType: string;
+  photoUrl: string | null;
+  createdAt: Date | string;
+}
+
+/**
+ * Given a ride's events, return the URL of the most recent arrival
+ * photo (null when none was captured).
+ */
+export function pickArrivalPhotoUrl(events: readonly RideEventLike[]): string | null {
+  const arrivals = events
+    .filter((e) => e.eventType === "arrived" && e.photoUrl)
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt as string).getTime() - new Date(a.createdAt as string).getTime()
+    );
+  return arrivals[0]?.photoUrl ?? null;
 }
 
 export interface FamilyMessage {
