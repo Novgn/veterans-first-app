@@ -91,3 +91,10 @@ export {
 } from './useDriverEarnings';
 export { useArrivalPhotoUpload, type UseArrivalPhotoUploadResult } from './useArrivalPhotoUpload';
 export { useMarkNoShow, type NoShowInput } from './useMarkNoShow';
+export {
+  driverProfileKeys,
+  useDriverProfile,
+  useUpdateDriverProfile,
+  type DriverProfile as DriverProfileRecord,
+  type DriverProfileUpdate,
+} from './useDriverProfile';

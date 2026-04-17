@@ -125,7 +125,7 @@ development_status:
   3-8-implement-driver-earnings-dashboard: done
   3-9-implement-photo-arrival-confirmation: done
   3-10-implement-no-show-handling: done
-  3-11-implement-driver-profile-management: backlog
+  3-11-implement-driver-profile-management: done
   3-12-create-admin-console-shell-and-navigation: backlog
   3-13-implement-fleet-map-view: backlog
   3-14-implement-ride-assignment-and-reassignment: backlog

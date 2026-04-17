@@ -19,3 +19,10 @@ export { AssistanceToggles } from './AssistanceToggles';
 export { TemperatureSelector, TEMPERATURE_OPTIONS } from './TemperatureSelector';
 export { ConversationSelector, CONVERSATION_OPTIONS } from './ConversationSelector';
 export { MusicSelector, MUSIC_OPTIONS } from './MusicSelector';
+
+// Story 3.11: Driver Profile
+export {
+  EditDriverProfileSheet,
+  validateDriverProfileForm,
+  type EditDriverProfileSheetProps,
+} from './EditDriverProfileSheet';
