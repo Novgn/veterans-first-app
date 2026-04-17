@@ -20,6 +20,7 @@ export * from "./tripDocumentation";
 export * from "./serviceArea";
 export * from "./pricing";
 export * from "./operatingHours";
+export * from "./userManagement";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format
