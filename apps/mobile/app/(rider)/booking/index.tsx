@@ -12,10 +12,10 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
 
-import { Header } from '@rider/components/Header';
-import { DestinationPicker, StepIndicator } from '@rider/booking';
-import { useDestinations } from '@rider/profile/hooks/useDestinations';
-import { useBookingStore, Destination } from '@rider/stores/bookingStore';
+import { Header } from '@/components/Header';
+import { DestinationPicker, StepIndicator } from '@/features/booking';
+import { useDestinations } from '@/features/profile/hooks/useDestinations';
+import { useBookingStore, Destination } from '@/stores/bookingStore';
 
 export default function BookingStep1() {
   const { setDropoffDestination, setCurrentStep, loadSavedDestinations, resetBooking } =

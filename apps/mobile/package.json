@@ -82,8 +82,6 @@
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|nativewind|@clerk/clerk-expo|zustand)"
     ],
     "moduleNameMapper": {
-      "^@rider/(.*)$": "<rootDir>/features/rider/$1",
-      "^@driver/(.*)$": "<rootDir>/features/driver/$1",
       "^@/(.*)$": "<rootDir>/$1",
       "^expo-modules-core$": "<rootDir>/__mocks__/expo-modules-core.js",
       "^expo-modules-core/(.*)$": "<rootDir>/__mocks__/expo-modules-core.js",

@@ -28,15 +28,15 @@ import {
   ScrollView,
 } from 'react-native';
 
-import { Header } from '@rider/components/Header';
-import { DriverSelectionSheet, usePreferredDriver } from '@rider/drivers';
-import { EditProfileSheet, type EditProfileData } from '@rider/profile/components';
+import { Header } from '@/components/Header';
+import { DriverSelectionSheet, usePreferredDriver } from '@/features/drivers';
+import { EditProfileSheet, type EditProfileData } from '@/features/profile/components';
 import {
   useProfile,
   useUpdateProfile,
   useAccessibilityPreferences,
   useComfortPreferences,
-} from '@rider/profile/hooks';
+} from '@/features/profile/hooks';
 
 export default function Profile() {
   const { signOut, userId } = useAuth();

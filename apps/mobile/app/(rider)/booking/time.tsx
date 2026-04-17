@@ -14,9 +14,9 @@
 import { router } from 'expo-router';
 import { View, Text, SafeAreaView } from 'react-native';
 
-import { Header } from '@rider/components/Header';
-import { StepIndicator, TimePicker } from '@rider/booking';
-import { useBookingStore } from '@rider/stores/bookingStore';
+import { Header } from '@/components/Header';
+import { StepIndicator, TimePicker } from '@/features/booking';
+import { useBookingStore } from '@/stores/bookingStore';
 
 export default function BookingStep2() {
   const {

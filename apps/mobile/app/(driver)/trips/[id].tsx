@@ -12,8 +12,8 @@ import { format, isToday, isTomorrow } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View, Text, SafeAreaView, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 
-import { RiderProfileCard } from '@driver/trips/components';
-import { useTrip, useRiderHistory } from '@driver/trips/hooks';
+import { RiderProfileCard } from '@/features/trips/components';
+import { useTrip, useRiderHistory } from '@/features/trips/hooks';
 
 /**
  * Formats pickup time with smart date labels

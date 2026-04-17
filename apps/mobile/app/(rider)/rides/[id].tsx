@@ -24,8 +24,8 @@ import { Stack, useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
 import { View, Text, SafeAreaView, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 
-import { Header } from '@rider/components/Header';
-import { DriverCard } from '@rider/drivers';
+import { Header } from '@/components/Header';
+import { DriverCard } from '@/features/drivers';
 import {
   useRide,
   useCancelRide,
@@ -33,13 +33,13 @@ import {
   CancellationSuccessScreen,
   ContactDriverSheet,
   RideDetailCard,
-} from '@rider/rides';
+} from '@/features/rides';
 import {
   DriverTrackingMap,
   ETADisplay,
   DriverArrivedBanner,
   useDriverLocation,
-} from '@rider/tracking';
+} from '@/features/tracking';
 
 // TODO: In production, geocode pickup address to get coordinates
 // For MVP, using mock coordinates for San Francisco area

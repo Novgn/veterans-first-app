@@ -28,8 +28,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { Header } from '@rider/components/Header';
-import { useRides, RideCard, RideListItem, type RideWithDriver } from '@rider/rides';
+import { Header } from '@/components/Header';
+import { useRides, RideCard, RideListItem, type RideWithDriver } from '@/features/rides';
 
 /**
  * Categorizes rides into upcoming and past based on status

@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { View, Text, Pressable, SafeAreaView } from 'react-native';
 
-import { Header } from '@rider/components/Header';
+import { Header } from '@/components/Header';
 
 export default function Home() {
   const { user } = useUser();

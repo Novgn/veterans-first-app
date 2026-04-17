@@ -30,14 +30,14 @@ import {
   TemperatureSelector,
   ConversationSelector,
   MusicSelector,
-} from '@rider/profile/components';
+} from '@/features/profile/components';
 import {
   useComfortPreferences,
   useUpdateComfortPreferences,
   type TemperaturePreference,
   type ConversationPreference,
   type MusicPreference,
-} from '@rider/profile/hooks';
+} from '@/features/profile/hooks';
 
 export default function ComfortPreferencesScreen() {
   const { data: preferences, isLoading, error, refetch } = useComfortPreferences();

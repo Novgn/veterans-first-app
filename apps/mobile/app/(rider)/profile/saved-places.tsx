@@ -24,8 +24,8 @@ import {
   useDestinations,
   useDeleteDestination,
   type SavedDestination,
-} from '@rider/profile';
-import { useBookingStore } from '@rider/stores/bookingStore';
+} from '@/features/profile';
+import { useBookingStore } from '@/stores/bookingStore';
 
 export default function SavedPlaces() {
   const { data: destinations, isLoading, error, refetch } = useDestinations();

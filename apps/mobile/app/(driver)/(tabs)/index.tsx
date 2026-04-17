@@ -18,9 +18,9 @@ import {
   TripCard,
   EmptyTripQueue,
   TripQueueSkeleton,
-} from '@driver/trips/components';
-import { useDriverTrips } from '@driver/trips/hooks';
-import { useTripStore } from '@driver/stores/tripStore';
+} from '@/features/trips/components';
+import { useDriverTrips } from '@/features/trips/hooks';
+import { useTripStore } from '@/stores/tripStore';
 
 export default function HomeScreen() {
   const { user } = useUser();

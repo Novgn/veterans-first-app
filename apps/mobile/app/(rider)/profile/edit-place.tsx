@@ -26,7 +26,7 @@ import {
   GooglePlaceDetail,
 } from 'react-native-google-places-autocomplete';
 
-import { useDestinations, useUpdateDestination } from '@rider/profile';
+import { useDestinations, useUpdateDestination } from '@/features/profile';
 
 export default function EditPlace() {
   const { id } = useLocalSearchParams<{ id: string }>();

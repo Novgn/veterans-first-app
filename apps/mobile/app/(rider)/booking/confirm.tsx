@@ -22,17 +22,17 @@ import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, Pressable, ScrollView, Alert } from 'react-native';
 
-import { Header } from '@rider/components/Header';
+import { Header } from '@/components/Header';
 import {
   StepIndicator,
   PriceLockBadge,
   WaitTimeIndicator,
   RideSummaryCard,
   BookingSuccessScreen,
-} from '@rider/booking';
-import { useBookRide } from '@rider/booking/hooks/useBookRide';
-import { DriverPreferenceRow, DriverSelectionSheet, usePreferredDriver } from '@rider/drivers';
-import { useBookingStore } from '@rider/stores/bookingStore';
+} from '@/features/booking';
+import { useBookRide } from '@/features/booking/hooks/useBookRide';
+import { DriverPreferenceRow, DriverSelectionSheet, usePreferredDriver } from '@/features/drivers';
+import { useBookingStore } from '@/stores/bookingStore';
 
 /** Mock price in cents for MVP - real pricing Edge Function in future story */
 const MOCK_PRICE_CENTS = 4500; // $45

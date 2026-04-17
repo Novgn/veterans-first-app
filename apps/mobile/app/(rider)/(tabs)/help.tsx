@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Alert, Linking, View, Text, Pressable, SafeAreaView } from 'react-native';
 
-import { Header } from '@rider/components/Header';
-import { SUPPORT_PHONE } from '@rider/lib/constants';
+import { Header } from '@/components/Header';
+import { SUPPORT_PHONE } from '@/lib/constants';
 
 export default function Help() {
   const handleCallSupport = async () => {
