@@ -16,10 +16,17 @@ if (!connectionUrl) {
 }
 
 export default defineConfig({
-  schema: "./packages/shared/src/db/schema.ts",
-  out: "./supabase/migrations",
+  // Paths are relative to this config file (packages/shared/drizzle.config.ts).
+  // The schema lives alongside this config; migrations stay under
+  // ../../supabase/migrations because the Supabase CLI (used by `supabase
+  // start` in CI and local dev) reads from that fixed path. Drizzle Kit
+  // generate/migrate writes to the same location so both tools agree.
+  schema: "./src/db/schema.ts",
+  out: "../../supabase/migrations",
   dialect: "postgresql",
   dbCredentials: {
     url: connectionUrl,
   },
+  verbose: true,
+  strict: true,
 });

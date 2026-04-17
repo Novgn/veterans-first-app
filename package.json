@@ -14,8 +14,10 @@
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "db:generate": "drizzle-kit generate",
-    "db:push": "drizzle-kit push",
+    "db:generate": "npm run --prefix packages/shared db:generate",
+    "db:migrate": "npm run --prefix packages/shared db:migrate",
+    "db:push": "npm run --prefix packages/shared db:push",
+    "db:studio": "npm run --prefix packages/shared db:studio",
     "prepare": "husky"
   },
   "lint-staged": {
