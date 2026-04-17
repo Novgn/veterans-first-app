@@ -18,6 +18,7 @@ export * from "./operationalMetrics";
 export * from "./financialReports";
 export * from "./tripDocumentation";
 export * from "./serviceArea";
+export * from "./pricing";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format
