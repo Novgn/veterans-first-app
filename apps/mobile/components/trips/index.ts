@@ -11,3 +11,4 @@ export { CountdownTimer } from './CountdownTimer';
 export { StatusActionButton, type StatusActionButtonProps } from './StatusActionButton';
 export { TripStatusBadge, type TripStatusBadgeProps, type RideStatusKey } from './TripStatusBadge';
 export { NavigationButton, type NavigationButtonProps } from './NavigationButton';
+export { ContactRiderSheet, type ContactRiderSheetProps } from './ContactRiderSheet';

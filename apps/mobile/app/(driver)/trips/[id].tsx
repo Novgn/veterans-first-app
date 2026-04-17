@@ -18,7 +18,6 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Linking,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -27,6 +26,7 @@ import {
 } from 'react-native';
 
 import {
+  ContactRiderSheet,
   NavigationButton,
   RiderProfileCard,
   StatusActionButton,
@@ -66,6 +66,7 @@ export default function TripDetailScreen() {
   const tripStatus = useTripStatus();
   const { captureLocation } = useLocationCapture();
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showContactSheet, setShowContactSheet] = useState(false);
 
   const handleTransition = async (nextStatus: RideStatus) => {
     if (!trip) return;
@@ -104,12 +105,11 @@ export default function TripDetailScreen() {
   };
 
   const handleContactRider = () => {
-    const phone = trip?.rider?.phone;
-    if (!phone) {
+    if (!trip?.rider?.phone) {
       Alert.alert('Unavailable', 'Rider phone number is not available.');
       return;
     }
-    void Linking.openURL(`tel:${phone}`);
+    setShowContactSheet(true);
   };
 
   if (isLoading) {
@@ -198,16 +198,17 @@ export default function TripDetailScreen() {
           testID="rider-profile-card"
         />
 
-        {/* Contact Rider */}
+        {/* Contact Rider (Story 3.6) */}
         <View className="mt-4 flex-row gap-3">
           <Pressable
             onPress={handleContactRider}
             className="min-h-[48px] flex-1 flex-row items-center justify-center rounded-xl border-2 border-primary bg-white"
-            accessibilityLabel="Call rider"
+            accessibilityLabel="Contact rider"
             accessibilityRole="button"
+            accessibilityHint="Opens options to call or text the rider"
             testID="contact-rider-button">
             <Ionicons name="call" size={20} color="#1E40AF" />
-            <Text className="ml-2 font-semibold text-primary">Call Rider</Text>
+            <Text className="ml-2 font-semibold text-primary">Contact Rider</Text>
           </Pressable>
         </View>
 
@@ -277,6 +278,15 @@ export default function TripDetailScreen() {
           />
         </View>
       ) : null}
+
+      {/* Contact rider sheet (Story 3.6) */}
+      <ContactRiderSheet
+        visible={showContactSheet}
+        onClose={() => setShowContactSheet(false)}
+        riderName={trip.rider?.firstName ?? 'Rider'}
+        riderPhone={trip.rider?.phone ?? ''}
+        testID="contact-rider-sheet"
+      />
     </SafeAreaView>
   );
 }
