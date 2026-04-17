@@ -151,7 +151,7 @@ development_status:
   4-2-implement-family-access-revocation: done
   4-3-implement-family-member-dashboard: done
   4-4-implement-family-ride-booking: done
-  4-5-implement-notification-preferences: backlog
+  4-5-implement-notification-preferences: done
   4-6-implement-ride-reminder-notifications: backlog
   4-7-implement-driver-status-notifications: backlog
   4-8-implement-driver-notifications: backlog

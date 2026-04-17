@@ -21,6 +21,14 @@ export {
 } from './useComfortPreferences';
 export { useDeclineRide, type DeclineRideInput } from './useDeclineRide';
 export {
+  DEFAULT_NOTIFICATION_PREFERENCES,
+  notificationKeys,
+  useNotificationPreferences,
+  useUpdateNotificationPreferences,
+  type NotificationPreferences,
+  type NotificationPreferenceUpdate,
+} from './useNotificationPreferences';
+export {
   useFamilyBookRide,
   type FamilyBookRideInput,
   type FamilyBookRideResult,

@@ -351,3 +351,29 @@ export const driverAvailability = pgTable("driver_availability", {
 
 export type DriverAvailability = InferSelectModel<typeof driverAvailability>;
 export type NewDriverAvailability = InferInsertModel<typeof driverAvailability>;
+
+/**
+ * Notification Preferences — Story 4.5
+ * Controls which notification channels and types fire for a given user.
+ * Expo push token is stored here too (Story 4.8) so the send-notification
+ * pipeline can look it up alongside the preference gate.
+ */
+export const notificationPreferences = pgTable("notification_preferences", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .unique()
+    .notNull(),
+  pushEnabled: boolean("push_enabled").notNull().default(true),
+  smsEnabled: boolean("sms_enabled").notNull().default(true),
+  remindersEnabled: boolean("reminders_enabled").notNull().default(true),
+  driverUpdatesEnabled: boolean("driver_updates_enabled").notNull().default(true),
+  arrivalPhotosEnabled: boolean("arrival_photos_enabled").notNull().default(true),
+  marketingEnabled: boolean("marketing_enabled").notNull().default(false),
+  pushToken: text("push_token"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export type NotificationPreference = InferSelectModel<typeof notificationPreferences>;
+export type NewNotificationPreference = InferInsertModel<typeof notificationPreferences>;
