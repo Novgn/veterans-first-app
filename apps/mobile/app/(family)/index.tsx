@@ -7,6 +7,7 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 import { ActivityIndicator, FlatList, Pressable, SafeAreaView, Text, View } from 'react-native';
 
 import {
@@ -103,19 +104,24 @@ export default function FamilyHome() {
             ) : null
           }
           renderItem={({ item }) => (
-            <View
-              className="flex-row items-center rounded-xl bg-white p-4 shadow-sm"
-              testID={`family-linked-rider-${item.id}`}>
-              <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <Ionicons name="person" size={22} color="#1E40AF" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-semibold text-foreground">{riderName(item)}</Text>
-                {item.relationship ? (
-                  <Text className="text-sm text-gray-500">{item.relationship}</Text>
-                ) : null}
-              </View>
-            </View>
+            <Link href={{ pathname: '/rider/[id]', params: { id: item.rider_id } }} asChild>
+              <Pressable
+                className="flex-row items-center rounded-xl bg-white p-4 shadow-sm"
+                accessibilityLabel={`View rides for ${riderName(item)}`}
+                accessibilityRole="button"
+                testID={`family-linked-rider-${item.id}`}>
+                <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                  <Ionicons name="person" size={22} color="#1E40AF" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-base font-semibold text-foreground">{riderName(item)}</Text>
+                  {item.relationship ? (
+                    <Text className="text-sm text-gray-500">{item.relationship}</Text>
+                  ) : null}
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+              </Pressable>
+            </Link>
           )}
         />
       )}

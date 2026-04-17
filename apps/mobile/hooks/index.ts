@@ -21,6 +21,16 @@ export {
 } from './useComfortPreferences';
 export { useDeclineRide, type DeclineRideInput } from './useDeclineRide';
 export {
+  familyRideKeys,
+  useFamilyRiderRides,
+  useFamilyRideDetail,
+  type FamilyRideRow,
+  type FamilyRideDetail,
+  type FamilyRideEvent,
+  type FamilyRideDriver,
+  type FamilyRideBuckets,
+} from './useFamilyRiderRides';
+export {
   familyLinkKeys,
   useFamilyLinks,
   useInviteFamilyMember,
