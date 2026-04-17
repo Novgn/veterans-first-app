@@ -58,6 +58,37 @@ export default function ProfileLayout() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="family-access"
+        options={{
+          title: 'Family Access',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#FAFAF9' },
+          headerTintColor: '#1E40AF',
+          headerTitleStyle: { fontWeight: '600', fontSize: 18 },
+        }}
+      />
+      <Stack.Screen
+        name="family-access/add"
+        options={{
+          title: 'Add Family Member',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#FAFAF9' },
+          headerTintColor: '#1E40AF',
+          headerTitleStyle: { fontWeight: '600', fontSize: 18 },
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="notifications"
+        options={{
+          title: 'Notifications',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#FAFAF9' },
+          headerTintColor: '#1E40AF',
+          headerTitleStyle: { fontWeight: '600', fontSize: 18 },
+        }}
+      />
     </Stack>
   );
 }

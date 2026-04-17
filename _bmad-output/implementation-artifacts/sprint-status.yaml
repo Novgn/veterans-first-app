@@ -146,8 +146,8 @@ development_status:
   #   - Cross-cutting notification prefs target apps/mobile + apps/web shared UI
   # Blocked on: epic-1-5 (migration)
   # ============================================================
-  epic-4: backlog
-  4-1-implement-family-member-linking: backlog
+  epic-4: in-progress
+  4-1-implement-family-member-linking: in-review
   4-2-implement-family-access-revocation: backlog
   4-3-implement-family-member-dashboard: backlog
   4-4-implement-family-ride-booking: backlog

@@ -176,6 +176,13 @@ describe("Database Schema", () => {
         id: "123e4567-e89b-12d3-a456-426614174005",
         riderId: "123e4567-e89b-12d3-a456-426614174000",
         familyMemberId: "123e4567-e89b-12d3-a456-426614174006",
+        invitedPhone: null,
+        relationship: "Daughter",
+        permissions: {
+          view_rides: true,
+          book_rides: false,
+          receive_notifications: true,
+        },
         status: "approved",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -184,6 +191,11 @@ describe("Database Schema", () => {
       const mockNewFamilyLink: NewFamilyLink = {
         riderId: "123e4567-e89b-12d3-a456-426614174000",
         familyMemberId: "123e4567-e89b-12d3-a456-426614174006",
+        permissions: {
+          view_rides: true,
+          book_rides: false,
+          receive_notifications: true,
+        },
         status: "pending",
       };
 

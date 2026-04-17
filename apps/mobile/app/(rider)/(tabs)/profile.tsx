@@ -299,27 +299,41 @@ export default function Profile() {
             </Pressable>
           </Link>
 
-          {/* Family Access - Epic 4 placeholder */}
-          <View className="h-[56px] flex-row items-center justify-between border-b border-gray-100 px-4 opacity-50">
-            <View className="flex-row items-center">
-              <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-orange-100">
-                <Ionicons name="people" size={20} color="#EA580C" />
+          {/* Family Access - Story 4.1 */}
+          <Link href="/profile/family-access" asChild>
+            <Pressable
+              className="h-[56px] flex-row items-center justify-between border-b border-gray-100 px-4"
+              accessibilityLabel="Family Access"
+              accessibilityRole="button"
+              accessibilityHint="Manage which family members can view your rides"
+              testID="profile-family-access-row">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-orange-100">
+                  <Ionicons name="people" size={20} color="#EA580C" />
+                </View>
+                <Text className="text-lg font-medium text-foreground">Family Access</Text>
               </View>
-              <Text className="text-lg font-medium text-gray-600">Family Access</Text>
-            </View>
-            <Text className="text-sm text-gray-400">Coming Soon</Text>
-          </View>
+              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            </Pressable>
+          </Link>
 
-          {/* Notification Settings - Epic 4 placeholder */}
-          <View className="h-[56px] flex-row items-center justify-between px-4 opacity-50">
-            <View className="flex-row items-center">
-              <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                <Ionicons name="notifications-outline" size={20} color="#6B7280" />
+          {/* Notification Settings - Story 4.5 */}
+          <Link href="/profile/notifications" asChild>
+            <Pressable
+              className="h-[56px] flex-row items-center justify-between px-4"
+              accessibilityLabel="Notification Settings"
+              accessibilityRole="button"
+              accessibilityHint="Choose how you receive notifications"
+              testID="profile-notifications-row">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                  <Ionicons name="notifications-outline" size={20} color="#6B7280" />
+                </View>
+                <Text className="text-lg font-medium text-foreground">Notification Settings</Text>
               </View>
-              <Text className="text-lg font-medium text-gray-600">Notification Settings</Text>
-            </View>
-            <Text className="text-sm text-gray-400">Coming Soon</Text>
-          </View>
+              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            </Pressable>
+          </Link>
         </View>
 
         {/* My Drivers Section - Story 2.7 */}

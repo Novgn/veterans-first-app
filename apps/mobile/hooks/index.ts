@@ -21,6 +21,23 @@ export {
 } from './useComfortPreferences';
 export { useDeclineRide, type DeclineRideInput } from './useDeclineRide';
 export {
+  familyLinkKeys,
+  useFamilyLinks,
+  useInviteFamilyMember,
+  useRespondToFamilyInvite,
+  useRevokeFamilyLink,
+  normalizePhone,
+  DEFAULT_FAMILY_PERMISSIONS,
+  type FamilyLinkRow,
+  type FamilyLinkView,
+  type FamilyLinkPerson,
+  type FamilyLinkPermissions,
+  type FamilyLinkStatus,
+  type InviteFamilyInput,
+  type RespondToInviteInput,
+  type RevokeLinkInput,
+} from './useFamilyLinks';
+export {
   destinationKeys,
   useCreateDestination,
   useDeleteDestination,

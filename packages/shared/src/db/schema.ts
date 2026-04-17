@@ -159,8 +159,29 @@ export const rides = pgTable(
 );
 
 /**
+ * Permissions stored on a family link. Controls what the linked family
+ * member can do once the link reaches `approved` status.
+ */
+export interface FamilyLinkPermissions {
+  view_rides: boolean;
+  book_rides: boolean;
+  receive_notifications: boolean;
+}
+
+export const DEFAULT_FAMILY_LINK_PERMISSIONS: FamilyLinkPermissions = {
+  view_rides: true,
+  book_rides: false,
+  receive_notifications: true,
+};
+
+/**
  * Family Links table - Manages family member access to rider data
- * Enables family role to view rides of linked riders
+ * Enables family role to view rides of linked riders.
+ *
+ * `family_member_id` is nullable so a rider can invite a phone number that
+ * isn't a user yet (see `invited_phone`). A CHECK constraint at the DB
+ * level guarantees that at least one of the two identifying columns is
+ * populated on every row.
  */
 export const familyLinks = pgTable(
   "family_links",
@@ -169,9 +190,10 @@ export const familyLinks = pgTable(
     riderId: uuid("rider_id")
       .notNull()
       .references(() => users.id),
-    familyMemberId: uuid("family_member_id")
-      .notNull()
-      .references(() => users.id),
+    familyMemberId: uuid("family_member_id").references(() => users.id),
+    invitedPhone: text("invited_phone"),
+    relationship: text("relationship"),
+    permissions: jsonb("permissions").$type<FamilyLinkPermissions>().notNull(),
     status: text("status").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
