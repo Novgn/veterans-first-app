@@ -21,7 +21,9 @@ export type RideNotificationType =
   | 'driver_arrived'
   | 'ride_accepted'
   | 'ride_declined'
-  | 'offer_expired';
+  | 'offer_expired'
+  | 'ride_in_progress'
+  | 'ride_completed';
 
 export type DriverNotificationType =
   | 'driver_ride_assigned'
@@ -56,6 +58,8 @@ export function notifyRideEvent(
     rideId: string;
     driverId?: string;
     etaMinutes?: number;
+    /** Set when completing a ride with an arrival photo captured. */
+    hasArrivalPhoto?: boolean;
   }
 ): Promise<void> {
   return postJson('/api/notifications/ride', payload, session);

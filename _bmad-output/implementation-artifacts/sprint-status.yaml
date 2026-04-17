@@ -155,7 +155,7 @@ development_status:
   4-6-implement-ride-reminder-notifications: done
   4-7-implement-driver-status-notifications: done
   4-8-implement-driver-notifications: done
-  4-9-implement-family-pickup-notifications: backlog
+  4-9-implement-family-pickup-notifications: done
   4-10-implement-family-arrival-notifications-with-photo: backlog
   epic-4-retrospective: optional
 

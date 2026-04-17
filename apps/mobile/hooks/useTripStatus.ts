@@ -70,6 +70,8 @@ export function isValidTransition(current: RideStatus, next: RideStatus): boolea
 const STATUS_TO_NOTIFICATION: Partial<Record<RideStatus, RideNotificationType>> = {
   en_route: 'driver_en_route',
   arrived: 'driver_arrived',
+  in_progress: 'ride_in_progress',
+  completed: 'ride_completed',
 };
 
 export function useTripStatus() {
@@ -128,6 +130,8 @@ export function useTripStatus() {
         void notifyRideEvent(session, {
           type: notifyType,
           rideId: variables.rideId,
+          hasArrivalPhoto:
+            notifyType === 'ride_completed' ? Boolean(variables.photoUrl) : undefined,
         });
       }
     },
