@@ -15,7 +15,9 @@ export interface LatLng {
 
 export type ServiceAreaPolygon = LatLng[];
 
-export type ParseResult = { ok: true; polygon: ServiceAreaPolygon } | { ok: false; reason: string };
+export type ServiceAreaParseResult =
+  | { ok: true; polygon: ServiceAreaPolygon }
+  | { ok: false; reason: string };
 
 function isLatLng(value: unknown): value is LatLng {
   if (!value || typeof value !== "object") return false;
@@ -34,7 +36,7 @@ function isLatLng(value: unknown): value is LatLng {
   );
 }
 
-export function parseServiceAreaPolygon(raw: string): ParseResult {
+export function parseServiceAreaPolygon(raw: string): ServiceAreaParseResult {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
