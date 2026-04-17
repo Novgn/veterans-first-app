@@ -9,10 +9,10 @@
 //
 // UX only. Supabase RLS enforces the real security boundary.
 
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-import type { UserRole } from "@veterans-first/shared";
-import { useRole } from "../../lib/auth/use-role";
+import type { UserRole } from '@veterans-first/shared';
+import { useRole } from '../../lib/auth/use-role';
 
 export interface RoleGateProps {
   /** Role(s) allowed to see the gated content. Pass a single role or an array. */
