@@ -2,6 +2,7 @@ import { useAuth } from '@clerk/clerk-expo';
 import { Stack } from 'expo-router';
 
 import { RoleGate } from '@/components/auth/RoleGate';
+import { WrongRoleScreen } from '@/components/auth/WrongRoleScreen';
 import { RideOfferModal } from '@driver/trips/components';
 
 function DriverStack() {
@@ -22,7 +23,7 @@ function DriverStack() {
 
 export default function DriverLayout() {
   return (
-    <RoleGate allowedRoles="driver">
+    <RoleGate allowedRoles="driver" fallback={<WrongRoleScreen expected="driver" />}>
       <DriverStack />
     </RoleGate>
   );

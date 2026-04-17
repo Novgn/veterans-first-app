@@ -1,12 +1,14 @@
 import { Stack } from 'expo-router';
 
 import { RoleGate } from '@/components/auth/RoleGate';
+import { WrongRoleScreen } from '@/components/auth/WrongRoleScreen';
 
 export default function RiderLayout() {
-  // Default role for unset users is 'rider' (most common). Story 1.5.4 will
-  // tighten the gate once the Supabase user_roles → Clerk sync is wired.
   return (
-    <RoleGate allowedRoles={['rider', 'family']}>
+    <RoleGate
+      allowedRoles="rider"
+      allowUnresolvedRole
+      fallback={<WrongRoleScreen expected="rider" />}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="profile" />

@@ -20,15 +20,30 @@ export interface RoleGateProps {
   children: ReactNode;
   /** Rendered when the user's role is not in `allowedRoles`. Defaults to null. */
   fallback?: ReactNode;
+  /**
+   * When true, users with no resolved role (e.g. brand-new sign-ups before
+   * dispatch assigns a role) are allowed through. Use this on the default
+   * landing route group (rider) to avoid blocking new accounts.
+   */
+  allowUnresolvedRole?: boolean;
 }
 
-export function RoleGate({ allowedRoles, children, fallback = null }: RoleGateProps) {
+export function RoleGate({
+  allowedRoles,
+  children,
+  fallback = null,
+  allowUnresolvedRole = false,
+}: RoleGateProps) {
   const { role, isLoading } = useRole();
 
   if (isLoading) return null;
 
   const allowed = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles as UserRole];
   if (role != null && allowed.includes(role)) {
+    return <>{children}</>;
+  }
+
+  if (role == null && allowUnresolvedRole) {
     return <>{children}</>;
   }
 
