@@ -9,6 +9,7 @@ export * from "./familyMessages";
 export * from "./driverDeactivation";
 export * from "./driverOnboarding";
 export * from "./invoicing";
+export * from "./paymentCharging";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format
