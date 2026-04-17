@@ -9,6 +9,13 @@
 
 // Note: @testing-library/react-native v12+ includes jest-native matchers automatically
 
+// Mock react-native-reanimated (SDK 55 uses the library's built-in mock)
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+
+// Mock react-native-worklets — reanimated's mock transitively imports worklets,
+// which throws in Jest because the native module isn't initialized.
+jest.mock('react-native-worklets', () => require('react-native-worklets/lib/module/mock'));
+
 // Mock expo-modules-core (required for jest-expo compatibility with Expo SDK 54+)
 jest.mock('expo-modules-core', () => ({
   NativeModulesProxy: {},
@@ -60,6 +67,21 @@ jest.mock('expo-location', () => ({
 jest.mock('react-native-google-places-autocomplete', () => ({
   GooglePlacesAutocomplete: 'GooglePlacesAutocomplete',
 }));
+
+// Mock react-native-maps (native module unavailable in Jest from v1.21+)
+jest.mock('react-native-maps', () => {
+  const MockMapView = 'MapView';
+  const MockMarker = 'Marker';
+  const MockPolyline = 'Polyline';
+  return {
+    __esModule: true,
+    default: MockMapView,
+    Marker: MockMarker,
+    Polyline: MockPolyline,
+    PROVIDER_GOOGLE: 'google',
+    PROVIDER_DEFAULT: 'default',
+  };
+});
 
 // Mock @expo/vector-icons
 jest.mock('@expo/vector-icons', () => ({
