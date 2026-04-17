@@ -29,7 +29,8 @@ import {
 } from 'react-native';
 
 import { Header } from '@/components/Header';
-import { useRides, RideCard, RideListItem, type RideWithDriver } from '@/features/rides';
+import { RideCard, RideListItem, type RideWithDriver } from '@/components/rides';
+import { useRides } from '@/hooks/useRides';
 
 /**
  * Categorizes rides into upcoming and past based on status

@@ -29,7 +29,7 @@ import {
   GooglePlaceDetail,
 } from 'react-native-google-places-autocomplete';
 
-import { useCreateDestination } from '@/features/profile';
+import { useCreateDestination } from '@/hooks/useDestinations';
 
 export default function AddPlace() {
   const createDestination = useCreateDestination();

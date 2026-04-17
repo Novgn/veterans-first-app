@@ -29,9 +29,10 @@ import {
   WaitTimeIndicator,
   RideSummaryCard,
   BookingSuccessScreen,
-} from '@/features/booking';
-import { useBookRide } from '@/features/booking/hooks/useBookRide';
-import { DriverPreferenceRow, DriverSelectionSheet, usePreferredDriver } from '@/features/drivers';
+} from '@/components/booking';
+import { useBookRide } from '@/hooks/useBookRide';
+import { DriverPreferenceRow, DriverSelectionSheet } from '@/components/drivers';
+import { usePreferredDriver } from '@/hooks/usePreferredDriver';
 import { useBookingStore } from '@/stores/bookingStore';
 
 /** Mock price in cents for MVP - real pricing Edge Function in future story */

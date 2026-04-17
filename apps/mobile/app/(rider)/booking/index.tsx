@@ -13,8 +13,8 @@ import { useEffect } from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
 
 import { Header } from '@/components/Header';
-import { DestinationPicker, StepIndicator } from '@/features/booking';
-import { useDestinations } from '@/features/profile/hooks/useDestinations';
+import { DestinationPicker, StepIndicator } from '@/components/booking';
+import { useDestinations } from '@/hooks/useDestinations';
 import { useBookingStore, Destination } from '@/stores/bookingStore';
 
 export default function BookingStep1() {

@@ -13,13 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCallback } from 'react';
 import { View, Text, SafeAreaView, ScrollView, RefreshControl } from 'react-native';
 
-import {
-  StatusToggle,
-  TripCard,
-  EmptyTripQueue,
-  TripQueueSkeleton,
-} from '@/features/trips/components';
-import { useDriverTrips } from '@/features/trips/hooks';
+import { StatusToggle, TripCard, EmptyTripQueue, TripQueueSkeleton } from '@/components/trips';
+import { useDriverTrips } from '@/hooks';
 import { useTripStore } from '@/stores/tripStore';
 
 export default function HomeScreen() {

@@ -9,7 +9,7 @@
 
 import { create } from 'zustand';
 
-import type { DriverStatus } from '@/features/trips/components/StatusToggle';
+import type { DriverStatus } from '@/components/trips/StatusToggle';
 
 interface TripState {
   status: DriverStatus;

@@ -26,18 +26,14 @@ import {
   Keyboard,
 } from 'react-native';
 
-import {
-  TemperatureSelector,
-  ConversationSelector,
-  MusicSelector,
-} from '@/features/profile/components';
+import { TemperatureSelector, ConversationSelector, MusicSelector } from '@/components/profile';
 import {
   useComfortPreferences,
   useUpdateComfortPreferences,
   type TemperaturePreference,
   type ConversationPreference,
   type MusicPreference,
-} from '@/features/profile/hooks';
+} from '@/hooks';
 
 export default function ComfortPreferencesScreen() {
   const { data: preferences, isLoading, error, refetch } = useComfortPreferences();

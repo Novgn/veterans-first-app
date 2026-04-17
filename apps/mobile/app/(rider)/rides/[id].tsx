@@ -25,21 +25,15 @@ import { useState } from 'react';
 import { View, Text, SafeAreaView, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 
 import { Header } from '@/components/Header';
-import { DriverCard } from '@/features/drivers';
+import { DriverCard } from '@/components/drivers';
 import {
-  useRide,
-  useCancelRide,
-  ConfirmationModal,
   CancellationSuccessScreen,
+  ConfirmationModal,
   ContactDriverSheet,
   RideDetailCard,
-} from '@/features/rides';
-import {
-  DriverTrackingMap,
-  ETADisplay,
-  DriverArrivedBanner,
-  useDriverLocation,
-} from '@/features/tracking';
+} from '@/components/rides';
+import { DriverArrivedBanner, DriverTrackingMap, ETADisplay } from '@/components/tracking';
+import { useCancelRide, useDriverLocation, useRide } from '@/hooks';
 
 // TODO: In production, geocode pickup address to get coordinates
 // For MVP, using mock coordinates for San Francisco area

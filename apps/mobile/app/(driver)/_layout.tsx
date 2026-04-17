@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 
 import { RoleGate } from '@/components/auth/RoleGate';
 import { WrongRoleScreen } from '@/components/auth/WrongRoleScreen';
-import { RideOfferModal } from '@/features/trips/components';
+import { RideOfferModal } from '@/components/trips';
 
 function DriverStack() {
   const { isSignedIn } = useAuth();

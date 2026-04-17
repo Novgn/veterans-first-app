@@ -26,12 +26,12 @@ import {
   Keyboard,
 } from 'react-native';
 
-import { MobilityAidSelector, AssistanceToggles } from '@/features/profile/components';
+import { MobilityAidSelector, AssistanceToggles } from '@/components/profile';
 import {
   useAccessibilityPreferences,
   useUpdateAccessibilityPreferences,
   type MobilityAidType,
-} from '@/features/profile/hooks';
+} from '@/hooks';
 
 export default function AccessibilityPreferencesScreen() {
   const { data: preferences, isLoading, error, refetch } = useAccessibilityPreferences();

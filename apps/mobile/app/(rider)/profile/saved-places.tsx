@@ -19,12 +19,8 @@ import {
   Alert,
 } from 'react-native';
 
-import {
-  DestinationCard,
-  useDestinations,
-  useDeleteDestination,
-  type SavedDestination,
-} from '@/features/profile';
+import { DestinationCard } from '@/components/profile';
+import { useDeleteDestination, useDestinations, type SavedDestination } from '@/hooks';
 import { useBookingStore } from '@/stores/bookingStore';
 
 export default function SavedPlaces() {

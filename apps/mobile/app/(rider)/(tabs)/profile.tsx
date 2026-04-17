@@ -29,14 +29,15 @@ import {
 } from 'react-native';
 
 import { Header } from '@/components/Header';
-import { DriverSelectionSheet, usePreferredDriver } from '@/features/drivers';
-import { EditProfileSheet, type EditProfileData } from '@/features/profile/components';
+import { DriverSelectionSheet } from '@/components/drivers';
+import { usePreferredDriver } from '@/hooks/usePreferredDriver';
+import { EditProfileSheet, type EditProfileData } from '@/components/profile';
 import {
   useProfile,
   useUpdateProfile,
   useAccessibilityPreferences,
   useComfortPreferences,
-} from '@/features/profile/hooks';
+} from '@/hooks';
 
 export default function Profile() {
   const { signOut, userId } = useAuth();

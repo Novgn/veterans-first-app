@@ -29,8 +29,8 @@ import {
 } from 'react-native';
 
 import { Header } from '@/components/Header';
-import { DateSelector, TimeSlot } from '@/features/booking';
-import { useRide, useModifyRide } from '@/features/rides';
+import { DateSelector, TimeSlot } from '@/components/booking';
+import { useRide, useModifyRide } from '@/hooks';
 
 /**
  * Generate time slots from 8:00 AM to 6:00 PM in 30-minute increments
