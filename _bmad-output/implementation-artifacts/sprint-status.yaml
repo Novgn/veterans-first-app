@@ -169,8 +169,8 @@ development_status:
   #   - Story 5-1 "Create business operations app shell" becomes "Add business section to apps/web"
   # Blocked on: epic-1-5 (migration)
   # ============================================================
-  epic-5: backlog
-  5-1-create-business-operations-app-shell: backlog
+  epic-5: in-progress
+  5-1-create-business-operations-app-shell: done
   5-2-implement-driver-roster-management: backlog
   5-3-implement-driver-onboarding: backlog
   5-4-implement-invoice-generation: backlog
