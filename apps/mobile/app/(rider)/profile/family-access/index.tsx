@@ -2,16 +2,19 @@
  * Rider-facing Family Access screen (Story 4.1, 4.2).
  *
  * Lists the rider's linked family members with status + permissions and
- * provides an entry point to invite a new member.
+ * provides an entry point to invite a new member. Revocation runs
+ * through a 60-second undo window (Story 4.2).
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { Link, Stack } from 'expo-router';
-import { useState } from 'react';
+import { Link, Stack, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, SafeAreaView, Text, View } from 'react-native';
 
 import { ConfirmRevokeModal } from '@/components/family/ConfirmRevokeModal';
-import { useFamilyLinks, useRevokeFamilyLink, type FamilyLinkView } from '@/hooks/useFamilyLinks';
+import { UndoToast } from '@/components/family/UndoToast';
+import { useFamilyLinks, type FamilyLinkView } from '@/hooks/useFamilyLinks';
+import { useRevokeWithUndo } from '@/hooks/useRevokeWithUndo';
 
 function displayName(link: FamilyLinkView): string {
   if (link.counterpart) {
@@ -33,14 +36,30 @@ function statusLabel(status: FamilyLinkView['status']): { text: string; tone: st
 
 export default function FamilyAccessScreen() {
   const { data: links = [], isLoading } = useFamilyLinks('rider');
-  const revoke = useRevokeFamilyLink();
+  const { queueRevocation, undo, flush, pending, isPending } = useRevokeWithUndo();
   const [confirming, setConfirming] = useState<FamilyLinkView | null>(null);
 
-  const handleRevoke = async () => {
+  // Flush any pending queue entries when the user navigates away so the
+  // server-side delete definitely happens.
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        Object.values(pending).forEach((entry) => {
+          clearTimeout(entry.timer);
+          void flush(entry.linkId);
+        });
+      };
+    }, [pending, flush])
+  );
+
+  const handleConfirmRevoke = () => {
     if (!confirming) return;
-    await revoke.mutateAsync({ linkId: confirming.id });
+    queueRevocation({ linkId: confirming.id, memberName: displayName(confirming) });
     setConfirming(null);
   };
+
+  const visibleLinks = links.filter((link) => !isPending(link.id));
+  const pendingEntries = Object.values(pending);
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -55,7 +74,7 @@ export default function FamilyAccessScreen() {
 
         {isLoading ? (
           <ActivityIndicator size="large" color="#1E40AF" className="mt-8" />
-        ) : links.length === 0 ? (
+        ) : visibleLinks.length === 0 ? (
           <View className="items-center rounded-xl bg-white p-6 shadow-sm">
             <Ionicons name="people-outline" size={40} color="#6B7280" />
             <Text className="mt-3 text-center text-base text-gray-600">
@@ -65,7 +84,7 @@ export default function FamilyAccessScreen() {
           </View>
         ) : (
           <FlatList
-            data={links}
+            data={visibleLinks}
             keyExtractor={(item) => item.id}
             ItemSeparatorComponent={() => <View className="h-3" />}
             renderItem={({ item }) => {
@@ -114,12 +133,20 @@ export default function FamilyAccessScreen() {
         </Link>
       </View>
 
+      {pendingEntries.map((entry) => (
+        <UndoToast
+          key={entry.linkId}
+          memberName={entry.memberName}
+          expiresAt={entry.expiresAt}
+          onUndo={() => undo(entry.linkId)}
+        />
+      ))}
+
       <ConfirmRevokeModal
         visible={confirming !== null}
         memberName={confirming ? displayName(confirming) : ''}
         onCancel={() => setConfirming(null)}
-        onConfirm={handleRevoke}
-        isLoading={revoke.isPending}
+        onConfirm={handleConfirmRevoke}
       />
     </SafeAreaView>
   );

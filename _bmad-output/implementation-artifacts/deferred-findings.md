@@ -25,3 +25,7 @@ Tracks Low/Info findings deferred during autonomous story execution. Organized c
 
 - **Low:** `/profile/notifications` link in the rider profile row will be unresolved until Story 4-5 ships; acceptable during the batch since 4-5 is in the queue.
 - **Info:** Invited phone claim relies on the user-signed-in phone matching `phone` column exactly. Clerk phone onboarding already normalizes to E.164, but any future flow that skips normalization would break claim. Covered implicitly by Story 4-1 `normalizePhone`.
+
+### Story 4-2
+
+- **Medium (pre-existing):** Pre-existing flaky test pointing at `components/profile/EditProfileSheet.tsx:86` with `TypeError: Cannot read properties of undefined (reading 'alert')`. Reproduced before Story 4-2 changes — failure rotates across unrelated test files on each run (`useRiderHistory`, `RiderProfileCard`, etc.). Root cause appears to be an `Alert.alert` call whose `Alert` import becomes `undefined` under some Jest worker ordering. Not blocking the batch since each affected test passes in isolation; should be investigated via `--detectOpenHandles` in a dedicated cleanup pass.
