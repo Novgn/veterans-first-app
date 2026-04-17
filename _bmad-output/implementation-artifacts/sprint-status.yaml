@@ -114,7 +114,7 @@ development_status:
   #   - Dispatch stories (3-12..3-18) target apps/web (dispatch section)
   # Blocked on: epic-1-5 (migration)
   # ============================================================
-  epic-3: in-progress
+  epic-3: done
   3-1-create-driver-app-shell-and-navigation: done
   3-2-implement-driver-trip-queue: done
   3-3-implement-accept-decline-rides: done
@@ -127,13 +127,13 @@ development_status:
   3-10-implement-no-show-handling: done
   3-11-implement-driver-profile-management: done
   3-12-create-admin-console-shell-and-navigation: done
-  3-13-implement-fleet-map-view: backlog
-  3-14-implement-ride-assignment-and-reassignment: backlog
-  3-15-implement-phone-booking-management: backlog
-  3-16-implement-rider-database-management: backlog
-  3-17-implement-ride-confirmation-calls: backlog
-  3-18-implement-no-show-processing-dispatch: backlog
-  3-19-implement-trip-documentation-and-mileage-tracking: backlog
+  3-13-implement-fleet-map-view: done
+  3-14-implement-ride-assignment-and-reassignment: done
+  3-15-implement-phone-booking-management: done
+  3-16-implement-rider-database-management: done
+  3-17-implement-ride-confirmation-calls: done
+  3-18-implement-no-show-processing-dispatch: done
+  3-19-implement-trip-documentation-and-mileage-tracking: done
   epic-3-retrospective: optional
 
   # ============================================================
