@@ -12,6 +12,8 @@ import {
   unique,
   decimal,
   boolean,
+  smallint,
+  time,
 } from "drizzle-orm/pg-core";
 import { sql, type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
@@ -296,3 +298,26 @@ export const rideEvents = pgTable(
 
 export type RideEvent = InferSelectModel<typeof rideEvents>;
 export type NewRideEvent = InferInsertModel<typeof rideEvents>;
+
+/**
+ * Driver Availability — Story 3.7
+ * Recurring weekly windows when the driver is accepting rides. Day is
+ * Sunday=0..Saturday=6 to match JS Date.getDay(). Times are local clock
+ * times (the rides themselves already carry timezone-aware timestamps, so
+ * the window itself is day-of-week + hours/minutes only).
+ */
+export const driverAvailability = pgTable("driver_availability", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  driverId: uuid("driver_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  dayOfWeek: smallint("day_of_week").notNull(),
+  startTime: time("start_time").notNull(),
+  endTime: time("end_time").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export type DriverAvailability = InferSelectModel<typeof driverAvailability>;
+export type NewDriverAvailability = InferInsertModel<typeof driverAvailability>;

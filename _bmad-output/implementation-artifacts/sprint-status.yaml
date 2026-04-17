@@ -121,7 +121,7 @@ development_status:
   3-4-implement-trip-status-transitions: done
   3-5-implement-integrated-navigation: done
   3-6-implement-driver-contact-rider: done
-  3-7-implement-driver-availability-schedule: backlog
+  3-7-implement-driver-availability-schedule: done
   3-8-implement-driver-earnings-dashboard: backlog
   3-9-implement-photo-arrival-confirmation: backlog
   3-10-implement-no-show-handling: backlog
