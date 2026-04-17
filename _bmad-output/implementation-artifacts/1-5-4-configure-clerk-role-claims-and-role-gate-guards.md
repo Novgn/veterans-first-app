@@ -1,6 +1,6 @@
 # Story 1.5.4: Configure Clerk Role Claims & Tighten Role-Gate Guards
 
-Status: in-progress
+Status: done
 
 ## Story
 

@@ -59,11 +59,11 @@ development_status:
   # Goal: Migrate 4-app tree into create-rell-app monolith structure
   # Stories: 4 (blocks all Epic 3+ backlog work)
   # ============================================================
-  epic-1-5: in-progress
+  epic-1-5: done
   1-5-1-scaffold-create-rell-app-monolith: done
   1-5-2-migrate-rider-and-driver-code-to-apps-mobile: done
   1-5-3-migrate-admin-and-business-code-to-apps-web: done
-  1-5-4-configure-clerk-role-claims-and-role-gate-guards: ready-for-dev
+  1-5-4-configure-clerk-role-claims-and-role-gate-guards: done
   epic-1-5-retrospective: optional
 
   # ============================================================

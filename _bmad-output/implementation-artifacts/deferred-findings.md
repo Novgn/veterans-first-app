@@ -47,6 +47,34 @@ links to the originating story for context.
 - **Suggested fix:** Wrap `getCurrentUserWithRole` in React's `cache()` so it dedupes within a single request. (Story 1.5.4 should incorporate this when wiring the real Clerk + Drizzle lookup.)
 - **Risk if not fixed:** One extra DB hit + one extra Clerk call per navigation. Negligible in dev, undesirable in prod under load.
 
+## From Story 1.5.4 (Clerk role claims + route guards)
+
+### LOW — Clerk JWT template not configured; web hits Clerk API on every server-side role check
+
+- **Where:** `apps/web/lib/auth/current-user.ts`. The fast path reads `sessionClaims.role`, but without a Clerk JWT template populating that claim, every check falls through to `currentUser()` (one Clerk API call per request, cached by React's `cache()` so still O(1) per request).
+- **Suggested fix:** Operator step — in the Clerk dashboard, create a JWT template with `{"role": "{{user.public_metadata.role}}"}`. Document in deployment runbook (Story 5.16's webhook story is a natural place).
+- **Risk if not fixed:** ~50ms extra per first-page-load per signed-in user. Acceptable for MVP.
+
+### LOW — Mobile useRole reads only publicMetadata; sessionClaims fallback not yet wired
+
+- **Where:** `apps/mobile/lib/auth/use-role.ts`. Reads `user.publicMetadata?.role` from Clerk Expo's `useUser()`. There's no JWT-claim fallback because Clerk Expo's `useAuth` doesn't expose decoded claims directly (would need to decode the token via `getToken()`).
+- **Suggested fix:** When Clerk Expo SDK exposes session claims, add a JWT-template path mirroring the web implementation.
+- **Risk if not fixed:** None — `publicMetadata.role` is the canonical client-side source. Same call, just no JWT shortcut.
+
+### INFO — `/api/me/role` doesn't add explicit Cache-Control: no-store
+
+- **Where:** `apps/web/app/api/me/role/route.ts`. Marked `dynamic = 'force-dynamic'` (so Next.js won't cache), but no explicit `Cache-Control` header. Browsers and intermediate proxies may still cache.
+- **Suggested fix:** Add `headers: { 'Cache-Control': 'no-store' }` to the NextResponse.
+- **Risk if not fixed:** Stale roles served from browser/proxy cache after a role change. Low risk for MVP since role changes are rare.
+
+### INFO — Web client useRole has no manual refresh API
+
+- **Where:** `apps/web/lib/auth/use-role.ts`. After cache populates, the only invalidation is on user change (sign out / different user). If an admin updates a user's role mid-session, the user keeps seeing the old role until sign out + sign in.
+- **Suggested fix:** Export a `refreshRole()` function and trigger it on a websocket / poll when needed. Defer until a real use case appears.
+- **Risk if not fixed:** Stale UI gating until the user's next session. Server-side checks remain correct (no React cache reuse across requests).
+
+---
+
 ### INFO — 'business' is not a UserRole; admins own the section
 
 - **Where:** `apps/web/app/business/layout.tsx` checks `user.role !== 'admin'`. The `UserRole` type set is `rider | driver | family | dispatcher | admin` — there's no `business` role. Until / unless a `business` role is introduced (Story 5.1+), admins own all business operations.
