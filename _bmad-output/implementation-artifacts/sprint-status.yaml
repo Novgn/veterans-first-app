@@ -172,7 +172,7 @@ development_status:
   epic-5: in-progress
   5-1-create-business-operations-app-shell: done
   5-2-implement-driver-roster-management: done
-  5-3-implement-driver-onboarding: backlog
+  5-3-implement-driver-onboarding: done
   5-4-implement-invoice-generation: backlog
   5-5-implement-payment-processing: backlog
   5-6-implement-recurring-billing: backlog

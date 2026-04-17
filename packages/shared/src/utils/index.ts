@@ -7,6 +7,7 @@ export * from "./driverStatusMessages";
 export * from "./driverRideMessages";
 export * from "./familyMessages";
 export * from "./driverDeactivation";
+export * from "./driverOnboarding";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format

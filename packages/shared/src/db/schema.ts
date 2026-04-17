@@ -15,6 +15,7 @@ import {
   smallint,
   time,
   integer,
+  date,
 } from "drizzle-orm/pg-core";
 import { sql, type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
@@ -427,3 +428,212 @@ export const notificationLogs = pgTable(
 
 export type NotificationLog = InferSelectModel<typeof notificationLogs>;
 export type NewNotificationLog = InferInsertModel<typeof notificationLogs>;
+
+// ---------------------------------------------------------------------------
+// Epic 5 — Business Operations & Administration
+// ---------------------------------------------------------------------------
+
+const credentialTypeCheck = check(
+  "driver_credential_type_check",
+  sql`credential_type IN ('drivers_license', 'insurance', 'background_check', 'vehicle_registration')`
+);
+
+const credentialStatusCheck = check(
+  "driver_credential_status_check",
+  sql`verification_status IN ('pending', 'verified', 'rejected', 'expired')`
+);
+
+/**
+ * Driver Credentials — Stories 5.3 + 5.9
+ * Tracks license, insurance, background-check, and vehicle registration.
+ * Expiration drives the Story 5.9 alerts job.
+ */
+export const driverCredentials = pgTable(
+  "driver_credentials",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    driverId: uuid("driver_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    credentialType: text("credential_type").notNull(),
+    credentialNumber: text("credential_number"),
+    issuedDate: date("issued_date"),
+    expirationDate: date("expiration_date"),
+    documentUrl: text("document_url"),
+    verificationStatus: text("verification_status").notNull().default("pending"),
+    verifiedBy: uuid("verified_by").references(() => users.id),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (_table) => [credentialTypeCheck, credentialStatusCheck]
+);
+
+export type DriverCredential = InferSelectModel<typeof driverCredentials>;
+export type NewDriverCredential = InferInsertModel<typeof driverCredentials>;
+
+const invoiceStatusCheck = check(
+  "invoice_status_check",
+  sql`status IN ('pending', 'paid', 'overdue', 'cancelled')`
+);
+
+const invoiceBillingPeriodCheck = check(
+  "invoice_billing_period_check",
+  sql`billing_period IN ('per_ride', 'weekly', 'monthly')`
+);
+
+/**
+ * Invoices — Story 5.4
+ * One invoice per ride by default; recurring billing (Story 5.6) rolls
+ * multiple ride_ids into a single invoice via `invoice_line_items` below.
+ */
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    invoiceNumber: text("invoice_number").notNull(),
+    riderId: uuid("rider_id")
+      .references(() => users.id)
+      .notNull(),
+    rideId: uuid("ride_id").references(() => rides.id),
+    amountCents: integer("amount_cents").notNull(),
+    taxCents: integer("tax_cents").notNull().default(0),
+    totalCents: integer("total_cents").notNull(),
+    status: text("status").notNull().default("pending"),
+    billingPeriod: text("billing_period").notNull().default("per_ride"),
+    periodStart: date("period_start"),
+    periodEnd: date("period_end"),
+    dueDate: date("due_date").notNull(),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    invoiceStatusCheck,
+    invoiceBillingPeriodCheck,
+    unique("invoices_invoice_number_unique").on(table.invoiceNumber),
+  ]
+);
+
+export type Invoice = InferSelectModel<typeof invoices>;
+export type NewInvoice = InferInsertModel<typeof invoices>;
+
+/**
+ * Invoice Line Items — Story 5.6
+ * Only used when `invoices.billing_period != 'per_ride'`. Per-ride
+ * invoices carry a single `ride_id` on the invoice row itself.
+ */
+export const invoiceLineItems = pgTable("invoice_line_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  invoiceId: uuid("invoice_id")
+    .references(() => invoices.id, { onDelete: "cascade" })
+    .notNull(),
+  rideId: uuid("ride_id").references(() => rides.id),
+  description: text("description").notNull(),
+  amountCents: integer("amount_cents").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type InvoiceLineItem = InferSelectModel<typeof invoiceLineItems>;
+export type NewInvoiceLineItem = InferInsertModel<typeof invoiceLineItems>;
+
+const paymentStatusCheck = check(
+  "payment_status_check",
+  sql`status IN ('pending', 'succeeded', 'failed', 'refunded')`
+);
+
+/**
+ * Payments — Story 5.5
+ * Every Stripe charge lands here. Webhooks move rows from pending -> final.
+ */
+export const payments = pgTable(
+  "payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    invoiceId: uuid("invoice_id")
+      .references(() => invoices.id)
+      .notNull(),
+    riderId: uuid("rider_id")
+      .references(() => users.id)
+      .notNull(),
+    amountCents: integer("amount_cents").notNull(),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    stripeCustomerId: text("stripe_customer_id"),
+    status: text("status").notNull().default("pending"),
+    paymentMethodType: text("payment_method_type"),
+    failureReason: text("failure_reason"),
+    refundedAt: timestamp("refunded_at", { withTimezone: true }),
+    refundedAmountCents: integer("refunded_amount_cents"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (_table) => [paymentStatusCheck]
+);
+
+export type Payment = InferSelectModel<typeof payments>;
+export type NewPayment = InferInsertModel<typeof payments>;
+
+/**
+ * Rider Payment Accounts — Stories 5.5 / 5.7
+ * One row per rider linking to their Stripe customer + default method.
+ * Autopay flag + billing frequency configured by Story 5.6.
+ */
+export const riderPaymentAccounts = pgTable("rider_payment_accounts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  riderId: uuid("rider_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .unique()
+    .notNull(),
+  stripeCustomerId: text("stripe_customer_id"),
+  defaultPaymentMethodId: text("default_payment_method_id"),
+  autopayEnabled: boolean("autopay_enabled").notNull().default(false),
+  billingFrequency: text("billing_frequency").notNull().default("per_ride"),
+  creditBalanceCents: integer("credit_balance_cents").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type RiderPaymentAccount = InferSelectModel<typeof riderPaymentAccounts>;
+export type NewRiderPaymentAccount = InferInsertModel<typeof riderPaymentAccounts>;
+
+/**
+ * Driver Earnings — Story 5.8
+ * One row per completed ride with a gross/fee/net split. Export feeds
+ * payroll; aggregate feeds financial reports (Story 5.11).
+ */
+export const driverEarnings = pgTable("driver_earnings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  driverId: uuid("driver_id")
+    .references(() => users.id)
+    .notNull(),
+  rideId: uuid("ride_id")
+    .references(() => rides.id, { onDelete: "cascade" })
+    .unique()
+    .notNull(),
+  grossAmountCents: integer("gross_amount_cents").notNull(),
+  companyFeeCents: integer("company_fee_cents").notNull(),
+  netAmountCents: integer("net_amount_cents").notNull(),
+  payPeriodStart: date("pay_period_start"),
+  payPeriodEnd: date("pay_period_end"),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type DriverEarning = InferSelectModel<typeof driverEarnings>;
+export type NewDriverEarning = InferInsertModel<typeof driverEarnings>;
+
+/**
+ * System Config — Stories 5.13 / 5.14 / 5.15
+ * Key/value store for service area, pricing, and operating-hours config.
+ */
+export const systemConfig = pgTable("system_config", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  configKey: text("config_key").unique().notNull(),
+  configValue: jsonb("config_value").notNull(),
+  description: text("description"),
+  updatedBy: uuid("updated_by").references(() => users.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type SystemConfig = InferSelectModel<typeof systemConfig>;
+export type NewSystemConfig = InferInsertModel<typeof systemConfig>;
