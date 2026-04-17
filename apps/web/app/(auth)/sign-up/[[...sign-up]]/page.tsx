@@ -1,18 +1,16 @@
-import { SignIn } from "@clerk/nextjs";
+import { SignUp } from "@clerk/nextjs";
 
-export default function SignInPage() {
+export default function SignUpPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Veterans First Admin
+            Veterans 1st Console
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to access the admin console
-          </p>
+          <p className="mt-2 text-center text-sm text-gray-600">Create your operations account</p>
         </div>
-        <SignIn
+        <SignUp
           appearance={{
             elements: {
               rootBox: "mx-auto",
@@ -25,8 +23,8 @@ export default function SignInPage() {
             },
           }}
           routing="path"
-          path="/sign-in"
-          signUpUrl="/sign-up"
+          path="/sign-up"
+          signInUrl="/sign-in"
         />
       </div>
     </div>

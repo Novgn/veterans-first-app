@@ -1,6 +1,6 @@
 # Story 1.5.2: Migrate Rider + Driver Code into apps/mobile
 
-Status: in-progress
+Status: done
 
 ## Story
 
