@@ -89,3 +89,4 @@ export {
   formatMoneyCents,
   type EarningsBuckets,
 } from './useDriverEarnings';
+export { useArrivalPhotoUpload, type UseArrivalPhotoUploadResult } from './useArrivalPhotoUpload';

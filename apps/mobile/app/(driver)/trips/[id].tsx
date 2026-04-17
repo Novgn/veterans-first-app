@@ -33,7 +33,13 @@ import {
   TripStatusBadge,
 } from '@/components/trips';
 import type { RideStatusKey } from '@/components/trips/TripStatusBadge';
-import { useLocationCapture, useTrip, useRiderHistory, useTripStatus } from '@/hooks';
+import {
+  useArrivalPhotoUpload,
+  useLocationCapture,
+  useTrip,
+  useRiderHistory,
+  useTripStatus,
+} from '@/hooks';
 import type { RideStatus } from '@/hooks/useTripStatus';
 
 function formatPickupTime(dateString: string): string {
@@ -65,6 +71,7 @@ export default function TripDetailScreen() {
 
   const tripStatus = useTripStatus();
   const { captureLocation } = useLocationCapture();
+  const { captureAndUpload: capturePhoto } = useArrivalPhotoUpload();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showContactSheet, setShowContactSheet] = useState(false);
 
@@ -91,10 +98,17 @@ export default function TripDetailScreen() {
     setIsTransitioning(true);
     try {
       const location = await captureLocation();
+      // Story 3.9: on arrival, optionally capture a confirmation photo.
+      // Upload is best-effort — transition proceeds even if photo fails/cancels.
+      let photoUrl: string | null = null;
+      if (nextStatus === 'arrived') {
+        photoUrl = await capturePhoto(trip.id).catch(() => null);
+      }
       await tripStatus.mutateAsync({
         rideId: trip.id,
         newStatus: nextStatus,
         location,
+        photoUrl,
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Could not update trip status';

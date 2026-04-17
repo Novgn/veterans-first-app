@@ -295,6 +295,7 @@ export const rideEvents = pgTable(
     lat: decimal("lat", { precision: 10, scale: 8 }),
     lng: decimal("lng", { precision: 11, scale: 8 }),
     notes: text("notes"),
+    photoUrl: text("photo_url"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (_table) => [rideEventTypeCheck]

@@ -34,6 +34,8 @@ export interface TripStatusInput {
   newStatus: RideStatus;
   location?: { lat: number; lng: number } | null;
   notes?: string;
+  /** Optional arrival/no-show photo URL (Story 3.9) */
+  photoUrl?: string | null;
 }
 
 /**
@@ -70,7 +72,7 @@ export function useTripStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ rideId, newStatus, location, notes }: TripStatusInput) => {
+    mutationFn: async ({ rideId, newStatus, location, notes, photoUrl }: TripStatusInput) => {
       if (!userId) throw new Error('Not authenticated');
 
       // Resolve driver's internal user id (needed for FK on ride_events)
@@ -105,6 +107,7 @@ export function useTripStatus() {
           lat: location?.lat ?? null,
           lng: location?.lng ?? null,
           notes: notes ?? null,
+          photo_url: photoUrl ?? null,
         });
 
         if (eventError) throw eventError;
