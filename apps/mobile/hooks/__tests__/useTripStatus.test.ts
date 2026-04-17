@@ -29,6 +29,9 @@ jest.mock('@/lib/supabase', () => ({
 
 jest.mock('@clerk/clerk-expo', () => ({
   useAuth: () => ({ userId: 'clerk-123', isSignedIn: true }),
+  useSession: () => ({
+    session: { getToken: () => Promise.resolve('test-token') },
+  }),
 }));
 
 function setupHappyPath() {

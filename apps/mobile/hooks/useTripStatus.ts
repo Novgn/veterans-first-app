@@ -12,9 +12,10 @@
  * Invalid transitions are rejected client-side before any DB write.
  */
 
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuth, useSession } from '@clerk/clerk-expo';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { notifyRideEvent, type RideNotificationType } from '@/lib/notifications';
 import { useSupabase } from '@/lib/supabase';
 
 import { tripKeys } from './useDriverTrips';
@@ -66,8 +67,14 @@ export function isValidTransition(current: RideStatus, next: RideStatus): boolea
   return VALID_TRANSITIONS[current] === next;
 }
 
+const STATUS_TO_NOTIFICATION: Partial<Record<RideStatus, RideNotificationType>> = {
+  en_route: 'driver_en_route',
+  arrived: 'driver_arrived',
+};
+
 export function useTripStatus() {
   const { userId } = useAuth();
+  const { session } = useSession();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
@@ -113,8 +120,16 @@ export function useTripStatus() {
         if (eventError) throw eventError;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: tripKeys.all });
+      const notifyType = STATUS_TO_NOTIFICATION[variables.newStatus];
+      if (notifyType) {
+        // Fire-and-forget — don't block the primary mutation on network.
+        void notifyRideEvent(session, {
+          type: notifyType,
+          rideId: variables.rideId,
+        });
+      }
     },
   });
 }

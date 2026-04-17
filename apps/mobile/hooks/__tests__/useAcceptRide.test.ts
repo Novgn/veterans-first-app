@@ -26,6 +26,9 @@ jest.mock('@clerk/clerk-expo', () => ({
     userId: mockUserId,
     isSignedIn: true,
   }),
+  useSession: () => ({
+    session: { getToken: () => Promise.resolve('test-token') },
+  }),
 }));
 
 describe('useAcceptRide', () => {

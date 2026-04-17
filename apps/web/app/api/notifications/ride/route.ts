@@ -1,42 +1,104 @@
 // Ride notifications endpoint.
 //
-// Replaces the Deno edge function previously at
-// supabase/functions/ride-notifications/. Triggered by Supabase database
-// webhooks (or direct API calls from the dispatch console) when a ride
-// state changes.
+// Handles rider-facing notifications driven by ride state changes:
+//   - ride_accepted / ride_declined (legacy, Story 3.3)
+//   - offer_expired (legacy, Story 3.3)
+//   - driver_assigned / driver_en_route / driver_arrived (Story 4.7)
 //
-// Supported event types:
-//   - ride_accepted: driver accepted a ride → notify rider
-//   - ride_declined: driver declined (internal log only)
-//   - offer_expired: ride offer timed out → mark offer expired and
-//     return ride to dispatch pool
-//
-// TODO: wire actual push (Expo Push or FCM). The current implementation
-// is a structured log + DB state-update placeholder, mirroring Story 3.3
-// behavior.
+// All driver-status events dispatch through `dispatchNotification` so
+// preference gates + notification_logs are honored.
 
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-import { getDb, rideOffers } from '@veterans-first/shared/db';
+import { getDb, rideOffers, rides, users } from '@veterans-first/shared/db';
+import { buildDriverStatusMessage } from '@veterans-first/shared';
 
 import { getCurrentUserId } from '@/lib/auth/roles';
+import { dispatchNotification } from '@/lib/notifications/dispatch';
+import { log } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+type EventType =
+  | 'ride_accepted'
+  | 'ride_declined'
+  | 'offer_expired'
+  | 'driver_assigned'
+  | 'driver_en_route'
+  | 'driver_arrived';
+
 interface NotificationRequest {
-  type: 'ride_accepted' | 'ride_declined' | 'offer_expired';
+  type: EventType;
   rideId: string;
   driverId?: string;
   riderId?: string;
+  etaMinutes?: number;
+}
+
+const DRIVER_STATUS_EVENTS: readonly EventType[] = [
+  'driver_assigned',
+  'driver_en_route',
+  'driver_arrived',
+] as const;
+
+async function handleDriverStatus(
+  type: 'driver_assigned' | 'driver_en_route' | 'driver_arrived',
+  rideId: string,
+  etaMinutes: number | undefined,
+) {
+  const db = getDb();
+
+  const [ride] = await db
+    .select({
+      riderId: rides.riderId,
+      driverId: rides.driverId,
+    })
+    .from(rides)
+    .where(eq(rides.id, rideId))
+    .limit(1);
+
+  if (!ride) {
+    return NextResponse.json({ error: 'Ride not found' }, { status: 404 });
+  }
+
+  const [rider] = await db
+    .select({ id: users.id, phone: users.phone })
+    .from(users)
+    .where(eq(users.id, ride.riderId))
+    .limit(1);
+
+  let driverFirstName: string | null = null;
+  if (ride.driverId) {
+    const [driver] = await db
+      .select({ firstName: users.firstName })
+      .from(users)
+      .where(eq(users.id, ride.driverId))
+      .limit(1);
+    driverFirstName = driver?.firstName ?? null;
+  }
+
+  const message = buildDriverStatusMessage(type, {
+    driverFirstName,
+    etaMinutes: etaMinutes ?? null,
+  });
+
+  const result = await dispatchNotification(
+    {
+      userId: ride.riderId,
+      rideId,
+      notificationType: type,
+      title: message.title,
+      body: message.body,
+    },
+    rider?.phone ?? null,
+  );
+
+  return NextResponse.json({ success: true, type, rideId, dispatch: result });
 }
 
 export async function POST(req: Request) {
-  // Auth: must be a signed-in caller (typically the dispatch console or a
-  // Supabase database webhook with a service role bearer). Database
-  // webhooks should be configured to send a Clerk-issued service token
-  // — see operator runbook.
   const userId = await getCurrentUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
@@ -49,7 +111,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { type, rideId, driverId } = body;
+  const { type, rideId, driverId, etaMinutes } = body;
   if (!type || !rideId) {
     return NextResponse.json({ error: 'type and rideId required' }, { status: 400 });
   }
@@ -57,34 +119,46 @@ export async function POST(req: Request) {
   const db = getDb();
 
   try {
+    if (DRIVER_STATUS_EVENTS.includes(type)) {
+      return handleDriverStatus(
+        type as 'driver_assigned' | 'driver_en_route' | 'driver_arrived',
+        rideId,
+        etaMinutes,
+      );
+    }
+
     switch (type) {
       case 'ride_accepted': {
-        // TODO: enqueue push notification to rider via Expo Push / FCM.
-        console.log(`[ride-notifications] ride_accepted ride=${rideId}`);
+        log.info({ event: 'notifications.ride_accepted', rideId }, 'ride accepted');
         return NextResponse.json({ success: true, type, rideId });
       }
-
       case 'ride_declined': {
-        console.log(
-          `[ride-notifications] ride_declined ride=${rideId} driver=${driverId ?? 'unknown'}`,
+        log.info(
+          { event: 'notifications.ride_declined', rideId, hasDriver: Boolean(driverId) },
+          'ride declined',
         );
         return NextResponse.json({ success: true, type, rideId });
       }
-
       case 'offer_expired': {
         await db
           .update(rideOffers)
           .set({ status: 'expired', updatedAt: new Date() })
           .where(eq(rideOffers.rideId, rideId));
-        console.log(`[ride-notifications] offer_expired ride=${rideId}`);
+        log.info({ event: 'notifications.offer_expired', rideId }, 'offer expired');
         return NextResponse.json({ success: true, type, rideId });
       }
-
       default:
         return NextResponse.json({ error: `Unknown type: ${type}` }, { status: 400 });
     }
   } catch (err) {
-    console.error('[ride-notifications] error:', err);
+    log.error(
+      {
+        event: 'notifications.ride.error',
+        rideId,
+        err: err instanceof Error ? err.message : String(err),
+      },
+      'ride notification failed',
+    );
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

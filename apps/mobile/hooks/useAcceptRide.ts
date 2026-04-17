@@ -8,9 +8,10 @@
  * - Handles errors gracefully
  */
 
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuth, useSession } from '@clerk/clerk-expo';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { notifyRideEvent } from '@/lib/notifications';
 import { useSupabase } from '@/lib/supabase';
 
 import { tripKeys } from './useDriverTrips';
@@ -34,6 +35,7 @@ export interface AcceptRideInput {
  */
 export function useAcceptRide() {
   const { userId } = useAuth();
+  const { session } = useSession();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
@@ -62,14 +64,16 @@ export function useAcceptRide() {
         .eq('id', rideId);
 
       if (rideError) throw rideError;
-
-      // TODO: Trigger push notification to rider via Edge Function
-      // This could be done via a database trigger or Edge Function call
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       // Invalidate relevant queries to refresh data
       queryClient.invalidateQueries({ queryKey: offerKeys.all });
       queryClient.invalidateQueries({ queryKey: tripKeys.all });
+      // Fire-and-forget rider notification (Story 4.7).
+      void notifyRideEvent(session, {
+        type: 'driver_assigned',
+        rideId: variables.rideId,
+      });
     },
   });
 }
