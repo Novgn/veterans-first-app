@@ -136,6 +136,7 @@ describe("Database Schema", () => {
         riderId: "123e4567-e89b-12d3-a456-426614174000",
         driverId: "123e4567-e89b-12d3-a456-426614174004",
         preferredDriverId: null,
+        bookedById: null,
         status: "pending",
         pickupAddress: "123 Main St",
         dropoffAddress: "456 Oak Ave",

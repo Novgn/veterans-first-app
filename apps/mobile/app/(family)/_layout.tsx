@@ -14,6 +14,10 @@ export default function FamilyLayout() {
         }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="rider/[id]/index" options={{ title: 'Rides' }} />
+        <Stack.Screen
+          name="rider/[id]/book"
+          options={{ title: 'Book a Ride', presentation: 'modal' }}
+        />
         <Stack.Screen name="rider/[id]/ride/[rideId]" options={{ title: 'Ride' }} />
       </Stack>
     </RoleGate>

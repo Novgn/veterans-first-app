@@ -29,3 +29,8 @@ Tracks Low/Info findings deferred during autonomous story execution. Organized c
 ### Story 4-2
 
 - **Medium (pre-existing):** Pre-existing flaky test pointing at `components/profile/EditProfileSheet.tsx:86` with `TypeError: Cannot read properties of undefined (reading 'alert')`. Reproduced before Story 4-2 changes — failure rotates across unrelated test files on each run (`useRiderHistory`, `RiderProfileCard`, etc.). Root cause appears to be an `Alert.alert` call whose `Alert` import becomes `undefined` under some Jest worker ordering. Not blocking the batch since each affected test passes in isolation; should be investigated via `--detectOpenHandles` in a dedicated cleanup pass.
+
+### Story 4-4
+
+- **Medium:** The family booking form takes pickup time as raw ISO text entry rather than a native date picker. Functional but rough UX. Track for a polish pass post-MVP; richer autocomplete/datepicker parity with the rider-side BookingWizard is out of scope for Epic 4.
+- **Medium:** Family booking form uses free-text pickup/drop-off entry (no Google Places autocomplete). Defer richer destination picker until the UX polish phase.

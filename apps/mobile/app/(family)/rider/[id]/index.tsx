@@ -10,6 +10,7 @@ import { Link, Stack, useLocalSearchParams } from 'expo-router';
 import { format } from 'date-fns';
 import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
+import { useFamilyLinks } from '@/hooks/useFamilyLinks';
 import { useFamilyRiderRides, type FamilyRideRow } from '@/hooks/useFamilyRiderRides';
 
 function formatPickup(ride: FamilyRideRow): string {
@@ -75,9 +76,12 @@ function RideCard({ ride }: { ride: FamilyRideRow }) {
 export default function FamilyRiderDashboard() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isLoading } = useFamilyRiderRides(id);
+  const { data: links = [] } = useFamilyLinks('family');
 
   const upcoming = data?.upcoming ?? [];
   const history = data?.history ?? [];
+  const link = links.find((l) => l.rider_id === id && l.status === 'approved');
+  const canBook = !!link?.permissions?.book_rides;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -87,6 +91,19 @@ export default function FamilyRiderDashboard() {
         <ActivityIndicator size="large" color="#1E40AF" className="mt-12" />
       ) : (
         <ScrollView className="flex-1 px-6 pt-4" testID="family-rider-dashboard">
+          {canBook ? (
+            <Link href={{ pathname: '/rider/[id]/book', params: { id: id ?? '' } }} asChild>
+              <Pressable
+                className="mb-4 min-h-[56px] flex-row items-center justify-center rounded-xl bg-primary"
+                accessibilityLabel="Book a ride"
+                accessibilityRole="button"
+                testID="family-book-ride-button">
+                <Ionicons name="car" size={22} color="#ffffff" />
+                <Text className="ml-2 text-lg font-semibold text-white">Book a Ride</Text>
+              </Pressable>
+            </Link>
+          ) : null}
+
           <Text className="mb-3 text-lg font-semibold text-foreground">Upcoming</Text>
           {upcoming.length === 0 ? (
             <View className="mb-6 items-center rounded-xl bg-white p-4 shadow-sm">

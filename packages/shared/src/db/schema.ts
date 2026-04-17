@@ -143,6 +143,9 @@ export const rides = pgTable(
       .references(() => users.id),
     driverId: uuid("driver_id").references(() => users.id),
     preferredDriverId: uuid("preferred_driver_id").references(() => users.id),
+    // Story 4.4: populated when a family member books on behalf of a rider.
+    // Nullable — null means the rider self-booked (legacy rows also stay null).
+    bookedById: uuid("booked_by_id").references(() => users.id),
     status: text("status").notNull(),
     pickupAddress: text("pickup_address").notNull(),
     dropoffAddress: text("dropoff_address").notNull(),
