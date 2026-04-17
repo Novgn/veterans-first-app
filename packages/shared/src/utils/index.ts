@@ -10,6 +10,7 @@ export * from "./driverDeactivation";
 export * from "./driverOnboarding";
 export * from "./invoicing";
 export * from "./paymentCharging";
+export * from "./billingPeriods";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format

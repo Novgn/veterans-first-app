@@ -59,4 +59,4 @@ export const INVOICE_STATUSES = ["pending", "paid", "overdue", "cancelled"] as c
 export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 
 export const BILLING_PERIODS = ["per_ride", "weekly", "monthly"] as const;
-export type BillingPeriod = (typeof BILLING_PERIODS)[number];
+export type InvoiceBillingPeriod = (typeof BILLING_PERIODS)[number];
