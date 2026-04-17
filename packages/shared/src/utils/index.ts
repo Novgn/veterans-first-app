@@ -11,6 +11,7 @@ export * from "./driverOnboarding";
 export * from "./invoicing";
 export * from "./paymentCharging";
 export * from "./billingPeriods";
+export * from "./creditAdjustment";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format

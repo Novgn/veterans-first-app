@@ -176,7 +176,7 @@ development_status:
   5-4-implement-invoice-generation: done
   5-5-implement-payment-processing: done
   5-6-implement-recurring-billing: done
-  5-7-implement-payment-account-management: backlog
+  5-7-implement-payment-account-management: done
   5-8-implement-driver-earnings-tracking: backlog
   5-9-implement-driver-credential-management: backlog
   5-10-implement-operational-reports: backlog
