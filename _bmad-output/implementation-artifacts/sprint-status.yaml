@@ -124,7 +124,7 @@ development_status:
   3-7-implement-driver-availability-schedule: done
   3-8-implement-driver-earnings-dashboard: done
   3-9-implement-photo-arrival-confirmation: done
-  3-10-implement-no-show-handling: backlog
+  3-10-implement-no-show-handling: done
   3-11-implement-driver-profile-management: backlog
   3-12-create-admin-console-shell-and-navigation: backlog
   3-13-implement-fleet-map-view: backlog

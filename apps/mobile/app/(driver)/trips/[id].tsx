@@ -28,6 +28,7 @@ import {
 import {
   ContactRiderSheet,
   NavigationButton,
+  NoShowTimer,
   RiderProfileCard,
   StatusActionButton,
   TripStatusBadge,
@@ -36,6 +37,7 @@ import type { RideStatusKey } from '@/components/trips/TripStatusBadge';
 import {
   useArrivalPhotoUpload,
   useLocationCapture,
+  useMarkNoShow,
   useTrip,
   useRiderHistory,
   useTripStatus,
@@ -70,10 +72,12 @@ export default function TripDetailScreen() {
   const { data: relationshipCount = 0 } = useRiderHistory(trip?.rider?.id ?? '');
 
   const tripStatus = useTripStatus();
+  const markNoShow = useMarkNoShow();
   const { captureLocation } = useLocationCapture();
   const { captureAndUpload: capturePhoto } = useArrivalPhotoUpload();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showContactSheet, setShowContactSheet] = useState(false);
+  const [arrivedAt, setArrivedAt] = useState<string | null>(null);
 
   const handleTransition = async (nextStatus: RideStatus) => {
     if (!trip) return;
@@ -110,12 +114,41 @@ export default function TripDetailScreen() {
         location,
         photoUrl,
       });
+      if (nextStatus === 'arrived') {
+        setArrivedAt(new Date().toISOString());
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Could not update trip status';
       Alert.alert('Update Failed', message);
     } finally {
       setIsTransitioning(false);
     }
+  };
+
+  const handleMarkNoShow = () => {
+    if (!trip) return;
+    Alert.alert(
+      'Mark No-Show?',
+      'This will end the trip as a no-show. Only do this after waiting at the pickup.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Mark No-Show',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const location = await captureLocation();
+              await markNoShow.mutateAsync({ rideId: trip.id, location });
+            } catch (err) {
+              Alert.alert(
+                'Update Failed',
+                err instanceof Error ? err.message : 'Could not mark no-show'
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleContactRider = () => {
@@ -259,6 +292,18 @@ export default function TripDetailScreen() {
             </View>
           </View>
         </View>
+
+        {/* No-show timer (Story 3.10) — only visible once the driver is at the pickup */}
+        {trip.status === 'arrived' ? (
+          <View className="mt-4">
+            <NoShowTimer
+              arrivedAt={arrivedAt}
+              onMarkNoShow={handleMarkNoShow}
+              isMarking={markNoShow.isPending}
+              testID="no-show-timer"
+            />
+          </View>
+        ) : null}
 
         {/* Turn-by-turn navigation (Story 3.5) */}
         <View className="mt-4">

@@ -74,7 +74,7 @@ export const auditLogs = pgTable("audit_logs", {
 // en_route: driver heading to pickup (Story 3.4)
 const rideStatusCheck = check(
   "ride_status_check",
-  sql`status IN ('pending', 'confirmed', 'pending_acceptance', 'assigned', 'en_route', 'in_progress', 'arrived', 'completed', 'cancelled')`
+  sql`status IN ('pending', 'confirmed', 'pending_acceptance', 'assigned', 'en_route', 'in_progress', 'arrived', 'completed', 'cancelled', 'no_show')`
 );
 
 const familyLinkStatusCheck = check(

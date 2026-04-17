@@ -12,3 +12,4 @@ export { StatusActionButton, type StatusActionButtonProps } from './StatusAction
 export { TripStatusBadge, type TripStatusBadgeProps, type RideStatusKey } from './TripStatusBadge';
 export { NavigationButton, type NavigationButtonProps } from './NavigationButton';
 export { ContactRiderSheet, type ContactRiderSheetProps } from './ContactRiderSheet';
+export { NoShowTimer, type NoShowTimerProps, formatMs } from './NoShowTimer';
