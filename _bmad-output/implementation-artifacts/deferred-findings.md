@@ -40,3 +40,14 @@ Tracks Low/Info findings deferred during autonomous story execution. Organized c
 - **Medium:** Push (Expo Push / FCM) and SMS (Twilio) transports are stubbed — the dispatcher logs structured metadata and writes a notification_logs row with status='sent', but no external API call fires yet. Tracked for Epic 5 ops work.
 - **Medium:** Reminder cron route has no external scheduler wired up — it's callable with a Clerk session, but production requires a Vercel Cron or external scheduler hitting it with a service-role token. Tracked for Epic 5 deployment setup.
 - **Low:** `windowRange` uses local `Date.now()` and UTC math for a ±5-min tolerance; if the cron interval drifts outside 10 minutes the reminder will be skipped. Acceptable for a scheduled cron firing every 5 minutes, but may need widening if ops picks a longer interval.
+
+### Story 4-7
+
+- **Medium:** `/api/notifications/ride` trusts the caller to pass the correct rideId without verifying the caller actually owns the ride (driver or rider). Low risk because the route only triggers notifications (no DB mutations), but hardening is recommended before going live.
+- **Low:** `EXPO_PUBLIC_WEB_API_URL` is read as a process env; when unset (local dev) notifications silently no-op. Add a dev warning like other constants.
+- **Info:** When the dispatcher reassigns a ride to a new driver, the old driver is not notified that the ride was taken back. Covered in Epic 5 ops work.
+
+### Story 4-8
+
+- **Medium:** No caller actually invokes `/api/notifications/driver` yet — dispatch console's ride-assignment page needs a post-assign hook. Route is ready and tested via the shared message builder; wiring deferred to Epic 5 dispatch UI work.
+- **Medium:** Driver push token capture on sign-in is not implemented; requires `expo-notifications.getExpoPushTokenAsync()` at driver onboarding. Adds value only once transports are wired (see Story 4-6 finding).

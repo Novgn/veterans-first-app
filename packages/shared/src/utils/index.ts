@@ -4,6 +4,7 @@
 
 export * from "./reminders";
 export * from "./driverStatusMessages";
+export * from "./driverRideMessages";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format
