@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "@veterans-first/config/typescript/react-native",
+    "../../node_modules/expo/tsconfig.base.json"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "@rider/*": ["./features/rider/*"],
+      "@driver/*": ["./features/driver/*"],
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "jest.setup.js",
+    "jest.setup-before.js"
+  ]
+}
