@@ -140,6 +140,8 @@ describe("Database Schema", () => {
         pickupAddress: "123 Main St",
         dropoffAddress: "456 Oak Ave",
         scheduledPickupTime: new Date(),
+        fareCents: null,
+        completedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

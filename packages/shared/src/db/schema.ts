@@ -14,6 +14,7 @@ import {
   boolean,
   smallint,
   time,
+  integer,
 } from "drizzle-orm/pg-core";
 import { sql, type InferSelectModel, type InferInsertModel } from "drizzle-orm";
 
@@ -148,6 +149,9 @@ export const rides = pgTable(
     scheduledPickupTime: timestamp("scheduled_pickup_time", {
       withTimezone: true,
     }).notNull(),
+    // Story 3.8: fare in cents (integer) + DB-stamped completed_at timestamp
+    fareCents: integer("fare_cents"),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
