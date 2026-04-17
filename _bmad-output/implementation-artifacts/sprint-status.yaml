@@ -152,7 +152,7 @@ development_status:
   4-3-implement-family-member-dashboard: done
   4-4-implement-family-ride-booking: done
   4-5-implement-notification-preferences: done
-  4-6-implement-ride-reminder-notifications: backlog
+  4-6-implement-ride-reminder-notifications: done
   4-7-implement-driver-status-notifications: backlog
   4-8-implement-driver-notifications: backlog
   4-9-implement-family-pickup-notifications: backlog

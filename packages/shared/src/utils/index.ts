@@ -2,6 +2,8 @@
  * Shared utility functions for Veterans First application
  */
 
+export * from "./reminders";
+
 /**
  * Format a phone number to (XXX) XXX-XXXX format
  */

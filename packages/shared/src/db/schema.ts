@@ -377,3 +377,53 @@ export const notificationPreferences = pgTable("notification_preferences", {
 
 export type NotificationPreference = InferSelectModel<typeof notificationPreferences>;
 export type NewNotificationPreference = InferInsertModel<typeof notificationPreferences>;
+
+/**
+ * Canonical default row used when a user has no notification_preferences
+ * row yet. Mirrors the DB defaults so server-side dispatch code can gate
+ * without a separate "seed on first login" flow.
+ */
+export const DEFAULT_NOTIFICATION_PREFERENCES_ROW = {
+  pushEnabled: true,
+  smsEnabled: true,
+  remindersEnabled: true,
+  driverUpdatesEnabled: true,
+  arrivalPhotosEnabled: true,
+  marketingEnabled: false,
+  pushToken: null as string | null,
+} as const;
+
+const notificationChannelCheck = check(
+  "notification_channel_check",
+  sql`channel IN ('push', 'sms', 'email')`
+);
+
+const notificationStatusCheck = check(
+  "notification_status_check",
+  sql`status IN ('sent', 'delivered', 'failed', 'skipped')`
+);
+
+/**
+ * Notification Logs — Story 4.6 (append-only).
+ * Every dispatch attempt is recorded so reminder/status endpoints can
+ * dedupe and support can audit what was actually sent.
+ */
+export const notificationLogs = pgTable(
+  "notification_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    rideId: uuid("ride_id").references(() => rides.id, { onDelete: "set null" }),
+    notificationType: text("notification_type").notNull(),
+    channel: text("channel").notNull(),
+    content: text("content").notNull(),
+    status: text("status").notNull().default("sent"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (_table) => [notificationChannelCheck, notificationStatusCheck]
+);
+
+export type NotificationLog = InferSelectModel<typeof notificationLogs>;
+export type NewNotificationLog = InferInsertModel<typeof notificationLogs>;

@@ -34,3 +34,9 @@ Tracks Low/Info findings deferred during autonomous story execution. Organized c
 
 - **Medium:** The family booking form takes pickup time as raw ISO text entry rather than a native date picker. Functional but rough UX. Track for a polish pass post-MVP; richer autocomplete/datepicker parity with the rider-side BookingWizard is out of scope for Epic 4.
 - **Medium:** Family booking form uses free-text pickup/drop-off entry (no Google Places autocomplete). Defer richer destination picker until the UX polish phase.
+
+### Story 4-6
+
+- **Medium:** Push (Expo Push / FCM) and SMS (Twilio) transports are stubbed — the dispatcher logs structured metadata and writes a notification_logs row with status='sent', but no external API call fires yet. Tracked for Epic 5 ops work.
+- **Medium:** Reminder cron route has no external scheduler wired up — it's callable with a Clerk session, but production requires a Vercel Cron or external scheduler hitting it with a service-role token. Tracked for Epic 5 deployment setup.
+- **Low:** `windowRange` uses local `Date.now()` and UTC math for a ±5-min tolerance; if the cron interval drifts outside 10 minutes the reminder will be skipped. Acceptable for a scheduled cron firing every 5 minutes, but may need widening if ops picks a longer interval.
