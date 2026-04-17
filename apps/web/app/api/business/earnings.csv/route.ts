@@ -15,16 +15,8 @@ import {
 } from '@veterans-first/shared/utils';
 
 import { getCurrentUserWithRole } from '@/lib/auth/current-user';
+import { toCsv } from '@/lib/csv';
 import { getServerSupabase } from '@/lib/supabase';
-
-function sanitizeCsvField(value: unknown): string {
-  const str = value == null ? '' : String(value);
-  const needsQuote = /[",\r\n]/.test(str);
-  const leadingDangerous = /^[=+\-@]/.test(str);
-  const safe = leadingDangerous ? `'${str}` : str;
-  const escaped = safe.replace(/"/g, '""');
-  return needsQuote || leadingDangerous ? `"${escaped}"` : escaped;
-}
 
 export async function GET(req: Request) {
   const user = await getCurrentUserWithRole();
@@ -61,25 +53,24 @@ export async function GET(req: Request) {
       created_at: string;
     }> | null) ?? [];
 
-  const header = [
-    'earning_id',
-    'ride_id',
-    'gross_amount_cents',
-    'company_fee_cents',
-    'net_amount_cents',
-    'created_at',
-  ]
-    .map(sanitizeCsvField)
-    .join(',');
-  const body = rows
-    .map((r) =>
-      [r.id, r.ride_id, r.gross_amount_cents, r.company_fee_cents, r.net_amount_cents, r.created_at]
-        .map(sanitizeCsvField)
-        .join(','),
-    )
-    .join('\n');
-
-  const csv = `${header}\n${body}`;
+  const csv = toCsv([
+    [
+      'earning_id',
+      'ride_id',
+      'gross_amount_cents',
+      'company_fee_cents',
+      'net_amount_cents',
+      'created_at',
+    ],
+    ...rows.map((r) => [
+      r.id,
+      r.ride_id,
+      r.gross_amount_cents,
+      r.company_fee_cents,
+      r.net_amount_cents,
+      r.created_at,
+    ]),
+  ]);
   return new NextResponse(csv, {
     status: 200,
     headers: {
