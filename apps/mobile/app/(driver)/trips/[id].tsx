@@ -26,7 +26,12 @@ import {
   View,
 } from 'react-native';
 
-import { RiderProfileCard, StatusActionButton, TripStatusBadge } from '@/components/trips';
+import {
+  NavigationButton,
+  RiderProfileCard,
+  StatusActionButton,
+  TripStatusBadge,
+} from '@/components/trips';
 import type { RideStatusKey } from '@/components/trips/TripStatusBadge';
 import { useLocationCapture, useTrip, useRiderHistory, useTripStatus } from '@/hooks';
 import type { RideStatus } from '@/hooks/useTripStatus';
@@ -240,12 +245,21 @@ export default function TripDetailScreen() {
           </View>
         </View>
 
-        {/* Map placeholder — Story 3.5 */}
-        <View className="mt-4 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-8">
-          <Ionicons name="map-outline" size={32} color="#9CA3AF" />
-          <Text className="mt-2 text-center text-sm text-gray-500">
-            Integrated navigation coming in Story 3.5
-          </Text>
+        {/* Turn-by-turn navigation (Story 3.5) */}
+        <View className="mt-4">
+          {trip.status === 'in_progress' ? (
+            <NavigationButton
+              label="Navigate to Dropoff"
+              address={trip.dropoffAddress}
+              testID="nav-dropoff-button"
+            />
+          ) : (
+            <NavigationButton
+              label="Navigate to Pickup"
+              address={trip.pickupAddress}
+              testID="nav-pickup-button"
+            />
+          )}
         </View>
 
         {/* Spacer so sticky action doesn't cover content */}
