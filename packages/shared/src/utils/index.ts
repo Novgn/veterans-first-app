@@ -13,6 +13,7 @@ export * from "./paymentCharging";
 export * from "./billingPeriods";
 export * from "./creditAdjustment";
 export * from "./driverEarnings";
+export * from "./credentialAlerts";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format
