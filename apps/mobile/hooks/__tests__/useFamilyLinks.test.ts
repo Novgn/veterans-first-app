@@ -29,7 +29,9 @@ function usersLookupResult(result: unknown) {
   return {
     select: jest.fn().mockReturnValue({
       eq: jest.fn().mockReturnValue({
-        single: jest.fn().mockResolvedValue({ data: { id: 'rider-uuid' }, error: null }),
+        single: jest
+          .fn()
+          .mockResolvedValue({ data: { id: 'rider-uuid', phone: '+15550000000' }, error: null }),
         maybeSingle: jest.fn().mockResolvedValue(result),
       }),
     }),
@@ -124,15 +126,35 @@ describe('useInviteFamilyMember', () => {
       /valid phone/
     );
   });
+
+  it('rejects self-invite (same phone as rider)', async () => {
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'users') return usersLookupResult({ data: null, error: null });
+      return {};
+    });
+
+    const { result } = renderHook(() => useInviteFamilyMember(), {
+      wrapper: createTestWrapper(),
+    });
+
+    await expect(
+      result.current.mutateAsync({ phone: '+15550000000', relationship: null })
+    ).rejects.toThrow(/own phone/);
+  });
 });
 
 describe('useRespondToFamilyInvite', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('approve flips the link status to approved', async () => {
+  it('approve claims the link for the current user (sets family_member_id)', async () => {
     const eq = jest.fn().mockResolvedValue({ error: null });
     const update = jest.fn().mockReturnValue({ eq });
-    mockFrom.mockReturnValue({ update });
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'users') return usersLookupResult({ data: null, error: null });
+      if (table === 'family_links') return { update };
+      return {};
+    });
 
     const { result } = renderHook(() => useRespondToFamilyInvite(), {
       wrapper: createTestWrapper(),
@@ -140,7 +162,13 @@ describe('useRespondToFamilyInvite', () => {
 
     await result.current.mutateAsync({ linkId: 'link-1', action: 'approve' });
 
-    expect(update).toHaveBeenCalledWith(expect.objectContaining({ status: 'approved' }));
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'approved',
+        family_member_id: 'rider-uuid',
+        invited_phone: null,
+      })
+    );
     expect(eq).toHaveBeenCalledWith('id', 'link-1');
   });
 
@@ -163,10 +191,10 @@ describe('useRespondToFamilyInvite', () => {
 describe('useRevokeFamilyLink', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('sets status to revoked', async () => {
+  it('hard-deletes the link so the rider can re-invite', async () => {
     const eq = jest.fn().mockResolvedValue({ error: null });
-    const update = jest.fn().mockReturnValue({ eq });
-    mockFrom.mockReturnValue({ update });
+    const del = jest.fn().mockReturnValue({ eq });
+    mockFrom.mockReturnValue({ delete: del });
 
     const { result } = renderHook(() => useRevokeFamilyLink(), {
       wrapper: createTestWrapper(),
@@ -174,7 +202,8 @@ describe('useRevokeFamilyLink', () => {
 
     await result.current.mutateAsync({ linkId: 'link-99' });
 
-    expect(update).toHaveBeenCalledWith(expect.objectContaining({ status: 'revoked' }));
+    expect(del).toHaveBeenCalled();
+    expect(eq).toHaveBeenCalledWith('id', 'link-99');
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 });

@@ -18,3 +18,10 @@ Tracks Low/Info findings deferred during autonomous story execution. Organized c
 - **Failure:** "Failed to connect to Supabase. Is local Supabase running?"
 - **Origin:** Tests require local Supabase running via `supabase start`.
 - **Recommendation:** Environmental — tests pass when Supabase is live. Skip in CI without Supabase.
+
+## Epic 4 deferred findings
+
+### Story 4-1
+
+- **Low:** `/profile/notifications` link in the rider profile row will be unresolved until Story 4-5 ships; acceptable during the batch since 4-5 is in the queue.
+- **Info:** Invited phone claim relies on the user-signed-in phone matching `phone` column exactly. Clerk phone onboarding already normalizes to E.164, but any future flow that skips normalization would break claim. Covered implicitly by Story 4-1 `normalizePhone`.

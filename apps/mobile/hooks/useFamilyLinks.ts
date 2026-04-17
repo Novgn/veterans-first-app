@@ -92,33 +92,62 @@ export function useFamilyLinks(role: 'rider' | 'family') {
 
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('id')
+        .select('id, phone')
         .eq('clerk_id', user.id)
         .single();
 
       if (userError || !userData) return [];
 
-      const column = role === 'rider' ? 'rider_id' : 'family_member_id';
+      // PostgREST FK embed: `users!<column_name>` embeds through the FK
+      // column, regardless of the constraint's generated name.
       const joinColumn = role === 'rider' ? 'family_member_id' : 'rider_id';
-
-      const { data, error } = await supabase
-        .from('family_links')
-        .select(
-          `
-          id, rider_id, family_member_id, invited_phone, relationship,
-          permissions, status, created_at, updated_at,
-          counterpart:users!family_links_${joinColumn === 'rider_id' ? 'rider_id_users_id_fk' : 'family_member_id_users_id_fk'}(
-            id, first_name, last_name, phone, profile_photo_url
-          )
-        `
+      const selectClause = `
+        id, rider_id, family_member_id, invited_phone, relationship,
+        permissions, status, created_at, updated_at,
+        counterpart:users!${joinColumn}(
+          id, first_name, last_name, phone, profile_photo_url
         )
-        .eq(column, userData.id)
-        .order('created_at', { ascending: false });
+      `;
 
-      if (error) throw error;
-      return ((data ?? []) as unknown as FamilyLinkView[]).filter(
-        (row) => row.status !== 'revoked'
-      );
+      if (role === 'rider') {
+        const { data, error } = await supabase
+          .from('family_links')
+          .select(selectClause)
+          .eq('rider_id', userData.id)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return (data ?? []) as unknown as FamilyLinkView[];
+      }
+
+      // Family role: include rows pointing at user id AND rows invited via
+      // the user's phone (pre-claim). Approval will write family_member_id.
+      const byIdPromise = supabase
+        .from('family_links')
+        .select(selectClause)
+        .eq('family_member_id', userData.id);
+      const byPhonePromise = userData.phone
+        ? supabase
+            .from('family_links')
+            .select(selectClause)
+            .is('family_member_id', null)
+            .eq('invited_phone', userData.phone)
+        : Promise.resolve({ data: [] as unknown[], error: null });
+
+      const [byId, byPhone] = await Promise.all([byIdPromise, byPhonePromise]);
+      if (byId.error) throw byId.error;
+      if ('error' in byPhone && byPhone.error) throw byPhone.error;
+
+      const rows = [
+        ...((byId.data ?? []) as unknown as FamilyLinkView[]),
+        ...((byPhone.data ?? []) as unknown as FamilyLinkView[]),
+      ];
+      // Dedupe by id in case of overlap.
+      const seen = new Set<string>();
+      return rows.filter((row) => {
+        if (seen.has(row.id)) return false;
+        seen.add(row.id);
+        return true;
+      });
     },
     enabled: !!user?.id,
   });
@@ -152,10 +181,14 @@ export function useInviteFamilyMember() {
 
       const { data: rider, error: riderError } = await supabase
         .from('users')
-        .select('id')
+        .select('id, phone')
         .eq('clerk_id', user.id)
         .single();
       if (riderError || !rider) throw new Error('Rider profile not found');
+
+      if (rider.phone === phone) {
+        throw new Error("You can't invite your own phone number");
+      }
 
       // Look up the family member by phone (may not exist yet).
       const { data: existing, error: existingError } = await supabase
@@ -200,26 +233,42 @@ export interface RespondToInviteInput {
 
 /**
  * Approve or decline a pending invitation. `approve` flips status to
- * `approved`; `decline` hard-deletes the row (so the rider can re-invite
- * without bumping against the `(rider_id, family_member_id)` unique
- * constraint).
+ * `approved` and also claims the link for the signed-in user (sets
+ * `family_member_id` + clears `invited_phone` so the link stops matching
+ * by phone). `decline` hard-deletes the row — lets the rider re-invite
+ * without hitting the `(rider_id, family_member_id)` unique constraint.
  */
 export function useRespondToFamilyInvite() {
+  const { user } = useUser();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ linkId, action }: RespondToInviteInput): Promise<void> => {
-      if (action === 'approve') {
-        const { error } = await supabase
-          .from('family_links')
-          .update({ status: 'approved', updated_at: new Date().toISOString() })
-          .eq('id', linkId);
-        if (error) throw error;
-      } else {
+      if (action === 'decline') {
         const { error } = await supabase.from('family_links').delete().eq('id', linkId);
         if (error) throw error;
+        return;
       }
+
+      if (!user?.id) throw new Error('Not signed in');
+      const { data: me, error: meError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('clerk_id', user.id)
+        .single();
+      if (meError || !me) throw new Error('User profile not found');
+
+      const { error } = await supabase
+        .from('family_links')
+        .update({
+          status: 'approved',
+          family_member_id: me.id,
+          invited_phone: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', linkId);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: familyLinkKeys.all });
@@ -232,8 +281,11 @@ export interface RevokeLinkInput {
 }
 
 /**
- * Rider-side revoke. Deletes the row so the rider can re-invite if they
- * change their mind. (Story 4.2 extends this with an undo window.)
+ * Rider-side revoke. Hard-deletes the row — riders need to be able to
+ * re-invite without hitting the `(rider_id, family_member_id)` unique
+ * constraint. Story 4.2 wraps this call with an undo window via
+ * `useFamilyRevocationQueue`. Audit log entries for deleted rows are
+ * written by the DB trigger (Story 1.5), so history survives.
  */
 export function useRevokeFamilyLink() {
   const supabase = useSupabase();
@@ -241,10 +293,7 @@ export function useRevokeFamilyLink() {
 
   return useMutation({
     mutationFn: async ({ linkId }: RevokeLinkInput): Promise<void> => {
-      const { error } = await supabase
-        .from('family_links')
-        .update({ status: 'revoked', updated_at: new Date().toISOString() })
-        .eq('id', linkId);
+      const { error } = await supabase.from('family_links').delete().eq('id', linkId);
       if (error) throw error;
     },
     onSuccess: () => {
