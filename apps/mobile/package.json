@@ -28,6 +28,7 @@
     "@veterans-first/shared": "*",
     "date-fns": "3.6.0",
     "expo": "55.0.15",
+    "expo-dev-client": "~55.0.27",
     "expo-haptics": "~55.0.14",
     "expo-image-manipulator": "~55.0.15",
     "expo-image-picker": "~55.0.18",
