@@ -1,8 +1,16 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata, Viewport } from 'next';
+import { Lexend } from 'next/font/google';
 import type { ReactNode } from 'react';
 
 import './globals.css';
+
+const lexend = Lexend({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-lexend',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Veterans 1st Console',
@@ -24,7 +32,7 @@ const hasValidClerkKey = clerkKey && clerkKey.length > 20 && !clerkKey.includes(
 export default function RootLayout({ children }: { children: ReactNode }) {
   if (!hasValidClerkKey) {
     return (
-      <html lang="en">
+      <html lang="en" className={lexend.variable}>
         <body>{children}</body>
       </html>
     );
@@ -32,7 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" className={lexend.variable}>
         <body>{children}</body>
       </html>
     </ClerkProvider>
