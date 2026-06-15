@@ -70,7 +70,7 @@ export function CancellationSuccessScreen({
       });
 
       Alert.alert('Ride Restored', 'Your ride has been restored successfully.');
-      router.replace('/(tabs)/rides');
+      router.replace('/(rider)/(tabs)/rides');
     } catch (error) {
       Alert.alert(
         'Undo Failed',
@@ -81,7 +81,7 @@ export function CancellationSuccessScreen({
   }, [rideId, previousStatus, isUndoing, undoMutation]);
 
   const handleDone = () => {
-    router.replace('/(tabs)/rides');
+    router.replace('/(rider)/(tabs)/rides');
   };
 
   const canUndo = secondsRemaining > 0;

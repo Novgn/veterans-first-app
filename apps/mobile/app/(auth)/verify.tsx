@@ -1,63 +1,47 @@
 import { useSignIn, useSignUp } from '@clerk/clerk-expo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+
+import { AuthScaffold, Button, Link, OTPField, ScreenHeader } from '@/components/ui';
+
+const RESEND_COOLDOWN_SECONDS = 45;
+const HAS_SEEN_WELCOME_KEY = 'veteransfirst.hasSeenWelcome';
+
+const markWelcomeSeen = async () => {
+  try {
+    await AsyncStorage.setItem(HAS_SEEN_WELCOME_KEY, 'true');
+  } catch {
+    // Non-fatal: routing continues even if persistence fails.
+  }
+};
+
+const maskPhone = (e164: string) => {
+  const digits = e164.replace(/\D/g, '').slice(-10);
+  if (digits.length !== 10) return e164;
+  return `(•••) •••-${digits.slice(6)}`;
+};
 
 export default function Verify() {
   const { signIn, setActive: setSignInActive } = useSignIn();
   const { signUp, setActive: setSignUpActive } = useSignUp();
   const { phone, mode } = useLocalSearchParams<{ phone: string; mode: 'sign-in' | 'sign-up' }>();
-  const [code, setCode] = useState(['', '', '', '', '', '']);
+  const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendCooldown, setResendCooldown] = useState(RESEND_COOLDOWN_SECONDS);
   const router = useRouter();
-  const inputRefs = useRef<(TextInput | null)[]>([]);
 
   useEffect(() => {
-    // Start cooldown timer
-    setResendCooldown(60);
     const timer = setInterval(() => {
       setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const handleCodeChange = (text: string, index: number) => {
-    const newCode = [...code];
-    newCode[index] = text;
-    setCode(newCode);
-
-    // Auto-focus next input
-    if (text && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-
-    // Auto-submit when all digits entered
-    if (index === 5 && text) {
-      const fullCode = newCode.join('');
-      if (fullCode.length === 6) {
-        onVerify(fullCode);
-      }
-    }
-  };
-
-  const handleKeyPress = (key: string, index: number) => {
-    if (key === 'Backspace' && !code[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const onVerify = async (verificationCode?: string) => {
-    const codeToVerify = verificationCode || code.join('');
+  const onVerify = async (fullCode?: string) => {
+    const codeToVerify = fullCode ?? code;
     if (codeToVerify.length !== 6) {
       setError('Please enter the 6-digit code');
       return;
@@ -72,32 +56,44 @@ export default function Verify() {
           strategy: 'phone_code',
           code: codeToVerify,
         });
-
         if (result.status === 'complete') {
           await setSignInActive({ session: result.createdSessionId });
-          router.replace('/(app)');
+          await markWelcomeSeen();
+          router.replace('/');
+        } else if (result.status === 'needs_second_factor') {
+          setError('Two-factor authentication is required but not yet supported in this app.');
+        } else {
+          console.warn('[verify] unexpected sign-in status', result.status, result);
+          setError(`Sign-in needs another step (${result.status}). Contact support.`);
         }
       } else if (mode === 'sign-up' && signUp) {
-        const result = await signUp.attemptPhoneNumberVerification({
-          code: codeToVerify,
-        });
-
+        const result = await signUp.attemptPhoneNumberVerification({ code: codeToVerify });
         if (result.status === 'complete') {
           await setSignUpActive({ session: result.createdSessionId });
-          router.replace('/(app)');
+          await markWelcomeSeen();
+          router.replace('/(auth)/onboarding/veteran');
+        } else if (result.status === 'missing_requirements') {
+          const missing = (result.missingFields ?? []).join(', ') || 'required fields';
+          console.warn('[verify] sign-up missing_requirements', result);
+          setError(
+            `Your account is verified, but Clerk still needs: ${missing}. Enable/disable these in Clerk dashboard → User & Authentication.`
+          );
+        } else {
+          console.warn('[verify] unexpected sign-up status', result.status, result);
+          setError(`Sign-up needs another step (${result.status}). Contact support.`);
         }
       }
     } catch (err: unknown) {
-      const clerkError = err as { errors?: { message: string }[] };
-      setError(clerkError.errors?.[0]?.message || 'Invalid verification code');
-      setCode(['', '', '', '', '', '']);
-      inputRefs.current[0]?.focus();
+      const clerkError = err as { errors?: { message?: string; longMessage?: string }[] };
+      const first = clerkError.errors?.[0];
+      setError(first?.longMessage || first?.message || 'Invalid verification code');
+      setCode('');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const onResendCode = async () => {
+  const onResend = async () => {
     if (resendCooldown > 0) return;
 
     setError('');
@@ -105,16 +101,10 @@ export default function Verify() {
 
     try {
       if (mode === 'sign-in' && signIn) {
-        // Create sign-in with identifier
-        const { supportedFirstFactors } = await signIn.create({
-          identifier: phone,
-        });
-
-        // Find the phone_code factor and prepare
+        const { supportedFirstFactors } = await signIn.create({ identifier: phone });
         const phoneCodeFactor = supportedFirstFactors?.find(
           (factor) => factor.strategy === 'phone_code'
         );
-
         if (phoneCodeFactor && 'phoneNumberId' in phoneCodeFactor) {
           await signIn.prepareFirstFactor({
             strategy: 'phone_code',
@@ -124,7 +114,7 @@ export default function Verify() {
       } else if (mode === 'sign-up' && signUp) {
         await signUp.preparePhoneNumberVerification();
       }
-      setResendCooldown(60);
+      setResendCooldown(RESEND_COOLDOWN_SECONDS);
     } catch (err: unknown) {
       const clerkError = err as { errors?: { message: string }[] };
       setError(clerkError.errors?.[0]?.message || 'Failed to resend code');
@@ -134,65 +124,55 @@ export default function Verify() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-[#FAFAF9]">
-      <View className="flex-1 justify-center px-6 py-8">
-        <Pressable onPress={() => router.back()} className="absolute left-4 top-12">
-          <Text className="text-lg text-[#1E40AF]">← Back</Text>
-        </Pressable>
-
-        <View className="mb-8">
-          <Text className="mb-2 text-center text-3xl font-bold text-gray-900">
-            Verify Your Phone
-          </Text>
-          <Text className="text-center text-lg text-gray-600">Enter the 6-digit code sent to</Text>
-          <Text className="text-center text-lg font-semibold text-gray-900">{phone}</Text>
+    <AuthScaffold header={<ScreenHeader />}>
+      <View>
+        <Text className="text-center text-title-1 text-foreground">Enter the code</Text>
+        <Text className="text-stone-600 mt-2 text-center text-lg">
+          We sent a 6-digit code to {maskPhone(phone ?? '')}.
+        </Text>
+        <View className="mt-2 items-center">
+          <Link label="Change number" onPress={() => router.back()} size="sm" />
         </View>
-
-        <View className="mb-6 flex-row justify-center space-x-2">
-          {code.map((digit, index) => (
-            <TextInput
-              key={index}
-              ref={(ref) => {
-                inputRefs.current[index] = ref;
-              }}
-              className="h-14 w-12 rounded-lg border border-gray-300 bg-white text-center text-2xl font-semibold"
-              keyboardType="number-pad"
-              maxLength={1}
-              value={digit}
-              onChangeText={(text) => handleCodeChange(text, index)}
-              onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
-              editable={!isLoading}
-              autoFocus={index === 0}
-            />
-          ))}
-        </View>
-
-        {error ? <Text className="mb-4 text-center text-base text-red-600">{error}</Text> : null}
-
-        <Pressable
-          onPress={() => onVerify()}
-          disabled={isLoading || code.join('').length !== 6}
-          className={`mb-4 h-14 items-center justify-center rounded-lg ${
-            isLoading || code.join('').length !== 6 ? 'bg-gray-400' : 'bg-[#1E40AF]'
-          }`}>
-          {isLoading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-lg font-semibold text-white">Verify</Text>
-          )}
-        </Pressable>
-
-        <Pressable onPress={onResendCode} disabled={resendCooldown > 0 || isLoading}>
-          <Text
-            className={`text-center text-base ${
-              resendCooldown > 0 ? 'text-gray-400' : 'text-[#1E40AF]'
-            }`}>
-            {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend verification code'}
-          </Text>
-        </Pressable>
       </View>
-    </KeyboardAvoidingView>
+
+      <View className="mt-10">
+        <OTPField
+          value={code}
+          onChange={setCode}
+          onComplete={onVerify}
+          disabled={isLoading}
+          error={error || undefined}
+        />
+      </View>
+
+      <View className="mt-6 items-center">
+        {resendCooldown > 0 ? (
+          <Text className="text-stone-500 text-base">
+            Resend code in 0:{resendCooldown.toString().padStart(2, '0')}
+          </Text>
+        ) : (
+          <Link label="Resend code" onPress={onResend} />
+        )}
+      </View>
+
+      <View className="mt-10">
+        <Button
+          label="Continue"
+          onPress={() => onVerify()}
+          loading={isLoading}
+          disabled={code.length !== 6}
+        />
+      </View>
+
+      <View className="mt-6 flex-row items-center justify-center gap-2">
+        <Text className="text-stone-500 text-sm">Didn&apos;t get it?</Text>
+        <Link
+          label="Contact support"
+          tone="accent"
+          size="sm"
+          onPress={() => router.push('/support')}
+        />
+      </View>
+    </AuthScaffold>
   );
 }

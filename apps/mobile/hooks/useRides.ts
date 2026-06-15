@@ -15,7 +15,6 @@
  * Story 2.8: Implement My Rides Screen with Upcoming Rides
  */
 
-import { useUser } from '@clerk/clerk-expo';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
@@ -23,6 +22,7 @@ import { useSupabase } from '@/lib/supabase';
 import type { RideWithDriver, DriverInfo } from '@/components/rides/RideCard';
 
 import type { Ride } from './useRide';
+import { useSupabaseUserId } from './useSupabaseUserId';
 
 /**
  * Raw ride data with driver join from database
@@ -37,16 +37,15 @@ interface RideWithDriverJoin {
   scheduled_pickup_time: string | null;
   created_at: string;
   updated_at: string;
-  driver_profile: {
-    user_id: string;
-    vehicle_make: string;
-    vehicle_model: string;
-    vehicle_color: string;
-    users: {
-      id: string;
-      first_name: string;
-      profile_photo_url: string | null;
-    };
+  driver: {
+    id: string;
+    first_name: string;
+    profile_photo_url: string | null;
+    driver_profile: {
+      vehicle_make: string;
+      vehicle_model: string;
+      vehicle_color: string;
+    } | null;
   } | null;
 }
 
@@ -78,26 +77,29 @@ export const ridesKeys = {
 export function useRides() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
-  const { user } = useUser();
+  const { data: supabaseUserId } = useSupabaseUserId();
 
-  // User-scoped query key for cache isolation
-  const queryKey = user?.id ? ridesKeys.list(user.id) : ridesKeys.all;
+  // User-scoped query key for cache isolation. Use Supabase UUID so cache
+  // keys line up with the realtime channel identifiers.
+  const queryKey = supabaseUserId ? ridesKeys.list(supabaseUserId) : ridesKeys.all;
 
-  // Set up real-time subscription for ride updates with optimistic cache updates
+  // Set up real-time subscription for ride updates with optimistic cache updates.
+  // Realtime filters operate on the physical column (`rider_id` UUID), so we
+  // must pass the Supabase UUID — not the Clerk string ID.
   useEffect(() => {
-    if (!user?.id) return;
+    if (!supabaseUserId) return;
 
-    const userQueryKey = ridesKeys.list(user.id);
+    const userQueryKey = ridesKeys.list(supabaseUserId);
 
     const channel = supabase
-      .channel(`rides:${user.id}`)
+      .channel(`rides:${supabaseUserId}`)
       .on(
         'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
           table: 'rides',
-          filter: `rider_id=eq.${user.id}`,
+          filter: `rider_id=eq.${supabaseUserId}`,
         },
         (payload) => {
           // Optimistic update: directly update the cache for status changes
@@ -120,7 +122,7 @@ export function useRides() {
           event: 'INSERT',
           schema: 'public',
           table: 'rides',
-          filter: `rider_id=eq.${user.id}`,
+          filter: `rider_id=eq.${supabaseUserId}`,
         },
         () => {
           // For new rides, invalidate to fetch complete data with driver info
@@ -133,7 +135,7 @@ export function useRides() {
           event: 'DELETE',
           schema: 'public',
           table: 'rides',
-          filter: `rider_id=eq.${user.id}`,
+          filter: `rider_id=eq.${supabaseUserId}`,
         },
         (payload) => {
           // Optimistic removal from cache
@@ -149,26 +151,27 @@ export function useRides() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, queryClient, user?.id]);
+  }, [supabase, queryClient, supabaseUserId]);
 
   return useQuery<RideWithDriver[]>({
     queryKey,
     queryFn: async () => {
-      // Fetch rides with driver profile and user info
+      // Fetch rides with driver profile and user info.
+      // Path: rides.driver_id → users.id → driver_profiles.user_id
+      // (there is no direct FK from rides to driver_profiles; we go via users).
       const { data, error } = await supabase
         .from('rides')
         .select(
           `
           *,
-          driver_profile:driver_profiles!rides_driver_id_fkey (
-            user_id,
-            vehicle_make,
-            vehicle_model,
-            vehicle_color,
-            users (
-              id,
-              first_name,
-              profile_photo_url
+          driver:users!driver_id (
+            id,
+            first_name,
+            profile_photo_url,
+            driver_profile:driver_profiles (
+              vehicle_make,
+              vehicle_model,
+              vehicle_color
             )
           )
         `
@@ -194,14 +197,14 @@ export function useRides() {
         };
 
         // If driver is assigned, include driver info
-        if (ride.driver_profile?.users) {
+        if (ride.driver && ride.driver.driver_profile) {
           const driverInfo: DriverInfo = {
-            id: ride.driver_profile.users.id,
-            firstName: ride.driver_profile.users.first_name,
-            profilePhotoUrl: ride.driver_profile.users.profile_photo_url,
-            vehicleMake: ride.driver_profile.vehicle_make,
-            vehicleModel: ride.driver_profile.vehicle_model,
-            vehicleColor: ride.driver_profile.vehicle_color,
+            id: ride.driver.id,
+            firstName: ride.driver.first_name,
+            profilePhotoUrl: ride.driver.profile_photo_url,
+            vehicleMake: ride.driver.driver_profile.vehicle_make,
+            vehicleModel: ride.driver.driver_profile.vehicle_model,
+            vehicleColor: ride.driver.driver_profile.vehicle_color,
           };
 
           return {
@@ -213,6 +216,6 @@ export function useRides() {
         return baseRide as RideWithDriver;
       });
     },
-    enabled: !!user?.id,
+    enabled: !!supabaseUserId,
   });
 }

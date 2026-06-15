@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 
 import { useSupabase } from '@/lib/supabase';
 
+import { useSupabaseUserId } from './useSupabaseUserId';
+
 /**
  * Driver trip with full rider information and preferences
  */
@@ -86,22 +88,24 @@ interface RideResponse {
  */
 export function useDriverTrips() {
   const { userId } = useAuth();
+  const { data: supabaseUserId } = useSupabaseUserId();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription for trip changes
+  // Set up real-time subscription for trip changes. Realtime filters operate
+  // on the physical `driver_id` UUID column, not the Clerk string ID.
   useEffect(() => {
-    if (!userId) return;
+    if (!supabaseUserId) return;
 
     const channel = supabase
-      .channel(`driver:${userId}:trips`)
+      .channel(`driver:${supabaseUserId}:trips`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'rides',
-          filter: `driver_id=eq.${userId}`,
+          filter: `driver_id=eq.${supabaseUserId}`,
         },
         () => {
           // Invalidate and refetch on any ride change
@@ -113,7 +117,7 @@ export function useDriverTrips() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId, supabase, queryClient]);
+  }, [supabaseUserId, supabase, queryClient]);
 
   return useQuery({
     queryKey: tripKeys.list(userId ?? ''),

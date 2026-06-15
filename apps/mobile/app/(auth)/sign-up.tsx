@@ -1,25 +1,68 @@
 import { useSignUp } from '@clerk/clerk-expo';
-import { Link, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from 'react-native';
+  AuthScaffold,
+  BrandMark,
+  Button,
+  Link,
+  PhoneField,
+  ScreenHeader,
+  TextField,
+  toE164,
+} from '@/components/ui';
+
+type ClerkFieldError = {
+  code?: string;
+  message?: string;
+  longMessage?: string;
+  meta?: { param_name?: string };
+};
+type ClerkErrorShape = { errors?: ClerkFieldError[] };
+
+const formatUSPhoneFromDigits = (digits: string) => {
+  if (digits.length <= 3) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+};
+
+const friendlyMessage = (e: ClerkFieldError): string => {
+  const code = e.code ?? '';
+  const param = e.meta?.param_name;
+
+  if (code === 'form_param_unknown') {
+    return `This Clerk instance doesn't accept "${param ?? 'that field'}". Enable phone number and name in Clerk dashboard → User & Authentication → Email, Phone, Username, and Personal Information.`;
+  }
+  if (code === 'form_identifier_exists') {
+    return 'An account with this phone number already exists. Try signing in instead.';
+  }
+  if (code === 'form_param_format_invalid' && param === 'phone_number') {
+    return 'That phone number format looks wrong. Use 10 digits, e.g. (555) 123-4567.';
+  }
+  if (code === 'form_param_nil' || code === 'form_param_missing') {
+    return `Missing required field: ${param ?? 'unknown'}.`;
+  }
+  return e.longMessage || e.message || 'Failed to create account';
+};
 
 export default function SignUp() {
   const { signUp, isLoaded } = useSignUp();
+  const { prefillPhone } = useLocalSearchParams<{ prefillPhone?: string }>();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (prefillPhone) {
+      const digits = prefillPhone.replace(/\D/g, '').slice(0, 10);
+      if (digits.length > 0) setPhone(formatUSPhoneFromDigits(digits));
+    }
+  }, [prefillPhone]);
 
   const onSignUp = async () => {
     if (!isLoaded) return;
@@ -28,8 +71,7 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      // Format phone number - ensure it starts with +1 for US
-      const formattedPhone = phone.startsWith('+') ? phone : `+1${phone.replace(/\D/g, '')}`;
+      const formattedPhone = toE164(phone);
 
       await signUp.create({
         phoneNumber: formattedPhone,
@@ -37,107 +79,81 @@ export default function SignUp() {
         lastName: lastName.trim(),
       });
 
-      // Prepare phone verification
       await signUp.preparePhoneNumberVerification();
 
-      // Navigate to verification screen
       router.push({
         pathname: '/(auth)/verify',
         params: { phone: formattedPhone, mode: 'sign-up' },
       });
     } catch (err: unknown) {
-      const clerkError = err as { errors?: { message: string }[] };
-      setError(clerkError.errors?.[0]?.message || 'Failed to create account');
+      const clerkError = err as ClerkErrorShape;
+      const firstError = clerkError.errors?.[0];
+      setError(firstError ? friendlyMessage(firstError) : 'Failed to create account');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const isFormValid = firstName.trim() && lastName.trim() && phone;
+  const isValid =
+    firstName.trim().length > 0 &&
+    lastName.trim().length > 0 &&
+    phone.replace(/\D/g, '').length === 10;
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-[#FAFAF9]">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className="flex-1 justify-center px-6 py-8">
-          <View className="mb-8">
-            <Text className="mb-2 text-center text-3xl font-bold text-gray-900">
-              Create Account
-            </Text>
-            <Text className="text-center text-lg text-gray-600">
-              Join Veterans First for easy ride booking
-            </Text>
+    <AuthScaffold header={<ScreenHeader />}>
+      <View className="items-center">
+        <BrandMark size="md" />
+      </View>
+
+      <View className="mt-8">
+        <Text className="text-center text-title-1 text-foreground">Create your account</Text>
+        <Text className="text-stone-600 mt-2 text-center text-body">
+          Join Veterans First for easy, dignified rides.
+        </Text>
+      </View>
+
+      <View className="mt-8 gap-5">
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <TextField
+              label="First name"
+              value={firstName}
+              onChangeText={setFirstName}
+              placeholder="John"
+              autoComplete="given-name"
+              autoCapitalize="words"
+              editable={!isLoading}
+            />
           </View>
-
-          <View className="space-y-4">
-            <View className="flex-row space-x-3">
-              <View className="flex-1">
-                <Text className="mb-2 text-base font-medium text-gray-700">First Name</Text>
-                <TextInput
-                  className="h-14 rounded-lg border border-gray-300 bg-white px-4 text-lg"
-                  placeholder="John"
-                  autoComplete="given-name"
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  editable={!isLoading}
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="mb-2 text-base font-medium text-gray-700">Last Name</Text>
-                <TextInput
-                  className="h-14 rounded-lg border border-gray-300 bg-white px-4 text-lg"
-                  placeholder="Doe"
-                  autoComplete="family-name"
-                  value={lastName}
-                  onChangeText={setLastName}
-                  editable={!isLoading}
-                />
-              </View>
-            </View>
-
-            <View>
-              <Text className="mb-2 text-base font-medium text-gray-700">Phone Number</Text>
-              <View className="flex-row items-center rounded-lg border border-gray-300 bg-white">
-                <Text className="pl-4 pr-2 text-lg text-gray-500">+1</Text>
-                <TextInput
-                  className="h-14 flex-1 px-2 text-lg"
-                  placeholder="(555) 123-4567"
-                  keyboardType="phone-pad"
-                  autoComplete="tel"
-                  value={phone}
-                  onChangeText={setPhone}
-                  editable={!isLoading}
-                />
-              </View>
-            </View>
-
-            {error ? <Text className="text-center text-base text-red-600">{error}</Text> : null}
-
-            <Pressable
-              onPress={onSignUp}
-              disabled={isLoading || !isFormValid}
-              className={`h-14 items-center justify-center rounded-lg ${
-                isLoading || !isFormValid ? 'bg-gray-400' : 'bg-[#1E40AF]'
-              }`}>
-              {isLoading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-lg font-semibold text-white">Create Account</Text>
-              )}
-            </Pressable>
-
-            <View className="mt-4 flex-row justify-center">
-              <Text className="text-base text-gray-600">Already have an account? </Text>
-              <Link href="/(auth)/sign-in" asChild>
-                <Pressable>
-                  <Text className="text-base font-semibold text-[#1E40AF]">Sign In</Text>
-                </Pressable>
-              </Link>
-            </View>
+          <View className="flex-1">
+            <TextField
+              label="Last name"
+              value={lastName}
+              onChangeText={setLastName}
+              placeholder="Doe"
+              autoComplete="family-name"
+              autoCapitalize="words"
+              editable={!isLoading}
+            />
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+        <PhoneField
+          label="Phone Number"
+          value={phone}
+          onChangeText={setPhone}
+          helperText="We'll text you a 6-digit code."
+          error={error || undefined}
+          editable={!isLoading}
+        />
+
+        <Button label="Create Account" onPress={onSignUp} loading={isLoading} disabled={!isValid} />
+
+        <View className="mt-2 flex-row items-center justify-center gap-2">
+          <Text className="text-stone-600 text-body">Already have an account?</Text>
+          <Link label="Sign in" onPress={() => router.push('/(auth)/sign-in')} />
+        </View>
+      </View>
+    </AuthScaffold>
   );
 }

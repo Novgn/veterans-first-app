@@ -1,16 +1,40 @@
 import { useAuth, useClerk } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Redirect } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, SafeAreaView, Text, View } from 'react-native';
 
 import { useRole } from '@/lib/auth/use-role';
+
+const HAS_SEEN_WELCOME_KEY = 'veteransfirst.hasSeenWelcome';
 
 export default function Index() {
   const { isSignedIn, isLoaded } = useAuth();
   const { role, isLoading: roleLoading } = useRole();
   const { signOut } = useClerk();
+  const [hasSeenWelcome, setHasSeenWelcome] = useState<boolean | null>(null);
 
-  if (!isLoaded || roleLoading) {
+  useEffect(() => {
+    let isMounted = true;
+    AsyncStorage.getItem(HAS_SEEN_WELCOME_KEY)
+      .then((value) => {
+        if (isMounted) {
+          setHasSeenWelcome(value === 'true');
+        }
+      })
+      .catch(() => {
+        // If AsyncStorage fails, treat as first run to avoid skipping welcome.
+        if (isMounted) {
+          setHasSeenWelcome(false);
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (!isLoaded || roleLoading || hasSeenWelcome === null) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#1E40AF" />
@@ -19,6 +43,9 @@ export default function Index() {
   }
 
   if (!isSignedIn) {
+    if (!hasSeenWelcome) {
+      return <Redirect href="/(auth)/welcome" />;
+    }
     return <Redirect href="/(auth)/sign-in" />;
   }
 

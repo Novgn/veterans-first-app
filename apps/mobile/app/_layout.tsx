@@ -8,12 +8,19 @@ import {
   Lexend_600SemiBold,
   Lexend_700Bold,
 } from '@expo-google-fonts/lexend';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { Stack } from 'expo-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { tokenCache } from '@/lib/auth/token-cache';
 import { asyncStoragePersister, queryClient } from '@/lib/queryClient';
+
+// Dev-only: expose AsyncStorage on globalThis so it's callable from the
+// React Native DevTools Console (Hermes doesn't expose `require` there).
+if (__DEV__) {
+  (globalThis as unknown as { AsyncStorage: typeof AsyncStorage }).AsyncStorage = AsyncStorage;
+}
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
