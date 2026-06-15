@@ -59,7 +59,7 @@ export default function ProfileLayout() {
         }}
       />
       <Stack.Screen
-        name="family-access"
+        name="family-access/index"
         options={{
           title: 'Family Access',
           headerShown: true,
@@ -89,6 +89,7 @@ export default function ProfileLayout() {
           headerTitleStyle: { fontWeight: '600', fontSize: 18 },
         }}
       />
+      <Stack.Screen name="delete-account" options={{ headerShown: false }} />
     </Stack>
   );
 }

@@ -10,7 +10,7 @@
 
 /** Matches the shape of the object returned from Clerk's `useSession()`. */
 export interface SessionLike {
-  getToken: (opts?: { template?: string }) => Promise<string | null>;
+  getToken: () => Promise<string | null>;
 }
 
 const WEB_BASE_URL = process.env.EXPO_PUBLIC_WEB_API_URL ?? '';
@@ -37,7 +37,7 @@ async function postJson(path: string, body: unknown, session: SessionLike | null
     return;
   }
   try {
-    const token = session ? await session.getToken({ template: 'supabase' }) : null;
+    const token = session ? await session.getToken() : null;
     await fetch(`${WEB_BASE_URL}${path}`, {
       method: 'POST',
       headers: {

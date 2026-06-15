@@ -59,23 +59,24 @@ export function useDriverHistory(riderId: string | undefined) {
     queryFn: async (): Promise<DriverHistoryItem[]> => {
       if (!riderId) return [];
 
-      // Query completed rides with driver and vehicle info
-      // Note: Uses Supabase joins to get driver profile data
+      // Query completed rides with driver and vehicle info.
+      // Path: rides.driver_id → users.id → driver_profiles.user_id
+      // (no direct FK from rides to driver_profiles; go through users).
       const { data, error } = await supabase
         .from('rides')
         .select(
           `
           driver_id,
           scheduled_pickup_time,
-          driver:users!rides_driver_id_fkey (
+          driver:users!driver_id (
             id,
             first_name,
-            profile_photo_url
-          ),
-          driver_profile:driver_profiles (
-            vehicle_make,
-            vehicle_model,
-            vehicle_color
+            profile_photo_url,
+            driver_profile:driver_profiles (
+              vehicle_make,
+              vehicle_model,
+              vehicle_color
+            )
           )
         `
         )
@@ -93,30 +94,23 @@ export function useDriverHistory(riderId: string | undefined) {
 
       for (const ride of data || []) {
         const driverId = ride.driver_id;
-        // Skip if missing required data
-        // Type assertion needed due to Supabase join types
-        // Supabase returns single object for singular relations
         const driverData = ride.driver as unknown as
           | {
               id: string;
               first_name: string;
               profile_photo_url: string | null;
+              driver_profile: {
+                vehicle_make: string;
+                vehicle_model: string;
+                vehicle_color: string;
+              } | null;
             }
           | null
           | undefined;
-        const profileData = ride.driver_profile as
-          | {
-              vehicle_make: string;
-              vehicle_model: string;
-              vehicle_color: string;
-            }[]
-          | null
-          | undefined;
 
-        if (!driverId || !driverData || !profileData || profileData.length === 0) continue;
+        if (!driverId || !driverData || !driverData.driver_profile) continue;
 
-        const profile = profileData[0];
-        if (!profile) continue;
+        const profile = driverData.driver_profile;
 
         const existing = driverMap.get(driverId);
         if (existing) {

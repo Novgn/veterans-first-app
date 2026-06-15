@@ -65,18 +65,17 @@ export interface RideWithDriverInfo extends Ride {
  * Raw data from Supabase join
  */
 interface RideWithJoin extends Ride {
-  driver_profile: {
-    user_id: string;
-    vehicle_make: string;
-    vehicle_model: string;
-    vehicle_color: string;
-    vehicle_plate: string;
-    users: {
-      id: string;
-      first_name: string;
-      phone: string;
-      profile_photo_url: string | null;
-    };
+  driver: {
+    id: string;
+    first_name: string;
+    phone: string;
+    profile_photo_url: string | null;
+    driver_profile: {
+      vehicle_make: string;
+      vehicle_model: string;
+      vehicle_color: string;
+      vehicle_plate: string;
+    } | null;
   } | null;
 }
 
@@ -103,23 +102,23 @@ export function useRide(rideId: string | undefined) {
     queryFn: async () => {
       if (!rideId) return null;
 
-      // Fetch ride with driver profile and user info (including phone for contact)
+      // Fetch ride with driver profile and user info (including phone for contact).
+      // Path: rides.driver_id → users.id → driver_profiles.user_id
       const { data, error } = await supabase
         .from('rides')
         .select(
           `
           *,
-          driver_profile:driver_profiles!rides_driver_id_fkey (
-            user_id,
-            vehicle_make,
-            vehicle_model,
-            vehicle_color,
-            vehicle_plate,
-            users (
-              id,
-              first_name,
-              phone,
-              profile_photo_url
+          driver:users!driver_id (
+            id,
+            first_name,
+            phone,
+            profile_photo_url,
+            driver_profile:driver_profiles (
+              vehicle_make,
+              vehicle_model,
+              vehicle_color,
+              vehicle_plate
             )
           )
         `
@@ -147,16 +146,16 @@ export function useRide(rideId: string | undefined) {
       };
 
       // If driver is assigned, add driver info (including phone for contact feature)
-      if (rideData.driver_profile?.users) {
+      if (rideData.driver && rideData.driver.driver_profile) {
         ride.driver = {
-          id: rideData.driver_profile.users.id,
-          firstName: rideData.driver_profile.users.first_name,
-          phone: rideData.driver_profile.users.phone,
-          profilePhotoUrl: rideData.driver_profile.users.profile_photo_url,
-          vehicleMake: rideData.driver_profile.vehicle_make,
-          vehicleModel: rideData.driver_profile.vehicle_model,
-          vehicleColor: rideData.driver_profile.vehicle_color,
-          vehiclePlate: rideData.driver_profile.vehicle_plate,
+          id: rideData.driver.id,
+          firstName: rideData.driver.first_name,
+          phone: rideData.driver.phone,
+          profilePhotoUrl: rideData.driver.profile_photo_url,
+          vehicleMake: rideData.driver.driver_profile.vehicle_make,
+          vehicleModel: rideData.driver.driver_profile.vehicle_model,
+          vehicleColor: rideData.driver.driver_profile.vehicle_color,
+          vehiclePlate: rideData.driver.driver_profile.vehicle_plate,
         };
 
         // Get driver ride count for this rider

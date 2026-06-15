@@ -36,7 +36,7 @@ export async function getServerSupabase(): Promise<SupabaseClient> {
   return createClient(supabaseUrl, anonKey, {
     auth: { persistSession: false },
     global: { headers: { 'X-Client-Info': 'veterans-first-web' } },
-    accessToken: async () => (await getToken({ template: 'supabase' })) ?? '',
+    accessToken: async () => (await getToken()) ?? '',
   });
 }
 
