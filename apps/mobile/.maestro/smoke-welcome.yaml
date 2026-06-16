@@ -1,0 +1,27 @@
+# Veterans 1st — unauthenticated smoke test.
+# Launches the app and screenshots the pre-auth Welcome screen → sign-in entry.
+# No account needed — verifies the app boots and the Veteran Honor restyle
+# renders on a real device surface (vector Road Ahead logo, Lexend, stone canvas).
+#
+# Selectors below are the ACTUAL verified Welcome-screen elements.
+#
+# NOTE on build type:
+#  - RELEASE / preview build → `maestro test` runs this cleanly (launches straight to Welcome).
+#  - DEV-CLIENT build (`expo run:ios`) → first load the Metro bundle and dismiss the
+#    expo dev menu (see README "Dev-client" section), THEN run this flow.
+appId: com.novagen.veteransfirst
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    text: 'Welcome'
+- assertVisible:
+    text: 'Get started'
+- takeScreenshot: 01-welcome
+- tapOn:
+    text: 'Get started'
+- takeScreenshot: 02-after-welcome
+- tapOn:
+    text: 'I already have an account'
+    optional: true
+- takeScreenshot: 03-sign-in

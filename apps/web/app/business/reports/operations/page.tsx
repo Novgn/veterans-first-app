@@ -14,6 +14,8 @@ import {
 } from '@veterans-first/shared/utils';
 
 import { DashboardCard } from '@/components/business/DashboardCard';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -56,17 +58,17 @@ export default async function OperationsReportPage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Operational metrics</h2>
-          <p className="text-sm text-zinc-600">Rides, completion, and no-shows.</p>
+          <h2 className="text-title-2 font-semibold text-ink">Operational metrics</h2>
+          <p className="mt-1 text-body text-ink-secondary">Rides, completion, and no-shows.</p>
         </div>
-        <div className="flex gap-2">
-          <form action="/business/reports/operations" method="get" className="flex gap-2">
+        <div className="flex flex-wrap items-end gap-2">
+          <form action="/business/reports/operations" method="get" className="flex items-end gap-2">
             <select
               name="window"
               defaultValue={window}
-              className="h-10 rounded-md border border-zinc-300 px-3 text-sm"
+              className="h-12 rounded-sm border border-border-strong bg-card px-3 text-body text-ink"
             >
               {OPERATIONAL_WINDOW_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -74,18 +76,10 @@ export default async function OperationsReportPage(props: {
                 </option>
               ))}
             </select>
-            <button
-              type="submit"
-              className="h-10 rounded-md bg-zinc-900 px-3 text-sm font-semibold text-white"
-            >
-              Apply
-            </button>
+            <Button type="submit">Apply</Button>
           </form>
-          <Link
-            href={`/api/business/operations.csv?window=${window}`}
-            className="inline-flex h-10 items-center rounded-md border border-zinc-300 px-4 text-sm"
-          >
-            Export CSV
+          <Link href={`/api/business/operations.csv?window=${window}`}>
+            <Button variant="outline">Export CSV</Button>
           </Link>
         </div>
       </div>
@@ -99,37 +93,54 @@ export default async function OperationsReportPage(props: {
         <DashboardCard title="Cancelled" value={summary.cancelledRides.toString()} />
       </div>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Per-day breakdown</h3>
-        {summary.perDay.length === 0 ? (
-          <p className="text-sm text-zinc-500">No rides in this window.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-zinc-50 text-left">
-                <tr>
-                  <th className="px-3 py-2">Date</th>
-                  <th className="px-3 py-2">Total</th>
-                  <th className="px-3 py-2">Completed</th>
-                  <th className="px-3 py-2">No-show</th>
-                  <th className="px-3 py-2">Cancelled</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summary.perDay.map((row) => (
-                  <tr key={row.date} className="border-t border-zinc-100">
-                    <td className="px-3 py-2">{row.date}</td>
-                    <td className="px-3 py-2">{row.total}</td>
-                    <td className="px-3 py-2">{row.completed}</td>
-                    <td className="px-3 py-2">{row.noShow}</td>
-                    <td className="px-3 py-2">{row.cancelled}</td>
+      <Card>
+        <CardHeader>
+          <CardTitle>Per-day breakdown</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {summary.perDay.length === 0 ? (
+            <p className="text-body text-ink-secondary">No rides in this window.</p>
+          ) : (
+            <div className="-mx-6 overflow-x-auto">
+              <table className="w-full text-body">
+                <thead className="border-y border-border-hairline bg-stone text-left">
+                  <tr>
+                    <th className="px-6 py-3 text-caption font-semibold text-ink-secondary">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-caption font-semibold text-ink-secondary">
+                      Total
+                    </th>
+                    <th className="px-6 py-3 text-caption font-semibold text-ink-secondary">
+                      Completed
+                    </th>
+                    <th className="px-6 py-3 text-caption font-semibold text-ink-secondary">
+                      No-show
+                    </th>
+                    <th className="px-6 py-3 text-caption font-semibold text-ink-secondary">
+                      Cancelled
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+                </thead>
+                <tbody>
+                  {summary.perDay.map((row) => (
+                    <tr
+                      key={row.date}
+                      className="border-t border-border-hairline text-ink transition-colors hover:bg-navy-100"
+                    >
+                      <td className="px-6 py-3">{row.date}</td>
+                      <td className="px-6 py-3">{row.total}</td>
+                      <td className="px-6 py-3">{row.completed}</td>
+                      <td className="px-6 py-3">{row.noShow}</td>
+                      <td className="px-6 py-3">{row.cancelled}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

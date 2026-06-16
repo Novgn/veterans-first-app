@@ -16,18 +16,20 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#1E40AF',
-        tabBarInactiveTintColor: '#9CA3AF',
+        // Veteran Honor bottom tabs: navy active, ink-secondary resting,
+        // warm-stone chrome with a hairline top divider. Lexend labels.
+        tabBarActiveTintColor: '#1F3A5F',
+        tabBarInactiveTintColor: '#4F4A41',
         tabBarStyle: {
           height: 80,
           paddingBottom: 16,
           paddingTop: 8,
-          backgroundColor: '#FAFAF9',
-          borderTopColor: '#E5E5E5',
+          backgroundColor: '#F4F1EA',
+          borderTopColor: '#DAD3C6',
         },
         tabBarLabelStyle: {
           fontSize: 14,
-          fontWeight: '600',
+          fontFamily: 'Lexend_600SemiBold',
         },
         tabBarItemStyle: {
           minHeight: 48,

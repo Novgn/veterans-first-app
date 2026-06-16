@@ -4,6 +4,9 @@
 
 import Link from 'next/link';
 
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+
 export const dynamic = 'force-dynamic';
 
 const REPORTS = [
@@ -41,48 +44,52 @@ export default async function CompliancePage(props: {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Compliance reports</h2>
-        <p className="text-sm text-zinc-600">Date range applies to every export below.</p>
+        <h2 className="text-title-2 font-semibold text-ink">Compliance reports</h2>
+        <p className="mt-1 text-body text-ink-secondary">
+          Date range applies to every export below.
+        </p>
       </div>
 
-      <form action="/business/compliance" method="get" className="flex flex-wrap gap-2">
-        <label className="flex items-center gap-2 text-sm">
+      <form action="/business/compliance" method="get" className="flex flex-wrap items-end gap-4">
+        <label className="flex flex-col gap-1 text-callout font-semibold text-ink">
           Start
           <input
             name="start"
             type="date"
             defaultValue={defaultStart}
-            className="h-10 rounded-md border border-zinc-300 px-3 text-sm"
+            className="h-12 rounded-sm border border-border-strong bg-card px-3 text-body text-ink"
           />
         </label>
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex flex-col gap-1 text-callout font-semibold text-ink">
           End
           <input
             name="end"
             type="date"
             defaultValue={defaultEnd}
-            className="h-10 rounded-md border border-zinc-300 px-3 text-sm"
+            className="h-12 rounded-sm border border-border-strong bg-card px-3 text-body text-ink"
           />
         </label>
-        <button
-          type="submit"
-          className="h-10 rounded-md bg-zinc-900 px-3 text-sm font-semibold text-white"
-        >
-          Apply
-        </button>
+        <Button type="submit">Apply</Button>
       </form>
 
-      <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {REPORTS.map((r) => (
-          <li key={r.href} className="rounded-xl border border-zinc-200 p-4">
-            <div className="text-sm font-semibold">{r.title}</div>
-            <p className="mt-1 text-xs text-zinc-500">{r.description}</p>
-            <Link
-              href={`${r.href}?start=${encodeURIComponent(defaultStart)}&end=${encodeURIComponent(defaultEnd)}`}
-              className="mt-3 inline-flex h-9 items-center rounded-md border border-zinc-300 px-3 text-xs"
-            >
-              Download CSV
-            </Link>
+          <li key={r.href}>
+            <Card className="flex h-full flex-col">
+              <CardHeader>
+                <CardTitle>{r.title}</CardTitle>
+                <p className="text-callout text-ink-secondary">{r.description}</p>
+              </CardHeader>
+              <CardContent className="mt-auto">
+                <Link
+                  href={`${r.href}?start=${encodeURIComponent(defaultStart)}&end=${encodeURIComponent(defaultEnd)}`}
+                >
+                  <Button variant="outline" size="sm">
+                    Download CSV
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </li>
         ))}
       </ul>

@@ -33,15 +33,15 @@ export function AvailabilityRow({
 }: AvailabilityRowProps) {
   return (
     <View
-      className={`flex-row items-center rounded-xl border bg-white p-4 ${
-        window.isActive ? 'border-primary/30' : 'border-gray-200'
+      className={`flex-row items-center rounded-lg border bg-card p-4 shadow-card ${
+        window.isActive ? 'border-secondary' : 'border-hairline'
       }`}
       testID={testID}>
       <View className="flex-1">
-        <Text className="text-base font-semibold text-foreground">
+        <Text className="font-sans-semibold text-headline text-foreground">
           {DAYS_OF_WEEK[window.dayOfWeek]}
         </Text>
-        <Text className="mt-1 text-sm text-gray-600">
+        <Text className="mt-1 font-sans text-body text-ink-secondary">
           {fmtTime(window.startTime)} – {fmtTime(window.endTime)}
         </Text>
       </View>
@@ -49,16 +49,17 @@ export function AvailabilityRow({
       <Switch
         value={window.isActive}
         onValueChange={() => onToggleActive(window)}
+        trackColor={{ true: '#4A6B54' }}
         accessibilityLabel={`Toggle ${DAYS_OF_WEEK[window.dayOfWeek]} availability`}
         testID={`${testID ?? 'availability-row'}-toggle`}
       />
       <Pressable
         onPress={() => onDelete(window)}
-        className="ml-3 min-h-[48px] min-w-[48px] items-center justify-center"
+        className="ml-3 min-h-touch min-w-[48px] items-center justify-center"
         accessibilityLabel={`Delete ${DAYS_OF_WEEK[window.dayOfWeek]} ${fmtTime(window.startTime)} to ${fmtTime(window.endTime)} window`}
         accessibilityRole="button"
         testID={`${testID ?? 'availability-row'}-delete`}>
-        <Ionicons name="trash-outline" size={20} color="#DC2626" />
+        <Ionicons name="trash-outline" size={20} color="#A83A35" />
       </Pressable>
     </View>
   );

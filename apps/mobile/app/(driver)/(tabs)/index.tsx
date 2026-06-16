@@ -43,10 +43,10 @@ export default function HomeScreen() {
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />}>
         {/* Header */}
         <View className="mb-4">
-          <Text className="text-2xl font-bold text-foreground">
+          <Text className="font-sans-bold text-title-1 text-foreground">
             {getGreeting()}, {user?.firstName || 'Driver'}
           </Text>
-          <Text className="text-gray-600">
+          <Text className="font-sans text-body text-ink-secondary">
             {tripCount > 0
               ? `${tripCount} ride${tripCount !== 1 ? 's' : ''} assigned`
               : 'Ready to start driving?'}
@@ -60,7 +60,7 @@ export default function HomeScreen() {
 
         {/* Trip Queue */}
         <View className="mb-6">
-          <Text className="mb-3 text-lg font-semibold text-foreground">Your Trips</Text>
+          <Text className="mb-3 font-sans-semibold text-title-3 text-foreground">Your Trips</Text>
 
           {isLoading ? (
             <TripQueueSkeleton count={3} testID="trip-queue-skeleton" />
@@ -75,39 +75,39 @@ export default function HomeScreen() {
 
         {/* Quick Stats */}
         <View className="mb-6 flex-row gap-4">
-          <View className="flex-1 items-center rounded-xl bg-white p-4 shadow-sm">
-            <Text className="text-2xl font-bold text-primary">{tripCount}</Text>
-            <Text className="text-sm text-gray-600">Assigned</Text>
+          <View className="border-hairline flex-1 items-center rounded-lg border bg-card p-4 shadow-card">
+            <Text className="font-sans-bold text-title-1 text-primary">{tripCount}</Text>
+            <Text className="font-sans text-caption text-ink-secondary">Assigned</Text>
           </View>
-          <View className="flex-1 items-center rounded-xl bg-white p-4 shadow-sm">
-            <Text className="text-2xl font-bold text-green-600">$0</Text>
-            <Text className="text-sm text-gray-600">Today&apos;s Earnings</Text>
+          <View className="border-hairline flex-1 items-center rounded-lg border bg-card p-4 shadow-card">
+            <Text className="font-sans-bold text-title-1 text-success">$0</Text>
+            <Text className="font-sans text-caption text-ink-secondary">Today&apos;s Earnings</Text>
           </View>
         </View>
 
-        {/* Status Info */}
+        {/* Status Info — calm informational banners; icon + text, never color alone */}
         {status === 'available' && (
-          <View className="mb-6 flex-row items-center rounded-xl border border-green-200 bg-green-50 p-4">
-            <Ionicons name="checkmark-circle" size={24} color="#059669" />
-            <Text className="ml-3 flex-1 text-green-800">
+          <View className="border-hairline mb-6 flex-row items-center rounded-lg border bg-secondary-100 p-4">
+            <Ionicons name="checkmark-circle" size={24} color="#4A6B54" />
+            <Text className="ml-3 flex-1 font-sans text-body text-foreground">
               You&apos;re available for trips. New ride requests will appear in your queue.
             </Text>
           </View>
         )}
 
         {status === 'offline' && (
-          <View className="mb-6 flex-row items-center rounded-xl border border-gray-200 bg-gray-50 p-4">
-            <Ionicons name="moon" size={24} color="#6B7280" />
-            <Text className="ml-3 flex-1 text-gray-700">
+          <View className="border-hairline mb-6 flex-row items-center rounded-lg border bg-background p-4">
+            <Ionicons name="moon" size={24} color="#4F4A41" />
+            <Text className="ml-3 flex-1 font-sans text-body text-ink-secondary">
               You&apos;re offline. Set your status to Available to receive trip requests.
             </Text>
           </View>
         )}
 
         {status === 'on_trip' && (
-          <View className="mb-6 flex-row items-center rounded-xl border border-blue-200 bg-blue-50 p-4">
-            <Ionicons name="car" size={24} color="#1E40AF" />
-            <Text className="ml-3 flex-1 text-blue-800">
+          <View className="border-hairline mb-6 flex-row items-center rounded-lg border bg-primary-100 p-4">
+            <Ionicons name="car" size={24} color="#1F3A5F" />
+            <Text className="ml-3 flex-1 font-sans text-body text-foreground">
               You&apos;re on a trip. Complete your current trip to receive new requests.
             </Text>
           </View>

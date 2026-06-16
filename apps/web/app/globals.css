@@ -10,3 +10,68 @@
 
 @import 'tailwindcss';
 @import '@veterans-first/design-tokens/tokens.css';
+
+/*
+ * Marketing-site motion — CSS only, no JS animation libs.
+ *
+ * Two effects, both ~340ms ease-out (DESIGN.md: gentle, no bounce, no infinite
+ * loops):
+ *   • [data-enter]  — staggered entrance on first paint (hero). Delay via
+ *                     `--enter-delay`.
+ *   • [data-reveal] / [data-reveal-fade] — scroll-driven reveal using the CSS
+ *                     `animation-timeline: view()` API. Each fires once as the
+ *                     element scrolls into the viewport.
+ *
+ * Reduced-motion + no-support fallback: elements default to the END state
+ * (opacity:1, no transform). Animation is ONLY applied inside the
+ * `@supports (animation-timeline: view())` + `prefers-reduced-motion:
+ * no-preference` guard, so anyone who opts out — or whose browser lacks
+ * scroll-driven animations — simply sees the finished layout with no movement.
+ */
+@keyframes v1-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes v1-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Entrance: runs on load, honoring an optional per-element stagger delay. */
+  [data-enter] {
+    opacity: 0;
+    animation: v1-enter 380ms var(--motion-ease) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  /* Scroll reveals require scroll-driven timelines; otherwise show end state. */
+  @supports (animation-timeline: view()) {
+    [data-reveal],
+    [data-reveal-fade] {
+      opacity: 0;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+      animation-fill-mode: both;
+    }
+
+    [data-reveal] {
+      animation-name: v1-enter;
+    }
+
+    [data-reveal-fade] {
+      animation-name: v1-fade;
+    }
+  }
+}

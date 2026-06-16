@@ -12,8 +12,9 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
 
-import { Header } from '@/components/Header';
+import { PhoneButton } from '@/components/PhoneButton';
 import { DestinationPicker, StepIndicator } from '@/components/booking';
+import { AppHeader } from '@/components/ui';
 import { useDestinations } from '@/hooks/useDestinations';
 import { useBookingStore, Destination } from '@/stores/bookingStore';
 
@@ -42,12 +43,19 @@ export default function BookingStep1() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <Header showBackButton onBack={handleBack} title="Book a Ride" />
+      <AppHeader
+        mode="screen"
+        title="Book a Ride"
+        onBack={handleBack}
+        rightSlot={<PhoneButton />}
+      />
       <View className="flex-1 px-6 pt-4">
         <StepIndicator currentStep={1} totalSteps={3} />
 
-        <Text className="mt-6 text-2xl font-bold text-foreground">Where are you going?</Text>
-        <Text className="mt-1 text-lg text-gray-700">Select a destination to continue</Text>
+        <Text className="mt-6 font-sans-bold text-title-1 text-foreground">Where to?</Text>
+        <Text className="mt-1 font-sans text-body text-ink-secondary">
+          Pick a saved place to continue
+        </Text>
 
         <DestinationPicker onSelect={handleDestinationSelect} className="mt-6 flex-1" />
       </View>

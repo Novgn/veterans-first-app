@@ -92,7 +92,7 @@ export function BookingSuccessScreen({ onDone }: BookingSuccessScreenProps) {
     if (onDone) {
       onDone();
     } else {
-      router.replace('/(tabs)');
+      router.replace('/(rider)/(tabs)');
     }
   }, [resetBooking, onDone]);
 

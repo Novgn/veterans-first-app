@@ -6,12 +6,16 @@ export interface DashboardCardProps {
   hint?: string;
 }
 
+// Veteran Honor metric card: white surface, rounded-lg, soft shadow-card,
+// hairline border, p-6 padding. Label in ink-secondary caption; value bold ink.
 export function DashboardCard({ title, value, hint }: DashboardCardProps) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-      <div className="text-xs font-medium uppercase tracking-wide text-zinc-500">{title}</div>
-      <div className="mt-2 text-2xl font-semibold text-zinc-900">{value}</div>
-      {hint ? <div className="mt-1 text-xs text-zinc-500">{hint}</div> : null}
+    <div className="rounded-lg border border-border-hairline bg-card p-6 shadow-card">
+      <div className="text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+        {title}
+      </div>
+      <div className="mt-2 text-title-1 font-bold text-ink">{value}</div>
+      {hint ? <div className="mt-1 text-caption text-ink-secondary">{hint}</div> : null}
     </div>
   );
 }

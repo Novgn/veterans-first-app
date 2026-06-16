@@ -12,6 +12,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/lib/supabase';
 import { DriverCardDriver } from '@/components/drivers/DriverCard';
 
+import { useSupabaseUserId } from './useSupabaseUserId';
+
 /**
  * Preferred driver data returned from query
  */
@@ -47,15 +49,20 @@ export const preferredDriverKeys = {
  * await clearPreferredDriver.mutateAsync();
  * ```
  */
-export function usePreferredDriver(userId: string | undefined) {
+export function usePreferredDriver(_legacyUserId?: string | undefined) {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  // `rider_preferences.user_id` is a UUID FK to users.id. Callers previously
+  // passed Clerk's string user ID which Postgres rejects as an invalid UUID.
+  // Resolve the current user's internal Supabase UUID here and ignore any
+  // legacy userId arg.
+  const { data: supabaseUserId } = useSupabaseUserId();
 
   // Query for current preferred driver
   const query = useQuery({
-    queryKey: preferredDriverKeys.detail(userId ?? ''),
+    queryKey: preferredDriverKeys.detail(supabaseUserId ?? ''),
     queryFn: async (): Promise<PreferredDriverData> => {
-      if (!userId) {
+      if (!supabaseUserId) {
         return { preferredDriverId: null, driver: null };
       }
 
@@ -63,7 +70,7 @@ export function usePreferredDriver(userId: string | undefined) {
       const { data: prefs, error: prefsError } = await supabase
         .from('rider_preferences')
         .select('default_preferred_driver_id')
-        .eq('user_id', userId)
+        .eq('user_id', supabaseUserId)
         .maybeSingle();
 
       if (prefsError) {
@@ -126,18 +133,18 @@ export function usePreferredDriver(userId: string | undefined) {
         },
       };
     },
-    enabled: !!userId,
+    enabled: !!supabaseUserId,
   });
 
   // Mutation to update preferred driver
   const updateMutation = useMutation({
     mutationFn: async (driverId: string | null) => {
-      if (!userId) throw new Error('User ID required');
+      if (!supabaseUserId) throw new Error('User ID required');
 
       // Upsert rider preferences
       const { error } = await supabase.from('rider_preferences').upsert(
         {
-          user_id: userId,
+          user_id: supabaseUserId,
           default_preferred_driver_id: driverId,
           updated_at: new Date().toISOString(),
         },
@@ -154,7 +161,9 @@ export function usePreferredDriver(userId: string | undefined) {
     },
     onSuccess: () => {
       // Invalidate queries to refetch fresh data
-      queryClient.invalidateQueries({ queryKey: preferredDriverKeys.detail(userId ?? '') });
+      queryClient.invalidateQueries({
+        queryKey: preferredDriverKeys.detail(supabaseUserId ?? ''),
+      });
     },
   });
 

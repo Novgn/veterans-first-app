@@ -6,7 +6,8 @@
  *
  * Features:
  * - Clock icon for visual clarity
- * - Calming green color (#059669)
+ * - Calm Veteran Honor styling: stone surface, sage icon, ink-secondary text
+ * - A reassuring "included" feature — never a countdown, never red
  * - Senior-friendly 18px+ text size
  * - Full accessibility support
  *
@@ -26,11 +27,14 @@ interface WaitTimeIndicatorProps {
 export function WaitTimeIndicator({ waitMinutes, className = '' }: WaitTimeIndicatorProps) {
   return (
     <View
-      className={`flex-row items-center ${className}`}
+      className={`flex-row items-center self-start rounded-md bg-background px-4 py-3 ${className}`}
       accessibilityLabel={`${waitMinutes} minutes of wait time included with your ride`}
       accessibilityRole="text">
-      <Ionicons name="time-outline" size={22} color="#059669" />
-      <Text className="ml-2 text-lg text-secondary">{waitMinutes} min wait time included</Text>
+      {/* sage clock — calm, supportive; never countdown red */}
+      <Ionicons name="time-outline" size={22} color="#4A6B54" />
+      <Text className="ml-2 font-sans text-lg text-ink-secondary">
+        {waitMinutes} min wait time included
+      </Text>
     </View>
   );
 }

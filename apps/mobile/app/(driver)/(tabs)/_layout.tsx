@@ -10,7 +10,7 @@ export default function TabLayout() {
   if (!isLoaded) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" color="#1E40AF" />
+        <ActivityIndicator size="large" color="#1F3A5F" />
       </View>
     );
   }
@@ -24,22 +24,22 @@ export default function TabLayout() {
   if (userRole !== 'driver') {
     return (
       <View className="flex-1 items-center justify-center bg-background px-6">
-        <View className="mb-6 h-24 w-24 items-center justify-center rounded-full bg-red-100">
-          <Ionicons name="warning" size={48} color="#EF4444" />
+        <View className="mb-6 h-24 w-24 items-center justify-center rounded-full bg-error-100">
+          <Ionicons name="warning" size={48} color="#A83A35" />
         </View>
-        <Text className="mt-4 text-center text-xl font-bold text-foreground">
+        <Text className="mt-4 text-center font-sans-bold text-title-2 text-foreground">
           Driver Access Only
         </Text>
-        <Text className="mt-2 text-center text-gray-600">
+        <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
           This app is for verified drivers only. Please use the Rider app to book rides.
         </Text>
         <Pressable
           onPress={() => signOut()}
-          className="mt-6 min-h-[56px] w-full items-center justify-center rounded-xl bg-red-500"
+          className="mt-6 min-h-touch-lg w-full items-center justify-center rounded-md bg-primary"
           accessibilityLabel="Sign out"
           accessibilityRole="button"
           accessibilityHint="Sign out of the driver app">
-          <Text className="text-lg font-semibold text-white">Sign Out</Text>
+          <Text className="font-sans-semibold text-headline text-white">Sign Out</Text>
         </Pressable>
       </View>
     );
@@ -48,18 +48,20 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#1E40AF',
-        tabBarInactiveTintColor: '#9CA3AF',
+        // Veteran Honor tab chrome: navy active, ink-secondary inactive, white
+        // raised surface on the stone canvas, hairline top divider, Lexend labels.
+        tabBarActiveTintColor: '#1F3A5F',
+        tabBarInactiveTintColor: '#4F4A41',
         tabBarStyle: {
           height: 80,
           paddingBottom: 16,
           paddingTop: 8,
-          backgroundColor: '#FAFAF9',
-          borderTopColor: '#E5E5E5',
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#DAD3C6',
         },
         tabBarLabelStyle: {
           fontSize: 14,
-          fontWeight: '600',
+          fontFamily: 'Lexend_600SemiBold',
         },
         tabBarItemStyle: {
           minHeight: 48,

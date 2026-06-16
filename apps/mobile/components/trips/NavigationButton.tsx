@@ -34,16 +34,18 @@ export function NavigationButton({ label, address, lat, lng, testID }: Navigatio
     }
   };
 
+  // Supporting action — outlined navy secondary so it does not compete with the
+  // single primary lifecycle CTA on the screen (one primary action per screen).
   return (
     <Pressable
       onPress={handlePress}
-      className="min-h-[56px] flex-row items-center justify-center rounded-xl bg-blue-600"
+      className="min-h-touch-lg flex-row items-center justify-center rounded-md border border-primary bg-card"
       accessibilityLabel={`${label}: ${address}`}
       accessibilityRole="button"
       accessibilityHint="Opens the maps app with turn-by-turn directions"
       testID={testID}>
-      <Ionicons name="navigate" size={22} color="white" />
-      <Text className="ml-2 text-base font-bold text-white">{label}</Text>
+      <Ionicons name="navigate" size={22} color="#1F3A5F" />
+      <Text className="ml-2 font-sans-semibold text-headline text-primary">{label}</Text>
     </Pressable>
   );
 }

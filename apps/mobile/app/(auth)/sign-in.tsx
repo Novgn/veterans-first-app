@@ -1,21 +1,25 @@
 import { useSignIn } from '@clerk/clerk-expo';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from 'react-native';
+import { Text, View } from 'react-native';
+
+import { AuthScaffold, BrandMark, Button, Card, Link, PhoneField, toE164 } from '@/components/ui';
+
+type ClerkErrorShape = {
+  errors?: { code?: string; message?: string; longMessage?: string }[];
+};
+
+// Clerk codes that mean "no account with this phone" — user should sign up.
+const NO_ACCOUNT_CODES = new Set([
+  'form_identifier_not_found',
+  'form_identifier_exists_or_not_found',
+]);
 
 export default function SignIn() {
   const { signIn, isLoaded } = useSignIn();
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
+  const [showSignUpSuggestion, setShowSignUpSuggestion] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -23,101 +27,104 @@ export default function SignIn() {
     if (!isLoaded) return;
 
     setError('');
+    setShowSignUpSuggestion(false);
     setIsLoading(true);
 
     try {
-      // Format phone number - ensure it starts with +1 for US
-      const formattedPhone = phone.startsWith('+') ? phone : `+1${phone.replace(/\D/g, '')}`;
+      const formattedPhone = toE164(phone);
 
-      // Create sign-in with identifier
       const { supportedFirstFactors } = await signIn.create({
         identifier: formattedPhone,
       });
 
-      // Find the phone_code factor
       const phoneCodeFactor = supportedFirstFactors?.find(
         (factor) => factor.strategy === 'phone_code'
       );
 
       if (phoneCodeFactor && 'phoneNumberId' in phoneCodeFactor) {
-        // Send the OTP code
         await signIn.prepareFirstFactor({
           strategy: 'phone_code',
           phoneNumberId: phoneCodeFactor.phoneNumberId,
         });
 
-        // Navigate to verification screen with phone number
         router.push({
           pathname: '/(auth)/verify',
           params: { phone: formattedPhone, mode: 'sign-in' },
         });
       } else {
-        setError('Phone authentication not available for this account');
+        setError('Phone authentication is not available for this account.');
       }
     } catch (err: unknown) {
-      const clerkError = err as { errors?: { message: string }[] };
-      setError(clerkError.errors?.[0]?.message || 'Failed to send verification code');
+      const clerkError = err as ClerkErrorShape;
+      const firstError = clerkError.errors?.[0];
+      const code = firstError?.code ?? '';
+
+      if (NO_ACCOUNT_CODES.has(code) || firstError?.message === 'Identifier is invalid.') {
+        setError("We couldn't find an account with that phone number.");
+        setShowSignUpSuggestion(true);
+      } else {
+        setError(
+          firstError?.longMessage || firstError?.message || 'Failed to send verification code.'
+        );
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  const goToSignUp = () => {
+    const digits = phone.replace(/\D/g, '');
+    router.push({
+      pathname: '/(auth)/sign-up',
+      params: digits.length === 10 ? { prefillPhone: digits } : undefined,
+    });
+  };
+
+  const isValid = phone.replace(/\D/g, '').length === 10;
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-[#FAFAF9]">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className="flex-1 justify-center px-6 py-8">
-          <View className="mb-8">
-            <Text className="mb-2 text-center text-3xl font-bold text-gray-900">Rider Sign In</Text>
-            <Text className="text-center text-lg text-gray-600">
-              Sign in to your Veterans First rider account
-            </Text>
-          </View>
+    <AuthScaffold>
+      <View className="items-center">
+        <BrandMark size="lg" />
+      </View>
 
-          <View className="space-y-4">
-            <View>
-              <Text className="mb-2 text-base font-medium text-gray-700">Phone Number</Text>
-              <View className="flex-row items-center rounded-lg border border-gray-300 bg-white">
-                <Text className="pl-4 pr-2 text-lg text-gray-500">+1</Text>
-                <TextInput
-                  className="h-14 flex-1 px-2 text-lg"
-                  placeholder="(555) 123-4567"
-                  keyboardType="phone-pad"
-                  autoComplete="tel"
-                  value={phone}
-                  onChangeText={setPhone}
-                  editable={!isLoading}
-                />
-              </View>
-            </View>
+      <View className="mt-10">
+        <Text className="text-center font-sans-bold text-title-1 text-foreground">
+          Welcome back
+        </Text>
+        <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
+          Enter your phone number to sign in.
+        </Text>
+      </View>
 
-            {error ? <Text className="text-center text-base text-red-600">{error}</Text> : null}
+      <Card variant="elevated" padding="lg" className="mt-8">
+        <View className="gap-5">
+          <PhoneField
+            label="Phone Number"
+            value={phone}
+            onChangeText={setPhone}
+            helperText="We'll text you a 6-digit code."
+            error={error || undefined}
+            editable={!isLoading}
+          />
 
-            <Pressable
+          {showSignUpSuggestion ? (
+            <Button label="Create an account instead" variant="secondary" onPress={goToSignUp} />
+          ) : (
+            <Button
+              label="Send verification code"
               onPress={onSendCode}
-              disabled={isLoading || !phone}
-              className={`h-14 items-center justify-center rounded-lg ${
-                isLoading || !phone ? 'bg-gray-400' : 'bg-[#1E40AF]'
-              }`}>
-              {isLoading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-lg font-semibold text-white">Send Verification Code</Text>
-              )}
-            </Pressable>
-
-            <View className="mt-4 flex-row justify-center">
-              <Text className="text-base text-gray-600">Don&apos;t have an account? </Text>
-              <Link href="/(auth)/sign-up" asChild>
-                <Pressable>
-                  <Text className="text-base font-semibold text-[#1E40AF]">Sign Up</Text>
-                </Pressable>
-              </Link>
-            </View>
-          </View>
+              loading={isLoading}
+              disabled={!isValid}
+            />
+          )}
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </Card>
+
+      <View className="mt-6 flex-row items-center justify-center gap-2">
+        <Text className="font-sans text-body text-ink-secondary">Don&apos;t have an account?</Text>
+        <Link label="Sign up" onPress={goToSignUp} />
+      </View>
+    </AuthScaffold>
   );
 }

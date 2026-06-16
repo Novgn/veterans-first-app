@@ -11,10 +11,31 @@ import {
   humanizeCredentialType,
 } from '@/lib/admin/credentialDisplay';
 
+import { Badge, type BadgeProps } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { setCredentialStatus } from '@/lib/admin/verifyCredential';
 import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
+
+type CredentialClass = ReturnType<typeof classifyCredential>;
+
+function credentialBadge(classification: CredentialClass): {
+  variant: BadgeProps['variant'];
+  label: string;
+} {
+  switch (classification) {
+    case 'expired':
+      return { variant: 'error', label: 'Expired' };
+    case 'expiring_30_days':
+      return { variant: 'warning', label: 'Expiring <30d' };
+    case 'ok':
+      return { variant: 'success', label: 'Verified' };
+    default:
+      return { variant: 'secondary', label: 'Needs review' };
+  }
+}
 
 interface CredentialRow {
   id: string;
@@ -73,13 +94,16 @@ export default async function CredentialsDriverPage(props: {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/admin/credentials" className="text-sm text-blue-600 hover:underline">
+        <Link
+          href="/admin/credentials"
+          className="text-callout font-semibold text-navy hover:underline"
+        >
           ← All drivers
         </Link>
-        <h2 className="mt-1 text-lg font-semibold">
+        <h2 className="mt-1 text-title-2 font-semibold text-ink">
           {driver.last_name}, {driver.first_name}
         </h2>
-        <p className="text-sm text-zinc-600">
+        <p className="text-body text-ink-secondary">
           {allRequiredVerified
             ? 'All required credentials verified — driver can be reactivated.'
             : 'Missing one or more required credentials — driver stays inactive.'}
@@ -87,9 +111,9 @@ export default async function CredentialsDriverPage(props: {
       </div>
 
       {credentials.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
-          No credentials on file. Add from the onboarding form (Story 5.3).
-        </div>
+        <Card className="border-dashed p-8 text-center text-body text-ink-secondary">
+          No credentials on file yet. Add from the onboarding form (Story 5.3).
+        </Card>
       ) : (
         <ul className="space-y-4">
           {credentials.map((c) => {
@@ -97,58 +121,77 @@ export default async function CredentialsDriverPage(props: {
               expirationDate: c.expiration_date,
               verificationStatus: c.verification_status,
             });
+            const badge = credentialBadge(classification);
+            const expiryAlert =
+              classification === 'expired'
+                ? {
+                    tone: 'error' as const,
+                    text: `Expired on ${c.expiration_date ?? '—'} — driver cannot be assigned.`,
+                  }
+                : classification === 'expiring_30_days'
+                  ? {
+                      tone: 'warning' as const,
+                      text: `Expires on ${c.expiration_date ?? '—'} — renew soon.`,
+                    }
+                  : null;
             return (
-              <li key={c.id} className="rounded-xl border border-zinc-200 p-4">
-                <div className="flex items-start justify-between">
+              <Card key={c.id} className="space-y-3 p-6">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="font-semibold">{humanizeCredentialType(c.credential_type)}</div>
-                    <div className="text-xs text-zinc-500">
+                    <div className="text-title-3 font-semibold text-ink">
+                      {humanizeCredentialType(c.credential_type)}
+                    </div>
+                    <div className="text-caption text-ink-secondary">
                       {c.credential_number ? `# ${c.credential_number} · ` : ''}
                       issued {c.issued_date ?? '—'} · expires {c.expiration_date ?? '—'}
                     </div>
                   </div>
-                  <div className="text-right text-xs">
-                    <div
-                      className={`rounded-full px-2 py-0.5 font-medium ${
-                        classification === 'expired'
-                          ? 'bg-red-100 text-red-800'
-                          : classification === 'expiring_30_days'
-                            ? 'bg-amber-100 text-amber-900'
-                            : classification === 'ok'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-zinc-100 text-zinc-700'
-                      }`}
-                    >
-                      {classification.replace('_', ' ')}
+                  <div className="flex flex-col items-end gap-1 text-right">
+                    <Badge variant={badge.variant}>{badge.label}</Badge>
+                    <div className="text-caption text-ink-secondary">
+                      Status: {c.verification_status}
                     </div>
-                    <div className="mt-1 text-zinc-500">Status: {c.verification_status}</div>
                   </div>
                 </div>
+
+                {expiryAlert ? (
+                  <p
+                    className={`flex items-start gap-2 rounded-md border p-3 text-body text-ink ${
+                      expiryAlert.tone === 'error'
+                        ? 'border-error bg-error-100'
+                        : 'border-warning bg-warning-100'
+                    }`}
+                  >
+                    <span aria-hidden="true">⚠</span>
+                    <span>{expiryAlert.text}</span>
+                  </p>
+                ) : null}
 
                 {c.document_url ? (
                   <a
                     href={c.document_url}
-                    className="mt-2 inline-block text-xs text-blue-600 hover:underline"
+                    className="inline-block text-callout font-semibold text-navy hover:underline"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    View document
+                    View {humanizeCredentialType(c.credential_type)} document
                   </a>
                 ) : null}
 
                 {c.notes ? (
-                  <p className="mt-2 rounded-md bg-zinc-50 p-2 text-xs text-zinc-600">
+                  <p className="rounded-md bg-stone p-3 text-body text-ink-secondary">
                     Note: {c.notes}
                   </p>
                 ) : null}
 
-                <form action={setCredentialStatus} className="mt-3 flex flex-wrap gap-2 text-sm">
+                <form action={setCredentialStatus} className="flex flex-wrap items-center gap-3">
                   <input type="hidden" name="credentialId" value={c.id} />
                   <input type="hidden" name="driverId" value={driverId} />
                   <select
                     name="status"
                     defaultValue={c.verification_status}
-                    className="h-9 rounded-md border border-zinc-300 px-2"
+                    aria-label="Verification status"
+                    className="h-12 rounded-sm border border-border-strong bg-card px-3 text-body text-ink"
                   >
                     <option value="pending">Pending</option>
                     <option value="verified">Verify</option>
@@ -159,16 +202,12 @@ export default async function CredentialsDriverPage(props: {
                     name="notes"
                     defaultValue={c.notes ?? ''}
                     placeholder="Notes (optional)"
-                    className="h-9 flex-1 rounded-md border border-zinc-300 px-2 text-xs"
+                    aria-label="Notes"
+                    className="h-12 flex-1 rounded-sm border border-border-strong bg-card px-3 text-body text-ink placeholder:text-ink-secondary"
                   />
-                  <button
-                    type="submit"
-                    className="h-9 rounded-md bg-blue-600 px-3 text-xs font-semibold text-white"
-                  >
-                    Save
-                  </button>
+                  <Button type="submit">Save</Button>
                 </form>
-              </li>
+              </Card>
             );
           })}
         </ul>

@@ -81,7 +81,7 @@ export default function ScheduleScreen() {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" color="#1E40AF" />
+        <ActivityIndicator size="large" color="#1F3A5F" />
       </SafeAreaView>
     );
   }
@@ -89,33 +89,37 @@ export default function ScheduleScreen() {
   if (error) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background px-6">
-        <Ionicons name="alert-circle" size={32} color="#DC2626" />
-        <Text className="mt-2 text-lg font-semibold text-foreground">Could not load schedule</Text>
+        <Ionicons name="alert-circle" size={32} color="#A83A35" />
+        <Text className="mt-2 font-sans-semibold text-headline text-foreground">
+          Could not load schedule
+        </Text>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-row items-center justify-between border-b border-gray-200 px-4 py-3">
-        <Text className="text-xl font-bold text-foreground">Weekly Availability</Text>
+      <View className="border-hairline flex-row items-center justify-between border-b px-4 py-3">
+        <Text className="font-sans-bold text-title-1 text-foreground">Weekly Availability</Text>
         <Pressable
           onPress={() => setShowAddSheet(true)}
-          className="min-h-[48px] min-w-[48px] flex-row items-center justify-center rounded-xl bg-primary px-4"
+          className="min-h-touch min-w-[48px] flex-row items-center justify-center rounded-md bg-primary px-4 active:bg-primary-700"
           accessibilityLabel="Add availability window"
           accessibilityRole="button"
           testID="add-availability-button">
-          <Ionicons name="add" size={20} color="white" />
-          <Text className="ml-1 font-semibold text-white">Add</Text>
+          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Text className="ml-1 font-sans-semibold text-callout text-white">Add</Text>
         </Pressable>
       </View>
 
       <ScrollView className="flex-1 px-4 py-4" contentContainerStyle={{ paddingBottom: 80 }}>
         {windows.length === 0 ? (
           <View className="mt-12 items-center px-6">
-            <Ionicons name="calendar-outline" size={48} color="#9CA3AF" />
-            <Text className="mt-4 text-lg font-semibold text-foreground">No windows yet</Text>
-            <Text className="mt-1 text-center text-gray-600">
+            <Ionicons name="calendar-outline" size={48} color="#6E685E" />
+            <Text className="mt-4 font-sans-semibold text-title-3 text-foreground">
+              No windows yet
+            </Text>
+            <Text className="mt-1 text-center font-sans text-body text-ink-secondary">
               Add a weekly window so dispatch knows when to assign rides to you.
             </Text>
           </View>

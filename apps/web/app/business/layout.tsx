@@ -30,12 +30,14 @@ export default async function BusinessLayout({ children }: { children: ReactNode
   const activePath = hdrs.get('x-next-pathname') ?? '/business';
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-6">
-      <div className="mb-6 border-b pb-4">
-        <h1 className="text-xl font-semibold">Business</h1>
-        <p className="text-sm text-zinc-600">Billing, payroll, reports, and compliance.</p>
-      </div>
-      <div className="flex gap-6">
+    <section className="min-h-screen bg-stone">
+      <header className="border-b border-border-hairline bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-5">
+          <h1 className="text-title-1 font-bold text-ink">Business</h1>
+          <p className="text-body text-ink-secondary">Billing, payroll, reports, and compliance.</p>
+        </div>
+      </header>
+      <div className="mx-auto flex max-w-7xl gap-8 px-6 py-8">
         <SectionNav items={BUSINESS_NAV} activePath={activePath} testId="business-nav" />
         <div className="min-w-0 flex-1">{children}</div>
       </div>

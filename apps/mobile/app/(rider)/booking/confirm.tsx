@@ -4,35 +4,45 @@
  * Third and final step of the 3-tap booking flow.
  * Users review their ride details and confirm with one tap.
  *
- * Features:
- * - RideSummaryCard with route, date, time
- * - DriverPreferenceRow for requesting specific driver (Story 2.7)
- * - PriceLockBadge with "No surge. Ever."
- * - WaitTimeIndicator showing included wait time
- * - Large "Book This Ride" button (56dp height)
- * - Success screen with 60-second undo
- * - Full accessibility support
+ * Uses the unified design primitives (AppHeader, Card, ListRow, BottomActionBar,
+ * RouteIndicator, Alert, Button) to present a single visual hierarchy:
+ *   - Route card (elevated)
+ *   - Schedule card (outlined)
+ *   - Trust-signals card (flat) wrapping price-lock + wait-time badges
+ *   - Driver preference row (self-styled)
+ *   - Price card (outlined) with "final price after driver assignment" note
+ *   - BottomActionBar pins the primary CTA with safe-area aware padding
  *
  * Story 2.5: 3-Tap Booking Flow - Confirmation (Tap 3)
  * Story 2.7: Preferred Driver Selection
  */
 
 import { useAuth } from '@clerk/clerk-expo';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, Pressable, ScrollView, Alert } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, Alert as RNAlert } from 'react-native';
 
-import { Header } from '@/components/Header';
+import {
+  AppHeader,
+  Alert,
+  BottomActionBar,
+  Button,
+  Card,
+  ListRow,
+  RouteIndicator,
+} from '@/components/ui';
 import {
   StepIndicator,
   PriceLockBadge,
   WaitTimeIndicator,
-  RideSummaryCard,
   BookingSuccessScreen,
 } from '@/components/booking';
-import { useBookRide } from '@/hooks/useBookRide';
 import { DriverPreferenceRow, DriverSelectionSheet } from '@/components/drivers';
+import { PhoneButton } from '@/components/PhoneButton';
+import { useBookRide } from '@/hooks/useBookRide';
 import { usePreferredDriver } from '@/hooks/usePreferredDriver';
+import { useSupabaseUserId } from '@/hooks/useSupabaseUserId';
 import { useBookingStore } from '@/stores/bookingStore';
 
 /** Mock price in cents for MVP - real pricing Edge Function in future story */
@@ -41,11 +51,41 @@ const MOCK_PRICE_CENTS = 4500; // $45
 /** Default wait time in minutes */
 const DEFAULT_WAIT_MINUTES = 20;
 
+/**
+ * Formats an ISO date string (YYYY-MM-DD) to a friendly display.
+ * Returns "Today", "Tomorrow", or "Mon, Jan 5".
+ */
+function formatDateDisplay(dateStr: string): string {
+  const date = new Date(`${dateStr}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const inputDate = new Date(date);
+  inputDate.setHours(0, 0, 0, 0);
+
+  if (inputDate.getTime() === today.getTime()) {
+    return 'Today';
+  }
+  if (inputDate.getTime() === tomorrow.getTime()) {
+    return 'Tomorrow';
+  }
+
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 export default function BookingStep3() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showDriverSheet, setShowDriverSheet] = useState(false);
 
   const { userId } = useAuth();
+  const { data: supabaseUserId } = useSupabaseUserId();
   const {
     pickupDestination,
     dropoffDestination,
@@ -86,7 +126,7 @@ export default function BookingStep3() {
 
   const handleBookRide = async () => {
     if (!dropoffDestination) {
-      Alert.alert('Missing Destination', 'Please select a destination before booking.');
+      RNAlert.alert('Missing Destination', 'Please select a destination before booking.');
       return;
     }
 
@@ -107,7 +147,7 @@ export default function BookingStep3() {
       setShowSuccess(true);
     } catch (error) {
       console.error('Booking failed:', error);
-      Alert.alert('Booking Failed', 'Unable to complete your booking. Please try again.');
+      RNAlert.alert('Booking Failed', 'Unable to complete your booking. Please try again.');
     }
   };
 
@@ -122,7 +162,6 @@ export default function BookingStep3() {
       return 'Every week';
     }
     if (recurringFrequency === 'custom' && recurringDays.length > 0) {
-      // Format day names nicely
       const dayNames: Record<string, string> = {
         mon: 'Mon',
         tue: 'Tue',
@@ -146,83 +185,115 @@ export default function BookingStep3() {
   if (!dropoffDestination) {
     return (
       <SafeAreaView className="flex-1 bg-background">
-        <Header showBackButton onBack={handleBack} title="Book a Ride" />
+        <AppHeader
+          mode="screen"
+          title="Review your ride"
+          onBack={handleBack}
+          rightSlot={<PhoneButton />}
+        />
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-lg text-gray-600">No destination selected.</Text>
-          <Pressable
-            onPress={handleBack}
-            className="mt-4 min-h-[48px] items-center justify-center rounded-xl bg-primary px-8"
-            accessibilityLabel="Go back to select destination"
-            accessibilityRole="button">
-            <Text className="text-lg font-bold text-white">Go Back</Text>
-          </Pressable>
+          <Text className="font-sans text-body text-ink-secondary">No destination selected.</Text>
+          <View className="mt-4 w-full max-w-[280px]">
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              label="Go back"
+              onPress={handleBack}
+              accessibilityLabel="Go back to select destination"
+            />
+          </View>
         </View>
       </SafeAreaView>
     );
   }
 
   const displayDate = selectedDate ?? new Date().toISOString().split('T')[0] ?? '';
+  const formattedDate = formatDateDisplay(displayDate);
+  const displayTime = selectedTime || 'ASAP';
+  const scheduleTitle = `${formattedDate} at ${displayTime}`;
+  const recurringDescription = getRecurringDescription();
+
+  // Build route stops — synthesize labels when missing
+  const pickupStop = {
+    label: pickupDestination?.name ?? 'Pickup',
+    address: pickupDestination?.address,
+  };
+  const destinationStop = {
+    label: dropoffDestination.name || 'Destination',
+    address: dropoffDestination.address,
+  };
+
+  const isSubmitting = bookRideMutation.isPending;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <Header showBackButton onBack={handleBack} title="Book a Ride" />
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 120 }}>
-        <View className="px-6 pt-4">
+      <AppHeader
+        mode="screen"
+        title="Review your ride"
+        onBack={handleBack}
+        rightSlot={<PhoneButton />}
+      />
+
+      <ScrollView className="flex-1">
+        <View className="gap-4 px-6 pb-6 pt-4">
+          {/* Step indicator (canonical progress widget) */}
           <StepIndicator currentStep={3} totalSteps={3} />
 
-          <Text
-            className="mt-6 text-2xl font-bold text-foreground"
-            accessibilityRole="header"
-            accessibilityLabel="Step 3: Confirm your ride">
-            Confirm your ride
-          </Text>
-          <Text className="mt-1 text-lg text-gray-700">Review and book with one tap</Text>
+          <Text className="font-sans-bold text-title-1 text-foreground">Review your ride</Text>
 
-          {/* Ride Summary */}
-          <RideSummaryCard
-            pickup={pickupDestination}
-            dropoff={dropoffDestination}
-            date={displayDate}
-            time={selectedTime}
-            isRecurring={isRecurring}
-            recurringDescription={getRecurringDescription()}
-            className="mt-6"
+          {/* Route */}
+          <Card variant="elevated" padding="lg">
+            <RouteIndicator pickup={pickupStop} destination={destinationStop} size="md" />
+          </Card>
+
+          {/* Schedule summary */}
+          <Card variant="outlined" padding="none">
+            <ListRow
+              leading={<Ionicons name="time" size={22} color="#1F3A5F" />}
+              leadingTint="primary"
+              title={scheduleTitle}
+              subtitle={recurringDescription}
+            />
+          </Card>
+
+          {/* Trust signals — locked price + included wait time grouped visually */}
+          <Card variant="flat" padding="md">
+            <View className="gap-3">
+              <PriceLockBadge priceCents={MOCK_PRICE_CENTS} />
+              <WaitTimeIndicator waitMinutes={DEFAULT_WAIT_MINUTES} />
+            </View>
+          </Card>
+
+          {/* Driver preference (DriverPreferenceRow is already visually wrapped) */}
+          <DriverPreferenceRow
+            selectedDriverId={preferredDriverId}
+            selectedDriverName={preferredDriverName}
+            onPress={() => setShowDriverSheet(true)}
+            testID="driver-preference-row"
           />
 
-          {/* Driver Preference - Story 2.7 */}
-          <View className="mt-4">
-            <DriverPreferenceRow
-              selectedDriverId={preferredDriverId}
-              selectedDriverName={preferredDriverName}
-              onPress={() => setShowDriverSheet(true)}
-              testID="driver-preference-row"
-            />
-          </View>
-
-          {/* Price Lock Badge */}
-          <PriceLockBadge priceCents={MOCK_PRICE_CENTS} className="mt-4" />
-
-          {/* Wait Time Indicator */}
-          <WaitTimeIndicator waitMinutes={DEFAULT_WAIT_MINUTES} className="mt-4 px-1" />
+          {/* Calm reassurance — price is final once a driver is assigned */}
+          <Alert
+            variant="info"
+            message="Your locked price is confirmed when your driver is assigned. Take your time."
+          />
         </View>
       </ScrollView>
 
-      {/* Fixed bottom button */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-gray-100 bg-background px-6 pb-8 pt-4">
-        <Pressable
+      {/* Sticky CTA — safe-area aware, no absolute positioning */}
+      <BottomActionBar>
+        <Button
+          variant="primary"
+          size="lg"
+          fullWidth
+          label="Book This Ride"
+          loading={isSubmitting}
+          disabled={isSubmitting}
           onPress={handleBookRide}
-          disabled={bookRideMutation.isPending}
-          className={`min-h-[56px] items-center justify-center rounded-xl ${
-            bookRideMutation.isPending ? 'bg-gray-300' : 'bg-primary'
-          } active:opacity-80`}
-          accessibilityLabel={bookRideMutation.isPending ? 'Booking in progress' : 'Book this ride'}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: bookRideMutation.isPending }}>
-          <Text className="text-lg font-bold text-white">
-            {bookRideMutation.isPending ? 'Booking...' : 'Book This Ride'}
-          </Text>
-        </Pressable>
-      </View>
+          accessibilityLabel={isSubmitting ? 'Booking in progress' : 'Book This Ride'}
+        />
+      </BottomActionBar>
 
       {/* Driver Selection Sheet - Story 2.7 */}
       <DriverSelectionSheet
@@ -232,7 +303,7 @@ export default function BookingStep3() {
           setPreferredDriver(driverId, driverName);
         }}
         selectedDriverId={preferredDriverId}
-        riderId={userId ?? undefined}
+        riderId={supabaseUserId ?? undefined}
         testID="driver-selection-sheet"
       />
     </SafeAreaView>

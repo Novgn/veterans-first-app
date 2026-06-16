@@ -5,32 +5,27 @@
  * Supports pull-to-refresh for status updates and real-time subscriptions.
  *
  * Features:
+ * - Segmented control (Upcoming / Past) to isolate each list
  * - Shows upcoming rides with RideCard (includes StatusTimeline and driver info)
  * - Shows past rides with compact RideListItem
  * - Tap ride navigates to RideDetailScreen
  * - Real-time updates via Supabase subscriptions
  * - Pull-to-refresh for manual updates
- * - Empty state when no rides
+ * - Skeleton loading, inline Alert empty/error states
  * - Full accessibility support
  *
  * Story 2.8: Implement My Rides Screen with Upcoming Rides
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useMemo, useCallback } from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  FlatList,
-  RefreshControl,
-  ActivityIndicator,
-} from 'react-native';
+import { useMemo, useCallback, useState } from 'react';
+import { View, SafeAreaView, FlatList, RefreshControl } from 'react-native';
 
-import { Header } from '@/components/Header';
 import { RideCard, RideListItem, type RideWithDriver } from '@/components/rides';
+import { Alert, AppHeader, Card, SectionHeader, SelectButton } from '@/components/ui';
 import { useRides } from '@/hooks/useRides';
+
+type Segment = 'upcoming' | 'past';
 
 /**
  * Categorizes rides into upcoming and past based on status
@@ -69,178 +64,140 @@ function categorizeRides(rides: RideWithDriver[]): {
   return { upcoming, past };
 }
 
-type SectionData =
-  | { type: 'header'; title: string }
-  | { type: 'upcoming-ride'; ride: RideWithDriver }
-  | { type: 'past-ride'; ride: RideWithDriver }
-  | { type: 'empty'; message: string };
-
 export default function RidesScreen() {
   const { data: rides, isLoading, error, refetch, isRefetching } = useRides();
+  const [segment, setSegment] = useState<Segment>('upcoming');
 
   const handleRidePress = useCallback((rideId: string) => {
     router.push(`/rides/${rideId}`);
   }, []);
 
-  // Build section data for FlatList
-  const sectionData = useMemo((): SectionData[] => {
-    if (!rides || rides.length === 0) {
-      return [];
-    }
-
-    const { upcoming, past } = categorizeRides(rides);
-    const data: SectionData[] = [];
-
-    // Upcoming section - uses enhanced RideCard with StatusTimeline
-    if (upcoming.length > 0) {
-      data.push({ type: 'header', title: 'Upcoming Rides' });
-      upcoming.forEach((ride) => data.push({ type: 'upcoming-ride', ride }));
-    }
-
-    // Past section - uses compact RideListItem
-    if (past.length > 0) {
-      data.push({ type: 'header', title: 'Past Rides' });
-      past.forEach((ride) => data.push({ type: 'past-ride', ride }));
-    }
-
-    return data;
-  }, [rides]);
-
-  const renderItem = useCallback(
-    ({ item }: { item: SectionData }) => {
-      if (item.type === 'header') {
-        return (
-          <View className="mb-2 mt-6">
-            <Text className="text-lg font-semibold text-gray-700">{item.title}</Text>
-          </View>
-        );
-      }
-
-      // Upcoming rides use enhanced RideCard with StatusTimeline and driver info
-      if (item.type === 'upcoming-ride') {
-        return (
-          <RideCard
-            ride={item.ride}
-            onPress={() => handleRidePress(item.ride.id)}
-            className="mb-4"
-          />
-        );
-      }
-
-      // Past rides use compact RideListItem
-      if (item.type === 'past-ride') {
-        return (
-          <RideListItem
-            ride={item.ride}
-            onPress={() => handleRidePress(item.ride.id)}
-            className="mb-2"
-          />
-        );
-      }
-
-      if (item.type === 'empty') {
-        return (
-          <View className="flex-1 items-center justify-center rounded-xl bg-gray-100 p-8">
-            <Ionicons name="car-outline" size={64} color="#9CA3AF" />
-            <Text className="mt-4 text-center text-lg font-medium text-gray-700">
-              {item.message}
-            </Text>
-          </View>
-        );
-      }
-
-      return null;
-    },
-    [handleRidePress]
-  );
-
-  const keyExtractor = useCallback((item: SectionData, index: number) => {
-    if (item.type === 'header') {
-      return `header-${item.title}`;
-    }
-    if (item.type === 'upcoming-ride' || item.type === 'past-ride') {
-      return item.ride.id;
-    }
-    return `item-${index}`;
+  const handleBookRide = useCallback(() => {
+    router.push('/booking');
   }, []);
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 bg-background">
-        <Header title="My Rides" />
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#1E40AF" />
-          <Text className="mt-4 text-lg text-gray-600">Loading your rides...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  const handleRetry = useCallback(() => {
+    void refetch();
+  }, [refetch]);
 
-  // Error state
-  if (error) {
-    return (
-      <SafeAreaView className="flex-1 bg-background">
-        <Header title="My Rides" />
-        <View className="flex-1 items-center justify-center px-6">
-          <View className="h-20 w-20 items-center justify-center rounded-full bg-red-100">
-            <Ionicons name="alert-circle" size={40} color="#DC2626" />
-          </View>
-          <Text className="mt-4 text-xl font-bold text-foreground">Unable to Load Rides</Text>
-          <Text className="mt-2 text-center text-lg text-gray-600">
-            We couldn&apos;t load your rides. Pull down to try again.
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  const { upcoming, past } = useMemo(() => {
+    if (!rides || rides.length === 0) {
+      return { upcoming: [] as RideWithDriver[], past: [] as RideWithDriver[] };
+    }
+    return categorizeRides(rides);
+  }, [rides]);
 
-  // Empty state
-  if (!rides || rides.length === 0) {
-    return (
-      <SafeAreaView className="flex-1 bg-background">
-        <Header title="My Rides" />
-        <View className="flex-1 px-6 pt-4">
-          <Text className="mb-6 text-2xl font-bold text-foreground" accessibilityRole="header">
-            My Rides
-          </Text>
+  const visibleRides = segment === 'upcoming' ? upcoming : past;
 
-          <View className="flex-1 items-center justify-center rounded-xl bg-gray-100 p-8">
-            <Ionicons name="car-outline" size={64} color="#9CA3AF" />
-            <Text className="mt-4 text-center text-lg font-medium text-gray-700">No rides yet</Text>
-            <Text className="mt-2 text-center text-gray-500">
-              Your upcoming and past rides will appear here
-            </Text>
-          </View>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  const renderItem = useCallback(
+    ({ item }: { item: RideWithDriver }) => {
+      if (segment === 'upcoming') {
+        return <RideCard ride={item} onPress={() => handleRidePress(item.id)} className="mb-4" />;
+      }
+
+      return <RideListItem ride={item} onPress={() => handleRidePress(item.id)} className="mb-2" />;
+    },
+    [segment, handleRidePress]
+  );
+
+  const keyExtractor = useCallback((item: RideWithDriver) => item.id, []);
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <Header title="My Rides" />
-      <View className="flex-1 px-6">
-        <Text className="mt-4 text-2xl font-bold text-foreground" accessibilityRole="header">
-          My Rides
-        </Text>
+      <AppHeader mode="brand" />
 
-        <FlatList
-          data={sectionData}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={refetch}
-              colors={['#1E40AF']}
-              tintColor="#1E40AF"
+      {/* Segmented control: Upcoming / Past */}
+      <View className="flex-row gap-2 px-6 pb-2 pt-3">
+        <View className="flex-1">
+          <SelectButton
+            label="Upcoming"
+            size="md"
+            variant="filled"
+            selected={segment === 'upcoming'}
+            onPress={() => setSegment('upcoming')}
+            fullWidth
+            accessibilityHint="Show upcoming rides"
+            testID="rides-segment-upcoming"
+          />
+        </View>
+        <View className="flex-1">
+          <SelectButton
+            label="Past"
+            size="md"
+            variant="filled"
+            selected={segment === 'past'}
+            onPress={() => setSegment('past')}
+            fullWidth
+            accessibilityHint="Show past rides"
+            testID="rides-segment-past"
+          />
+        </View>
+      </View>
+
+      <View className="flex-1 px-6 pt-2">
+        {isLoading ? (
+          // Skeleton loading — three flat cards stand in for rows until data arrives
+          <View accessibilityLabel="Loading rides" accessible>
+            <Card variant="flat" padding="lg" className="mb-4 h-32">
+              <View />
+            </Card>
+            <Card variant="flat" padding="lg" className="mb-4 h-32">
+              <View />
+            </Card>
+            <Card variant="flat" padding="lg" className="mb-4 h-32">
+              <View />
+            </Card>
+          </View>
+        ) : error ? (
+          <Alert
+            variant="error"
+            title="Unable to load rides"
+            message="We couldn't load your rides. Please check your connection and try again."
+            action={{ label: 'Try again', onPress: handleRetry }}
+          />
+        ) : visibleRides.length === 0 ? (
+          segment === 'upcoming' ? (
+            <Alert
+              variant="info"
+              title="No upcoming rides"
+              message="Book your next ride when you're ready."
+              action={{ label: 'Book a ride', onPress: handleBookRide }}
             />
-          }
-          ListFooterComponent={<View className="h-4" />}
-        />
+          ) : (
+            <Alert
+              variant="info"
+              title="No past rides yet"
+              message="Once you've taken a ride, it'll show up here."
+            />
+          )
+        ) : (
+          <FlatList
+            data={visibleRides}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 24 }}
+            ListHeaderComponent={
+              segment === 'upcoming' && upcoming.length > 0 ? (
+                <View className="mb-2 mt-2">
+                  <SectionHeader
+                    title="Scheduled"
+                    hint={`${upcoming.length} ${upcoming.length === 1 ? 'ride' : 'rides'} scheduled`}
+                  />
+                </View>
+              ) : null
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={refetch}
+                colors={['#1F3A5F']}
+                tintColor="#1F3A5F"
+              />
+            }
+            ListFooterComponent={<View className="h-4" />}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

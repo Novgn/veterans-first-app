@@ -9,6 +9,8 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
 import { getServerSupabase } from '@/lib/supabase';
 import { formatDateTime } from '@/lib/format';
 
@@ -64,46 +66,45 @@ export default async function ConfirmationsPage() {
   const rides = await fetchUpcoming();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Confirmation Calls</h2>
-        <p className="text-sm text-zinc-600">
+        <h2 className="text-title-2 font-semibold text-ink">Confirmation Calls</h2>
+        <p className="mt-1 text-body text-ink-secondary">
           Rides scheduled in the next 24 hours. Call the rider, then mark confirmed.
         </p>
       </div>
 
       {rides.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <div className="rounded-lg border border-dashed border-border-hairline bg-card p-6 text-center text-body text-ink-secondary">
           Nothing to confirm right now.
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {rides.map((r) => (
-            <form
-              key={r.id}
-              action={markConfirmedAction}
-              className="flex flex-col gap-2 rounded-xl border border-zinc-200 p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <input type="hidden" name="rideId" value={r.id} />
-              <div>
-                <div className="font-semibold">
-                  {r.rider?.first_name} {r.rider?.last_name}{' '}
-                  <span className="ml-2 text-xs font-normal text-zinc-500">
-                    {r.rider?.phone ?? 'no phone'}
-                  </span>
-                </div>
-                <div className="mt-1 text-xs text-zinc-500">
-                  {formatDateTime(r.scheduled_pickup_time)} • {r.pickup_address}
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={r.status === 'confirmed'}
-                className="min-h-[40px] rounded-md bg-green-600 px-3 text-sm font-semibold text-white hover:bg-green-700 disabled:bg-zinc-300"
-              >
-                {r.status === 'confirmed' ? 'Confirmed' : 'Mark Confirmed'}
-              </button>
-            </form>
+            <Card key={r.id}>
+              <CardContent className="p-6">
+                <form
+                  action={markConfirmedAction}
+                  className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <input type="hidden" name="rideId" value={r.id} />
+                  <div>
+                    <div className="text-title-3 font-semibold text-ink">
+                      {r.rider?.first_name} {r.rider?.last_name}{' '}
+                      <span className="ml-2 text-caption font-normal text-ink-secondary">
+                        {r.rider?.phone ?? 'no phone'}
+                      </span>
+                    </div>
+                    <div className="mt-1 text-caption text-ink-secondary">
+                      {formatDateTime(r.scheduled_pickup_time)} • {r.pickup_address}
+                    </div>
+                  </div>
+                  <Button type="submit" size="sm" disabled={r.status === 'confirmed'}>
+                    {r.status === 'confirmed' ? 'Confirmed' : 'Mark Confirmed'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}

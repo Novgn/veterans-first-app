@@ -29,75 +29,80 @@ interface StatusStyle {
   iconColor: string;
 }
 
+// Veteran Honor status pills: stone neutral for resting states, navy for the
+// active in-flight node, sage for supportive/assigned, success for arrived/done,
+// error for cancelled. Each pill always carries icon + label — color alone is
+// never the signal. Tints use the *-100 surface families with on-surface ink
+// (≥7:1) so the caption text stays AAA-legible.
 const STATUS_STYLES: Record<RideStatusKey, StatusStyle> = {
   pending: {
     label: 'Pending',
     icon: 'time-outline',
-    bgColor: 'bg-gray-100',
-    textColor: 'text-gray-700',
-    iconColor: '#6B7280',
+    bgColor: 'bg-background',
+    textColor: 'text-ink-secondary',
+    iconColor: '#6E685E', // border-strong
   },
   confirmed: {
     label: 'Confirmed',
     icon: 'checkmark',
-    bgColor: 'bg-blue-100',
-    textColor: 'text-blue-700',
-    iconColor: '#1D4ED8',
+    bgColor: 'bg-secondary-100',
+    textColor: 'text-foreground',
+    iconColor: '#4A6B54', // sage
   },
   pending_acceptance: {
     label: 'Awaiting Response',
     icon: 'hourglass-outline',
-    bgColor: 'bg-amber-100',
-    textColor: 'text-amber-700',
-    iconColor: '#D97706',
+    bgColor: 'bg-warning-100',
+    textColor: 'text-foreground',
+    iconColor: '#8A6420', // warning
   },
   assigned: {
     label: 'Assigned',
     icon: 'person-outline',
-    bgColor: 'bg-blue-100',
-    textColor: 'text-blue-700',
-    iconColor: '#1D4ED8',
+    bgColor: 'bg-secondary-100',
+    textColor: 'text-foreground',
+    iconColor: '#4A6B54', // sage
   },
   en_route: {
     label: 'En Route',
     icon: 'navigate',
-    bgColor: 'bg-amber-100',
-    textColor: 'text-amber-700',
-    iconColor: '#D97706',
+    bgColor: 'bg-primary-100',
+    textColor: 'text-foreground',
+    iconColor: '#1F3A5F', // navy — active node
   },
   arrived: {
     label: 'Arrived',
     icon: 'location',
-    bgColor: 'bg-green-100',
-    textColor: 'text-green-700',
-    iconColor: '#059669',
+    bgColor: 'bg-success-100',
+    textColor: 'text-foreground',
+    iconColor: '#356046', // success
   },
   in_progress: {
     label: 'In Progress',
     icon: 'car',
-    bgColor: 'bg-purple-100',
-    textColor: 'text-purple-700',
-    iconColor: '#7C3AED',
+    bgColor: 'bg-primary-100',
+    textColor: 'text-foreground',
+    iconColor: '#1F3A5F', // navy — active node
   },
   completed: {
     label: 'Completed',
     icon: 'checkmark-circle',
-    bgColor: 'bg-gray-100',
-    textColor: 'text-gray-600',
-    iconColor: '#6B7280',
+    bgColor: 'bg-success-100',
+    textColor: 'text-foreground',
+    iconColor: '#356046', // success
   },
   cancelled: {
     label: 'Cancelled',
     icon: 'close-circle',
-    bgColor: 'bg-red-100',
-    textColor: 'text-red-700',
-    iconColor: '#DC2626',
+    bgColor: 'bg-error-100',
+    textColor: 'text-foreground',
+    iconColor: '#A83A35', // error
   },
 };
 
 const SIZE_STYLES = {
-  sm: { container: 'px-2 py-1', text: 'text-xs', icon: 14 },
-  md: { container: 'px-3 py-1', text: 'text-sm', icon: 16 },
+  sm: { container: 'px-2 py-1', text: 'text-caption', icon: 14 },
+  md: { container: 'px-3 py-1', text: 'text-caption', icon: 16 },
   lg: { container: 'px-4 py-2', text: 'text-base', icon: 20 },
 } as const;
 
@@ -118,7 +123,7 @@ export function TripStatusBadge({ status, size = 'md', testID }: TripStatusBadge
       accessibilityRole="text"
       testID={testID}>
       <Ionicons name={styles.icon} size={sizeStyles.icon} color={styles.iconColor} />
-      <Text className={`ml-1 font-semibold ${styles.textColor} ${sizeStyles.text}`}>
+      <Text className={`ml-1 font-sans-semibold ${styles.textColor} ${sizeStyles.text}`}>
         {styles.label}
       </Text>
     </View>

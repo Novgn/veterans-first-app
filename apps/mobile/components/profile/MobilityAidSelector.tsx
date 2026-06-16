@@ -57,8 +57,8 @@ interface MobilityAidSelectorProps {
 export function MobilityAidSelector({ value, onChange, testID }: MobilityAidSelectorProps) {
   return (
     <View testID={testID}>
-      <Text className="mb-3 text-lg font-semibold text-foreground">Mobility Aid</Text>
-      <Text className="mb-4 text-sm text-gray-600">
+      <Text className="mb-3 font-sans-semibold text-headline text-foreground">Mobility Aid</Text>
+      <Text className="mb-4 font-sans text-footnote text-ink-secondary">
         Select the mobility aid you use, if any. This helps drivers prepare for your ride.
       </Text>
 
@@ -70,10 +70,10 @@ export function MobilityAidSelector({ value, onChange, testID }: MobilityAidSele
           <Pressable
             key={option.value}
             onPress={() => onChange(option.value)}
-            className={`min-h-[56px] flex-row items-center rounded-xl px-4 ${
+            className={`min-h-[56px] flex-row items-center rounded-lg px-4 ${
               value === option.value
-                ? 'border-2 border-primary bg-primary/10'
-                : 'border border-gray-200 bg-white'
+                ? 'border-2 border-primary bg-primary-100'
+                : 'border-strong border bg-card'
             }`}
             accessibilityLabel={option.label}
             accessibilityRole="radio"
@@ -82,25 +82,27 @@ export function MobilityAidSelector({ value, onChange, testID }: MobilityAidSele
             testID={testID ? `${testID}-option-${option.value}` : undefined}>
             <View
               className={`mr-4 h-10 w-10 items-center justify-center rounded-full ${
-                value === option.value ? 'bg-primary' : 'bg-gray-100'
+                value === option.value ? 'bg-primary' : 'bg-background'
               }`}>
               <Ionicons
                 name={option.icon}
                 size={24}
-                color={value === option.value ? '#FFFFFF' : '#6B7280'}
+                color={value === option.value ? '#FFFFFF' : '#4F4A41'}
               />
             </View>
             <View className="flex-1">
               <Text
-                className={`text-base font-medium ${
+                className={`font-sans-medium text-body ${
                   value === option.value ? 'text-primary' : 'text-foreground'
                 }`}>
                 {option.label}
               </Text>
-              <Text className="text-sm text-gray-500">{option.description}</Text>
+              <Text className="font-sans text-footnote text-ink-secondary">
+                {option.description}
+              </Text>
             </View>
             {value === option.value && (
-              <Ionicons name="checkmark-circle" size={24} color="#1E40AF" />
+              <Ionicons name="checkmark-circle" size={24} color="#1F3A5F" />
             )}
           </Pressable>
         ))}

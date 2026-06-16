@@ -3,7 +3,8 @@
  *
  * Features:
  * - Displays minutes:seconds format
- * - Changes color based on urgency (green -> yellow -> red)
+ * - Surface tone escalates with urgency for this genuine offer-expiry deadline
+ *   (calm stone -> warning -> error); the time text stays in on-surface ink
  * - Pulse animation when critical (< 30 seconds)
  * - Calls onExpire callback when timer reaches 0
  */
@@ -73,16 +74,16 @@ export function CountdownTimer({ seconds, onExpire, testID }: CountdownTimerProp
     transform: [{ scale: scale.value }],
   }));
 
-  // Urgency-based colors
-  const bgColor = isCritical ? 'bg-red-100' : isUrgent ? 'bg-amber-100' : 'bg-gray-100';
-
-  const textColor = isCritical ? 'text-red-600' : isUrgent ? 'text-amber-600' : 'text-gray-700';
+  // Veteran Honor: this is a genuine offer-expiry deadline, so escalating from a
+  // calm stone resting state → warning → error (the one place a countdown earns a
+  // warning tone). Text always renders in on-surface ink (≥7:1) for legibility.
+  const bgColor = isCritical ? 'bg-error-100' : isUrgent ? 'bg-warning-100' : 'bg-background';
 
   return (
     <Animated.View style={animatedStyle} testID={testID}>
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
         <Text
-          className={`text-lg font-bold ${textColor}`}
+          className="font-sans-semibold text-headline text-foreground"
           accessibilityLabel={`${minutes} minutes and ${secs} seconds remaining`}
           accessibilityRole="timer">
           {timeString}

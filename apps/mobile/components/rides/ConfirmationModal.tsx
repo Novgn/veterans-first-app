@@ -5,10 +5,10 @@
  * Used for ride cancellation and other irreversible actions.
  *
  * Features:
- * - Dark overlay (50% opacity)
- * - Warning icon for destructive actions
+ * - Soft ink scrim (rgba(26,24,19,0.45)) per Veteran Honor ConfirmationDialog
+ * - Warning icon for destructive actions (error tint)
  * - Optional reason input for cancellations
- * - 56px touch targets for senior-friendly UX
+ * - 56px touch targets for senior-friendly UX; primary action on the right
  * - Full accessibility support
  *
  * Story 2.6: Ride Modification and Cancellation
@@ -76,39 +76,40 @@ export function ConfirmationModal({
       onRequestClose={handleClose}
       accessibilityViewIsModal={true}>
       <Pressable
-        className="flex-1 items-center justify-center bg-black/50"
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: 'rgba(26, 24, 19, 0.45)' }}
         onPress={handleClose}
         accessibilityLabel="Close modal"
         accessibilityRole="button">
         <Pressable
-          className="mx-6 w-full max-w-md rounded-2xl bg-white p-6"
+          className="mx-6 w-full max-w-md rounded-lg bg-card p-6 shadow-overlay"
           onPress={(e) => e.stopPropagation()}
           accessibilityLabel={title}>
           {/* Warning icon for destructive actions */}
           {isDestructive && (
             <View className="mb-4 items-center">
-              <View className="h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                <Ionicons name="warning" size={32} color="#DC2626" />
+              <View className="h-16 w-16 items-center justify-center rounded-full bg-error-100">
+                <Ionicons name="warning" size={32} color="#A83A35" />
               </View>
             </View>
           )}
 
           {/* Title */}
           <Text
-            className="text-center text-2xl font-bold text-foreground"
+            className="text-center font-sans-bold text-2xl text-foreground"
             accessibilityRole="header">
             {title}
           </Text>
 
           {/* Message */}
-          <Text className="mt-2 text-center text-lg text-gray-600">{message}</Text>
+          <Text className="mt-2 text-center font-sans text-lg text-ink-secondary">{message}</Text>
 
           {/* Optional reason input */}
           {showReasonInput && (
             <TextInput
-              className="mt-4 min-h-[56px] rounded-xl border border-gray-300 px-4 text-lg"
+              className="border-strong mt-4 min-h-[56px] rounded-sm border px-4 font-sans text-lg text-foreground"
               placeholder={reasonPlaceholder}
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#6E685E"
               value={reason}
               onChangeText={setReason}
               accessibilityLabel="Cancellation reason"
@@ -120,28 +121,28 @@ export function ConfirmationModal({
 
           {/* Action buttons */}
           <View className="mt-6 flex-row">
-            {/* Cancel/Go Back button */}
+            {/* Cancel/Go Back button — secondary outline */}
             <Pressable
               onPress={handleClose}
               disabled={isLoading}
-              className={`mr-3 min-h-[56px] flex-1 items-center justify-center rounded-xl border border-gray-300 active:bg-gray-50 ${isLoading ? 'opacity-50' : ''}`}
+              className={`mr-3 min-h-[56px] flex-1 items-center justify-center rounded-md border-2 border-primary active:bg-primary-50 ${isLoading ? 'opacity-50' : ''}`}
               accessibilityLabel={cancelText}
               accessibilityRole="button"
               accessibilityState={{ disabled: isLoading }}>
-              <Text className="text-lg font-semibold text-gray-700">{cancelText}</Text>
+              <Text className="font-sans-semibold text-lg text-primary">{cancelText}</Text>
             </Pressable>
 
-            {/* Confirm button */}
+            {/* Confirm button — primary on the right; destructive in error */}
             <Pressable
               onPress={handleConfirm}
               disabled={isLoading}
-              className={`min-h-[56px] flex-1 items-center justify-center rounded-xl active:opacity-80 ${
-                isDestructive ? 'bg-red-600' : 'bg-primary'
+              className={`min-h-[56px] flex-1 items-center justify-center rounded-md active:opacity-80 ${
+                isDestructive ? 'bg-error' : 'bg-primary'
               } ${isLoading ? 'opacity-50' : ''}`}
               accessibilityLabel={isLoading ? `${confirmText} in progress` : confirmText}
               accessibilityRole="button"
               accessibilityState={{ disabled: isLoading }}>
-              <Text className="text-lg font-bold text-white">
+              <Text className="font-sans-bold text-lg text-white">
                 {isLoading ? 'Processing...' : confirmText}
               </Text>
             </Pressable>

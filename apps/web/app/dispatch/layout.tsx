@@ -33,12 +33,14 @@ export default async function DispatchLayout({ children }: { children: ReactNode
   const activePath = hdrs.get('x-next-pathname') ?? '/dispatch';
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-6">
-      <div className="mb-6 border-b pb-4">
-        <h1 className="text-xl font-semibold">Dispatch</h1>
-        <p className="text-sm text-zinc-600">Live fleet, bookings, and assignments.</p>
-      </div>
-      <div className="flex gap-6">
+    <section className="min-h-screen bg-stone">
+      <header className="border-b border-border-hairline bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-5">
+          <h1 className="text-title-1 font-bold text-ink">Dispatch</h1>
+          <p className="text-body text-ink-secondary">Live fleet, bookings, and assignments.</p>
+        </div>
+      </header>
+      <div className="mx-auto flex max-w-7xl gap-8 px-6 py-8">
         <SectionNav items={DISPATCH_NAV} activePath={activePath} testId="dispatch-nav" />
         <div className="min-w-0 flex-1">{children}</div>
       </div>
