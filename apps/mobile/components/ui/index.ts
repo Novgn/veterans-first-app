@@ -8,6 +8,7 @@ export { Card, type CardPadding, type CardProps, type CardVariant } from './Card
 export { Link, type LinkProps } from './Link';
 export { ListRow, type ListRowProps, type ListRowTint } from './ListRow';
 export { OTPField, type OTPFieldProps } from './OTPField';
+export { RoleSwitcher, type RoleSwitcherProps, type RoleSwitcherRole } from './RoleSwitcher';
 export { PhoneField, toE164, type PhoneFieldProps } from './PhoneField';
 export {
   RouteIndicator,
