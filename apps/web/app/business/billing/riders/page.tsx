@@ -8,6 +8,8 @@
 
 import Link from 'next/link';
 
+import { Badge } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
 import { formatMoneyCents } from '@/lib/format';
 import { getServerSupabase } from '@/lib/supabase';
 
@@ -78,41 +80,50 @@ export default async function RiderBillingListPage() {
   const rows = await fetchRiderBilling();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Rider billing</h2>
-        <p className="text-sm text-zinc-600">
+        <h2 className="text-title-2 font-semibold text-ink">Rider billing</h2>
+        <p className="text-body text-ink-secondary">
           Riders with outstanding invoices, sorted by amount owed.
         </p>
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <Card className="border-dashed p-8 text-center text-body text-ink-secondary">
           No outstanding balances.
-        </div>
+        </Card>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-zinc-200">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-left">
-              <tr>
-                <th className="px-4 py-2">Rider</th>
-                <th className="px-4 py-2">Outstanding</th>
-                <th className="px-4 py-2">Autopay</th>
-                <th className="px-4 py-2" />
+        <Card className="overflow-x-auto p-0">
+          <table className="w-full text-body">
+            <thead className="border-b border-border-hairline text-left">
+              <tr className="text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+                <th className="px-4 py-3">Rider</th>
+                <th className="px-4 py-3">Outstanding</th>
+                <th className="px-4 py-3">Autopay</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.id} className="border-t border-zinc-100">
-                  <td className="px-4 py-2">
+                <tr
+                  key={r.id}
+                  className="border-b border-border-hairline transition-colors last:border-0 hover:bg-navy-100"
+                >
+                  <td className="px-4 py-3 text-ink">
                     {r.last_name}, {r.first_name}
                   </td>
-                  <td className="px-4 py-2">{formatMoneyCents(r.outstanding_cents)}</td>
-                  <td className="px-4 py-2">{r.autopay ? 'On' : 'Off'}</td>
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-3 font-bold text-ink">
+                    {formatMoneyCents(r.outstanding_cents)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge variant={r.autopay ? 'success' : 'secondary'}>
+                      {r.autopay ? 'On' : 'Off'}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3 text-right">
                     <Link
                       href={`/business/billing/riders/${r.id}`}
-                      className="text-sm font-medium text-blue-600 hover:underline"
+                      className="text-callout font-semibold text-navy hover:underline"
                     >
                       Manage
                     </Link>
@@ -121,7 +132,7 @@ export default async function RiderBillingListPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       )}
     </div>
   );

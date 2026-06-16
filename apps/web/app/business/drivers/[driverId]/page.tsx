@@ -14,6 +14,8 @@ import {
   type BillingFrequency,
 } from '@veterans-first/shared/utils';
 
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { formatDateTime, formatMoneyCents } from '@/lib/format';
 import { getServerSupabase } from '@/lib/supabase';
 
@@ -81,66 +83,76 @@ export default async function DriverEarningsDetailPage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <Link href="/business/drivers" className="text-sm text-blue-600 hover:underline">
+          <Link
+            href="/business/drivers"
+            className="text-callout font-semibold text-navy hover:underline"
+          >
             ← All drivers
           </Link>
-          <h2 className="mt-1 text-lg font-semibold">
+          <h2 className="mt-1 text-title-2 font-semibold text-ink">
             {driver.last_name}, {driver.first_name}
           </h2>
-          <p className="text-sm text-zinc-600">
+          <p className="text-body text-ink-secondary">
             {earnings.period.startIso} → {earnings.period.endIso}
           </p>
         </div>
-        <Link
-          href={`/api/business/earnings.csv?driverId=${driverId}&period=${frequency}`}
-          className="inline-flex h-10 items-center rounded-md border border-zinc-300 px-4 text-sm"
-        >
-          Export CSV
+        <Link href={`/api/business/earnings.csv?driverId=${driverId}&period=${frequency}`}>
+          <Button variant="outline">Export CSV</Button>
         </Link>
       </div>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Totals</h3>
-        <dl className="grid grid-cols-2 gap-2 text-sm">
-          <dt className="text-zinc-500">Rides</dt>
-          <dd>{earnings.rows.length}</dd>
-          <dt className="text-zinc-500">Gross</dt>
-          <dd>{formatMoneyCents(totals.gross)}</dd>
-          <dt className="text-zinc-500">Company fee</dt>
-          <dd>{formatMoneyCents(totals.fee)}</dd>
-          <dt className="text-zinc-500 font-semibold">Net</dt>
-          <dd className="font-semibold">{formatMoneyCents(totals.net)}</dd>
-        </dl>
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>Totals</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid grid-cols-2 gap-2 text-body text-ink">
+            <dt className="text-ink-secondary">Rides</dt>
+            <dd>{earnings.rows.length}</dd>
+            <dt className="text-ink-secondary">Gross</dt>
+            <dd>{formatMoneyCents(totals.gross)}</dd>
+            <dt className="text-ink-secondary">Company fee</dt>
+            <dd>{formatMoneyCents(totals.fee)}</dd>
+            <dt className="font-semibold text-ink-secondary">Net</dt>
+            <dd className="font-semibold">{formatMoneyCents(totals.net)}</dd>
+          </dl>
+        </CardContent>
+      </Card>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Line items</h3>
-        {earnings.rows.length === 0 ? (
-          <p className="text-sm text-zinc-500">No earnings this period.</p>
-        ) : (
-          <ul className="divide-y divide-zinc-100 text-sm">
-            {earnings.rows.map((r) => (
-              <li key={r.id} className="flex justify-between py-2">
-                <div>
-                  <div className="font-mono text-xs text-zinc-500">
-                    ride {r.ride_id.slice(0, 8)}
+      <Card>
+        <CardHeader>
+          <CardTitle>Line items</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {earnings.rows.length === 0 ? (
+            <p className="text-body text-ink-secondary">No earnings this period.</p>
+          ) : (
+            <ul className="divide-y divide-border-hairline text-body">
+              {earnings.rows.map((r) => (
+                <li key={r.id} className="flex justify-between py-3">
+                  <div>
+                    <div className="font-mono text-caption text-ink-secondary">
+                      ride {r.ride_id.slice(0, 8)}
+                    </div>
+                    <div className="text-caption text-ink-secondary">
+                      {formatDateTime(r.created_at)}
+                    </div>
                   </div>
-                  <div className="text-xs text-zinc-500">{formatDateTime(r.created_at)}</div>
-                </div>
-                <div className="text-right">
-                  <div>{formatMoneyCents(r.net_amount_cents)}</div>
-                  <div className="text-xs text-zinc-500">
-                    {formatMoneyCents(r.gross_amount_cents)} −{' '}
-                    {formatMoneyCents(r.company_fee_cents)} fee
+                  <div className="text-right">
+                    <div className="text-ink">{formatMoneyCents(r.net_amount_cents)}</div>
+                    <div className="text-caption text-ink-secondary">
+                      {formatMoneyCents(r.gross_amount_cents)} −{' '}
+                      {formatMoneyCents(r.company_fee_cents)} fee
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

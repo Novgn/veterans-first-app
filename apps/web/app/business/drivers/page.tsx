@@ -13,6 +13,7 @@ import {
   type BillingFrequency,
 } from '@veterans-first/shared/utils';
 
+import { Button } from '@/components/ui/Button';
 import { formatMoneyCents } from '@/lib/format';
 import { getServerSupabase } from '@/lib/supabase';
 
@@ -101,64 +102,64 @@ export default async function BusinessDriversPage(props: {
   const { period: window, rows } = await fetchSummary(frequency);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start justify-between">
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Driver earnings</h2>
-          <p className="text-sm text-zinc-600">
+          <h2 className="text-title-2 font-semibold text-ink">Driver earnings</h2>
+          <p className="mt-1 text-body text-ink-secondary">
             Pay period {window.startIso} → {window.endIso}.
           </p>
         </div>
-        <form action="/business/drivers" method="get" className="flex gap-2">
+        <form action="/business/drivers" method="get" className="flex items-end gap-2">
           <select
             name="period"
             defaultValue={frequency}
-            className="h-10 rounded-md border border-zinc-300 px-3 text-sm"
+            className="h-12 rounded-sm border border-border-strong bg-card px-3 text-body text-ink"
           >
             <option value="weekly">Previous week</option>
             <option value="monthly">Previous month</option>
           </select>
-          <button
-            type="submit"
-            className="h-10 rounded-md bg-zinc-900 px-3 text-sm font-semibold text-white"
-          >
-            Apply
-          </button>
+          <Button type="submit">Apply</Button>
         </form>
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <div className="rounded-lg border border-dashed border-border-hairline bg-card p-6 text-center text-body text-ink-secondary">
           No earnings for this window.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-zinc-200">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-left">
+        <div className="overflow-x-auto rounded-lg border border-border-hairline bg-card shadow-card">
+          <table className="w-full text-body">
+            <thead className="border-b border-border-hairline bg-stone text-left">
               <tr>
-                <th className="px-4 py-2">Driver</th>
-                <th className="px-4 py-2">Rides</th>
-                <th className="px-4 py-2">Gross</th>
-                <th className="px-4 py-2">Company fee</th>
-                <th className="px-4 py-2">Net</th>
-                <th className="px-4 py-2" />
+                <th className="px-4 py-3 text-caption font-semibold text-ink-secondary">Driver</th>
+                <th className="px-4 py-3 text-caption font-semibold text-ink-secondary">Rides</th>
+                <th className="px-4 py-3 text-caption font-semibold text-ink-secondary">Gross</th>
+                <th className="px-4 py-3 text-caption font-semibold text-ink-secondary">
+                  Company fee
+                </th>
+                <th className="px-4 py-3 text-caption font-semibold text-ink-secondary">Net</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.driverId} className="border-t border-zinc-100">
-                  <td className="px-4 py-2">
+                <tr
+                  key={r.driverId}
+                  className="border-t border-border-hairline text-ink transition-colors hover:bg-navy-100"
+                >
+                  <td className="px-4 py-3">
                     {r.lastName || '—'}
                     {r.firstName ? `, ${r.firstName}` : ''}
                   </td>
-                  <td className="px-4 py-2">{r.rideCount}</td>
-                  <td className="px-4 py-2">{formatMoneyCents(r.grossCents)}</td>
-                  <td className="px-4 py-2">{formatMoneyCents(r.companyFeeCents)}</td>
-                  <td className="px-4 py-2 font-semibold">{formatMoneyCents(r.netCents)}</td>
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-3">{r.rideCount}</td>
+                  <td className="px-4 py-3">{formatMoneyCents(r.grossCents)}</td>
+                  <td className="px-4 py-3">{formatMoneyCents(r.companyFeeCents)}</td>
+                  <td className="px-4 py-3 font-semibold">{formatMoneyCents(r.netCents)}</td>
+                  <td className="px-4 py-3 text-right">
                     <Link
                       href={`/business/drivers/${r.driverId}?period=${frequency}`}
-                      className="text-sm font-medium text-blue-600 hover:underline"
+                      className="text-callout font-semibold text-navy hover:underline"
                     >
                       Detail
                     </Link>

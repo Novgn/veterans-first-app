@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { financialWindowDelta } from '@veterans-first/shared/utils';
 
 import { DashboardCard } from '@/components/business/DashboardCard';
+import { Button } from '@/components/ui/Button';
 import { formatMoneyCents } from '@/lib/format';
 import { loadFinancialSummary } from '@/lib/reports/fetchFinancial';
 import {
@@ -40,19 +41,19 @@ export default async function FinancialReportPage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Financial summary</h2>
-          <p className="text-sm text-zinc-600">
+          <h2 className="text-title-2 font-semibold text-ink">Financial summary</h2>
+          <p className="mt-1 text-body text-ink-secondary">
             Revenue, outstanding, refunds, and driver payouts.
           </p>
         </div>
-        <div className="flex gap-2">
-          <form action="/business/reports/financial" method="get" className="flex gap-2">
+        <div className="flex flex-wrap items-end gap-2">
+          <form action="/business/reports/financial" method="get" className="flex items-end gap-2">
             <select
               name="window"
               defaultValue={windowValue}
-              className="h-10 rounded-md border border-zinc-300 px-3 text-sm"
+              className="h-12 rounded-sm border border-border-strong bg-card px-3 text-body text-ink"
             >
               {FINANCIAL_WINDOW_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -60,18 +61,10 @@ export default async function FinancialReportPage(props: {
                 </option>
               ))}
             </select>
-            <button
-              type="submit"
-              className="h-10 rounded-md bg-zinc-900 px-3 text-sm font-semibold text-white"
-            >
-              Apply
-            </button>
+            <Button type="submit">Apply</Button>
           </form>
-          <Link
-            href={`/api/business/financial.csv?window=${windowValue}`}
-            className="inline-flex h-10 items-center rounded-md border border-zinc-300 px-4 text-sm"
-          >
-            Export CSV
+          <Link href={`/api/business/financial.csv?window=${windowValue}`}>
+            <Button variant="outline">Export CSV</Button>
           </Link>
         </div>
       </div>
