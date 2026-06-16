@@ -8,6 +8,8 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
 import { getServerSupabase } from '@/lib/supabase';
 import { formatDateTime } from '@/lib/format';
 
@@ -75,69 +77,68 @@ export default async function NoShowsPage() {
   const rides = await fetchNoShows();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">No-Show Review</h2>
-        <p className="text-sm text-zinc-600">
+        <h2 className="text-title-2 font-semibold text-ink">No-Show Review</h2>
+        <p className="mt-1 text-body text-ink-secondary">
           Trips drivers flagged as no-show. Reopen if the no-show was in error.
         </p>
       </div>
 
       {rides.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <div className="rounded-lg border border-dashed border-border-hairline bg-card p-6 text-center text-body text-ink-secondary">
           No pending no-shows. Good news.
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {rides.map((r) => {
             const noShowEvent = r.ride_events.find((e) => e.event_type === 'no_show');
             return (
-              <div key={r.id} className="rounded-xl border border-zinc-200 p-4">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <div className="font-semibold">
-                      {r.rider?.first_name} {r.rider?.last_name}{' '}
-                      <span className="ml-2 text-xs font-normal text-zinc-500">
-                        {r.rider?.phone ?? 'no phone'}
-                      </span>
-                    </div>
-                    <div className="mt-1 text-xs text-zinc-500">
-                      Scheduled {formatDateTime(r.scheduled_pickup_time)} • Marked{' '}
-                      {formatDateTime(r.updated_at)}
-                    </div>
-                    <div className="mt-2 text-sm">
-                      <span className="text-zinc-500">Pickup:</span> {r.pickup_address}
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-zinc-500">Driver:</span>{' '}
-                      {r.driver ? `${r.driver.first_name} ${r.driver.last_name}` : '—'}
-                    </div>
-                    {noShowEvent?.notes ? (
-                      <div className="mt-2 rounded-md bg-zinc-50 p-2 text-sm">
-                        “{noShowEvent.notes}”
+              <Card key={r.id}>
+                <CardContent className="p-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <div className="text-title-3 font-semibold text-ink">
+                        {r.rider?.first_name} {r.rider?.last_name}{' '}
+                        <span className="ml-2 text-caption font-normal text-ink-secondary">
+                          {r.rider?.phone ?? 'no phone'}
+                        </span>
                       </div>
-                    ) : null}
-                    {noShowEvent?.photo_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={noShowEvent.photo_url}
-                        alt="Arrival evidence"
-                        className="mt-2 max-w-xs rounded-md"
-                      />
-                    ) : null}
-                  </div>
+                      <div className="mt-1 text-caption text-ink-secondary">
+                        Scheduled {formatDateTime(r.scheduled_pickup_time)} • Marked{' '}
+                        {formatDateTime(r.updated_at)}
+                      </div>
+                      <div className="mt-3 text-body text-ink">
+                        <span className="text-ink-secondary">Pickup:</span> {r.pickup_address}
+                      </div>
+                      <div className="text-body text-ink">
+                        <span className="text-ink-secondary">Driver:</span>{' '}
+                        {r.driver ? `${r.driver.first_name} ${r.driver.last_name}` : '—'}
+                      </div>
+                      {noShowEvent?.notes ? (
+                        <div className="mt-3 rounded-md bg-stone p-3 text-body text-ink">
+                          “{noShowEvent.notes}”
+                        </div>
+                      ) : null}
+                      {noShowEvent?.photo_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={noShowEvent.photo_url}
+                          alt="Arrival evidence"
+                          className="mt-3 max-w-xs rounded-md"
+                        />
+                      ) : null}
+                    </div>
 
-                  <form action={reopenRideAction}>
-                    <input type="hidden" name="rideId" value={r.id} />
-                    <button
-                      type="submit"
-                      className="min-h-[40px] rounded-md bg-amber-600 px-3 text-sm font-semibold text-white hover:bg-amber-700"
-                    >
-                      Reopen ride
-                    </button>
-                  </form>
-                </div>
-              </div>
+                    <form action={reopenRideAction}>
+                      <input type="hidden" name="rideId" value={r.id} />
+                      <Button type="submit" variant="outline" size="sm">
+                        Reopen ride
+                      </Button>
+                    </form>
+                  </div>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
