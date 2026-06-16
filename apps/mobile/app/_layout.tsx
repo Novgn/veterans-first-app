@@ -1,6 +1,13 @@
 import '../global.css';
 
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
+import {
+  useFonts,
+  Lexend_400Regular,
+  Lexend_500Medium,
+  Lexend_600SemiBold,
+  Lexend_700Bold,
+} from '@expo-google-fonts/lexend';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { Stack } from 'expo-router';
 
@@ -9,6 +16,15 @@ import { tokenCache } from '@/lib/auth/token-cache';
 import { asyncStoragePersister, queryClient } from '@/lib/queryClient';
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Lexend_400Regular,
+    Lexend_500Medium,
+    Lexend_600SemiBold,
+    Lexend_700Bold,
+  });
+
+  if (!fontsLoaded) return null;
+
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   if (!publishableKey) {

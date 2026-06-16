@@ -1,0 +1,17 @@
+{
+  "name": "@veterans-first/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Veteran Honor design tokens — single source of truth for color, type, spacing, shape, motion. Consumed by apps/mobile (NativeWind, via tokens.js) and apps/web (Tailwind 4, via tokens.css).",
+  "main": "tokens.js",
+  "types": "tokens.d.ts",
+  "exports": {
+    ".": "./tokens.js",
+    "./tokens.css": "./tokens.css"
+  },
+  "files": [
+    "tokens.js",
+    "tokens.css",
+    "tokens.d.ts"
+  ]
+}
