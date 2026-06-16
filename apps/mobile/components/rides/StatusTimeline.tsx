@@ -5,15 +5,17 @@
  * Booked → Confirmed → Assigned → En Route → Arrived
  *
  * Features:
- * - Completed steps shown with filled dots
- * - Current step highlighted with primary color
- * - Future steps shown as gray outline
+ * - Completed steps shown as success-green nodes with a checkmark glyph
+ * - Current (active) step highlighted in navy (primary)
+ * - Future (pending) steps shown as a hairline outline
  * - Connecting lines between steps
+ * - Color is never the sole signal — node + checkmark/label carry the state
  * - Full accessibility support with progressbar role
  *
  * Story 2.8: Implement My Rides Screen with Upcoming Rides
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 
 /**
@@ -97,32 +99,40 @@ export function StatusTimeline({ currentStatus, className = '' }: StatusTimeline
         const isCompleted = index < currentIndex;
         const isCurrent = index === currentIndex;
 
+        // A node is "reached" (line filled to it) once the prior step is done.
+        const lineReached = index <= currentIndex;
+
         return (
           <View key={step.status} className="relative flex-1 items-center">
             {/* Connecting line (before dot) - spans from previous dot to current */}
             {index > 0 && (
               <View
-                className={`absolute -left-1/2 top-[7px] h-[2px] w-full ${
-                  isCompleted ? 'bg-primary' : 'bg-gray-200'
+                className={`absolute -left-1/2 top-[9px] h-[2px] w-full ${
+                  lineReached ? 'bg-success' : 'bg-border-hairline'
                 }`}
               />
             )}
 
-            {/* Status dot */}
+            {/* Status node — completed (success + check), active (navy), pending (hairline) */}
             <View
-              className={`z-10 h-4 w-4 rounded-full ${
+              className={`z-10 h-5 w-5 items-center justify-center rounded-full ${
                 isCompleted
-                  ? 'bg-primary'
+                  ? 'bg-success'
                   : isCurrent
-                    ? 'border-2 border-primary bg-primary/20'
-                    : 'border-2 border-gray-300 bg-white'
-              }`}
-            />
+                    ? 'border-2 border-primary bg-primary'
+                    : 'border-2 border-border-hairline bg-card'
+              }`}>
+              {isCompleted ? <Ionicons name="checkmark" size={12} color="#FFFFFF" /> : null}
+            </View>
 
             {/* Label */}
             <Text
-              className={`mt-1 text-center text-xs ${
-                isCurrent ? 'font-semibold text-primary' : 'text-gray-500'
+              className={`mt-1 text-center text-caption ${
+                isCurrent
+                  ? 'font-sans-semibold text-primary'
+                  : isCompleted
+                    ? 'font-sans-medium text-success'
+                    : 'font-sans text-ink-secondary'
               }`}
               numberOfLines={1}>
               {step.label}

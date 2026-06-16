@@ -19,7 +19,8 @@ export function PhoneButton() {
   return (
     <Pressable
       onPress={handlePress}
-      className="h-[56px] w-[56px] items-center justify-center rounded-full bg-primary"
+      // Sage fill — the always-reachable "Call us" human-escalation guarantee.
+      className="h-[56px] w-[56px] items-center justify-center rounded-full bg-secondary"
       accessibilityLabel="Call support"
       accessibilityRole="button"
       accessibilityHint="Opens your phone to call Veterans 1st support">

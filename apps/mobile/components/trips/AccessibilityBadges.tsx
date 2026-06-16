@@ -9,7 +9,11 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
+
+// Veteran Honor accent — muted brass. NON-TEXT only: used for the badge border
+// and icon. The label always renders in ink (text-foreground).
+const BRASS = '#9A7B3F';
 
 interface AccessibilityPrefs {
   mobilityAid: string | null;
@@ -34,7 +38,6 @@ const MOBILITY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 
 interface Badge {
   icon: keyof typeof Ionicons.glyphMap;
-  color: string;
   label: string;
 }
 
@@ -44,7 +47,6 @@ export function AccessibilityBadges({
   testID,
 }: AccessibilityBadgesProps) {
   const iconSize = size === 'sm' ? 14 : 18;
-  const badgeSize = size === 'sm' ? 24 : 32;
 
   const badges: Badge[] = [];
 
@@ -52,7 +54,6 @@ export function AccessibilityBadges({
   if (preferences.mobilityAid && preferences.mobilityAid !== 'none') {
     badges.push({
       icon: MOBILITY_ICONS[preferences.mobilityAid] ?? 'accessibility',
-      color: '#7C3AED',
       label: preferences.mobilityAid.replace(/_/g, ' '),
     });
   }
@@ -61,7 +62,6 @@ export function AccessibilityBadges({
   if (preferences.needsDoorAssistance) {
     badges.push({
       icon: 'home',
-      color: '#1E40AF',
       label: 'door assistance',
     });
   }
@@ -70,7 +70,6 @@ export function AccessibilityBadges({
   if (preferences.needsPackageAssistance) {
     badges.push({
       icon: 'bag-handle',
-      color: '#059669',
       label: 'package help',
     });
   }
@@ -79,7 +78,6 @@ export function AccessibilityBadges({
   if (preferences.extraVehicleSpace) {
     badges.push({
       icon: 'resize',
-      color: '#F59E0B',
       label: 'extra space',
     });
   }
@@ -89,19 +87,21 @@ export function AccessibilityBadges({
     return null;
   }
 
+  // Veteran Honor assistance badge: stone pill, brass border + icon (non-text),
+  // ink label. Dignified, matter-of-fact — never clinical, never red-flagged.
+  const labelClass = size === 'sm' ? 'text-caption' : 'text-base';
+
   return (
-    <View testID={testID} className="mt-1 flex-row gap-1">
+    <View testID={testID} className="mt-1 flex-row flex-wrap gap-2">
       {badges.map((badge, index) => (
         <View
           key={`badge-${index}`}
-          style={{
-            width: badgeSize,
-            height: badgeSize,
-            backgroundColor: `${badge.color}20`,
-          }}
-          className="items-center justify-center rounded-full"
+          className="flex-row items-center rounded-full border border-brass bg-background px-3 py-1"
           accessibilityLabel={`Needs ${badge.label}`}>
-          <Ionicons name={badge.icon} size={iconSize} color={badge.color} />
+          <Ionicons name={badge.icon} size={iconSize} color={BRASS} />
+          <Text className={`ml-1.5 font-sans-medium capitalize text-foreground ${labelClass}`}>
+            {badge.label}
+          </Text>
         </View>
       ))}
     </View>

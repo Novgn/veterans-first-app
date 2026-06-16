@@ -76,9 +76,9 @@ export function DriverCard({
   return (
     <Pressable
       onPress={onPress}
-      className={`min-h-[80px] flex-row items-center rounded-2xl p-4 ${
-        isSelected ? 'border-2 border-primary bg-primary/5' : 'border border-gray-200 bg-white'
-      } shadow-sm active:bg-gray-50`}
+      className={`min-h-[80px] flex-row items-center rounded-lg p-4 ${
+        isSelected ? 'border-2 border-primary bg-primary-50' : 'border-hairline border bg-card'
+      } shadow-card active:bg-background`}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}
@@ -92,23 +92,23 @@ export function DriverCard({
             accessibilityIgnoresInvertColors
           />
         ) : (
-          <View className="h-16 w-16 items-center justify-center rounded-full bg-gray-200">
-            <Ionicons name="person" size={32} color="#6B7280" />
+          <View className="h-16 w-16 items-center justify-center rounded-full bg-primary-100">
+            <Ionicons name="person" size={32} color="#1F3A5F" />
           </View>
         )}
       </View>
 
       {/* Driver Info */}
       <View className="flex-1">
-        <Text className="text-xl font-bold text-foreground">{driver.firstName}</Text>
-        <Text className="mt-1 text-base text-gray-600">
+        <Text className="font-sans-bold text-xl text-foreground">{driver.firstName}</Text>
+        <Text className="mt-1 font-sans text-base text-ink-secondary">
           {driver.vehicleColor} {driver.vehicleMake} {driver.vehicleModel}
         </Text>
-        <Text className="mt-1 text-base font-medium text-primary">
+        <Text className="mt-1 font-sans-medium text-base text-primary">
           Driven you {rideCount} {rideCount === 1 ? 'time' : 'times'}
         </Text>
         {lastRideDate && (
-          <Text className="text-sm text-gray-500">
+          <Text className="font-sans text-caption text-ink-secondary">
             Last ride: {formatRelativeDate(lastRideDate)}
           </Text>
         )}
@@ -117,7 +117,7 @@ export function DriverCard({
       {/* Selection indicator */}
       {isSelected && (
         <View className="ml-2">
-          <Ionicons name="checkmark-circle" size={28} color="#1E40AF" />
+          <Ionicons name="checkmark-circle" size={28} color="#1F3A5F" />
         </View>
       )}
     </Pressable>
