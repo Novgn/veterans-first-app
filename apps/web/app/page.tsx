@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+import { MarketingHome } from '@/components/marketing/MarketingHome';
 import { getCurrentUserWithRole } from '@/lib/auth/current-user';
 
 // Auth-dependent: must run at request time, not build time.
@@ -27,27 +27,8 @@ export default async function Home() {
     }
   }
 
-  return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-start justify-center gap-6 px-8 py-24">
-      <h1 className="text-3xl font-semibold tracking-tight">Veterans 1st Console</h1>
-      <p className="max-w-md text-base text-zinc-600">
-        Operations portal for dispatchers, admins, and business staff. Riders, drivers, and family
-        members should use the Veterans 1st mobile app.
-      </p>
-      <div className="flex gap-4">
-        <Link
-          href="/sign-in"
-          className="inline-flex h-12 items-center justify-center rounded-full bg-foreground px-6 text-background hover:bg-zinc-700"
-        >
-          Sign In
-        </Link>
-        <Link
-          href="/sign-up"
-          className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-300 px-6 hover:bg-zinc-100"
-        >
-          Sign Up
-        </Link>
-      </div>
-    </main>
-  );
+  // Non-logged-in (and non-dispatcher/admin) visitors land on the public
+  // marketing site. The "Staff sign in" link in the marketing nav/footer keeps
+  // the operations console reachable.
+  return <MarketingHome />;
 }
