@@ -6,8 +6,10 @@ export default function BusinessHome() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Dashboard</h2>
-        <p className="text-sm text-zinc-600">Financial, compliance, and operational overview.</p>
+        <h2 className="text-title-2 font-semibold text-ink">Operations Dashboard</h2>
+        <p className="text-body text-ink-secondary">
+          Financial, compliance, and operational overview.
+        </p>
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <DashboardCard title="Revenue this month" value="—" hint="Populated by Story 5.11." />

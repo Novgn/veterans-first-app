@@ -5,11 +5,34 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
+import { Badge, type BadgeProps } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
 import { formatDateTime, formatMoneyCents, humanStatus } from '@/lib/format';
 import { applyRiderCredit, waiveInvoice } from '@/lib/billing/riderAccount';
 import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
+
+// Invoice / Stripe payment status → semantic Badge variant. paid/succeeded →
+// success, pending/processing/overdue → warning, failed → error, everything
+// else → secondary. Color is never the sole signal — the label always shows.
+function paymentStatusVariant(status: string): BadgeProps['variant'] {
+  switch (status) {
+    case 'paid':
+    case 'succeeded':
+      return 'success';
+    case 'pending':
+    case 'processing':
+    case 'overdue':
+      return 'warning';
+    case 'failed':
+      return 'error';
+    default:
+      return 'secondary';
+  }
+}
 
 async function fetchRider(riderId: string) {
   const supabase = await getServerSupabase();
@@ -109,93 +132,104 @@ export default async function RiderBillingDetailPage(props: {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/business/billing/riders" className="text-sm text-blue-600 hover:underline">
+        <Link
+          href="/business/billing/riders"
+          className="text-callout font-semibold text-navy hover:underline"
+        >
           ← All riders
         </Link>
-        <h2 className="mt-1 text-lg font-semibold">
+        <h2 className="mt-1 text-title-2 font-semibold text-ink">
           {rider.last_name}, {rider.first_name}
         </h2>
-        <p className="text-sm text-zinc-600">
+        <p className="text-body text-ink-secondary">
           {rider.phone}
           {rider.email ? ` · ${rider.email}` : ''}
         </p>
       </div>
 
       {error ? (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-800" role="alert">
-          {error}
+        <div
+          className="flex items-start gap-2 rounded-md border border-error bg-error-100 p-3 text-body text-ink"
+          role="alert"
+        >
+          <span aria-hidden="true">⚠</span>
+          <span>{error}</span>
         </div>
       ) : null}
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Billing overview</h3>
-        <dl className="grid grid-cols-2 gap-2 text-sm">
-          <dt className="text-zinc-500">Outstanding</dt>
-          <dd className="font-semibold">{formatMoneyCents(outstanding)}</dd>
-          <dt className="text-zinc-500">Credit balance</dt>
-          <dd>{formatMoneyCents(account?.credit_balance_cents ?? 0)}</dd>
-          <dt className="text-zinc-500">Autopay</dt>
-          <dd>{account?.autopay_enabled ? 'On' : 'Off'}</dd>
-          <dt className="text-zinc-500">Billing frequency</dt>
-          <dd>{humanStatus(account?.billing_frequency ?? 'per_ride')}</dd>
-          <dt className="text-zinc-500">Default card</dt>
+      <Card className="space-y-3 p-6">
+        <h3 className="text-title-3 font-semibold text-ink">Billing overview</h3>
+        <dl className="grid grid-cols-2 gap-2 text-body">
+          <dt className="text-ink-secondary">Outstanding</dt>
+          <dd className="font-bold text-ink">{formatMoneyCents(outstanding)}</dd>
+          <dt className="text-ink-secondary">Credit balance</dt>
+          <dd className="font-bold text-ink">
+            {formatMoneyCents(account?.credit_balance_cents ?? 0)}
+          </dd>
+          <dt className="text-ink-secondary">Autopay</dt>
           <dd>
+            <Badge variant={account?.autopay_enabled ? 'success' : 'secondary'}>
+              {account?.autopay_enabled ? 'On' : 'Off'}
+            </Badge>
+          </dd>
+          <dt className="text-ink-secondary">Billing frequency</dt>
+          <dd className="text-ink">{humanStatus(account?.billing_frequency ?? 'per_ride')}</dd>
+          <dt className="text-ink-secondary">Default card</dt>
+          <dd className="text-ink">
             {account?.default_payment_method_id
               ? `••••${account.default_payment_method_id.slice(-4)}`
               : '—'}
           </dd>
         </dl>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Apply credit</h3>
-        <form action={applyRiderCredit} className="flex flex-wrap gap-2 text-sm">
+      <Card className="space-y-3 p-6">
+        <h3 className="text-title-3 font-semibold text-ink">Apply credit</h3>
+        <form action={applyRiderCredit} className="flex flex-wrap items-end gap-3">
           <input type="hidden" name="riderId" value={riderId} />
-          <input
+          <Input
             name="amount"
             type="number"
             step="0.01"
             min="0.01"
-            placeholder="Amount (USD)"
-            className="h-10 w-40 rounded-md border border-zinc-300 px-3"
+            label="Amount (USD)"
+            className="w-40"
             required
           />
-          <input
-            name="reason"
-            placeholder="Reason (optional)"
-            className="h-10 flex-1 rounded-md border border-zinc-300 px-3"
-          />
-          <button
-            type="submit"
-            className="h-10 rounded-md bg-blue-600 px-4 font-semibold text-white"
-          >
-            Apply credit
-          </button>
+          <Input name="reason" label="Reason (optional)" className="min-w-48 flex-1" />
+          <Button type="submit">Apply credit</Button>
         </form>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Invoices</h3>
+      <Card className="space-y-3 p-6">
+        <h3 className="text-title-3 font-semibold text-ink">Invoices</h3>
         {invoices.length === 0 ? (
-          <p className="text-sm text-zinc-500">No invoices yet.</p>
+          <p className="text-body text-ink-secondary">No invoices yet.</p>
         ) : (
-          <ul className="divide-y divide-zinc-100 text-sm">
+          <ul className="text-body">
             {invoices.map((inv) => (
-              <li key={inv.id} className="flex items-center justify-between py-2">
-                <div>
+              <li
+                key={inv.id}
+                className="flex items-center justify-between gap-3 border-b border-border-hairline py-3 last:border-0"
+              >
+                <div className="min-w-0">
                   <Link
                     href={`/business/billing/${inv.id}`}
-                    className="font-mono text-xs text-blue-600 hover:underline"
+                    className="font-mono text-caption font-semibold text-navy hover:underline"
                   >
                     {inv.invoice_number}
                   </Link>
-                  <div className="text-xs text-zinc-500">
-                    {formatDateTime(inv.created_at)} · {humanStatus(inv.billing_period)} ·{' '}
-                    {humanStatus(inv.status)} · due {inv.due_date}
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-caption text-ink-secondary">
+                    <span>{formatDateTime(inv.created_at)}</span>
+                    <span>· {humanStatus(inv.billing_period)} ·</span>
+                    <Badge variant={paymentStatusVariant(inv.status)}>
+                      {humanStatus(inv.status)}
+                    </Badge>
+                    <span>· due {inv.due_date}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span>{formatMoneyCents(inv.total_cents)}</span>
+                <div className="flex shrink-0 items-center gap-3">
+                  <span className="font-bold text-ink">{formatMoneyCents(inv.total_cents)}</span>
                   {inv.status === 'pending' ? (
                     <form action={waiveInvoice}>
                       <input type="hidden" name="invoiceId" value={inv.id} />
@@ -205,12 +239,9 @@ export default async function RiderBillingDetailPage(props: {
                         name="reason"
                         value="Waived by admin from rider billing screen"
                       />
-                      <button
-                        type="submit"
-                        className="h-8 rounded-md border border-red-200 px-3 text-xs font-medium text-red-600 hover:bg-red-50"
-                      >
+                      <Button type="submit" variant="destructive" size="sm">
                         Waive
-                      </button>
+                      </Button>
                     </form>
                   ) : null}
                 </div>
@@ -218,26 +249,30 @@ export default async function RiderBillingDetailPage(props: {
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Payments</h3>
+      <Card className="space-y-3 p-6">
+        <h3 className="text-title-3 font-semibold text-ink">Payments</h3>
         {payments.length === 0 ? (
-          <p className="text-sm text-zinc-500">No payments on file.</p>
+          <p className="text-body text-ink-secondary">No payments on file.</p>
         ) : (
-          <ul className="divide-y divide-zinc-100 text-sm">
+          <ul className="text-body">
             {payments.map((p) => (
-              <li key={p.id} className="flex justify-between py-2">
-                <span className="text-xs text-zinc-500">
-                  {formatDateTime(p.created_at)} · {humanStatus(p.status)}
-                  {p.payment_method_type ? ` · ${p.payment_method_type}` : ''}
+              <li
+                key={p.id}
+                className="flex items-center justify-between gap-3 border-b border-border-hairline py-3 last:border-0"
+              >
+                <span className="flex flex-wrap items-center gap-2 text-caption text-ink-secondary">
+                  {formatDateTime(p.created_at)}
+                  <Badge variant={paymentStatusVariant(p.status)}>{humanStatus(p.status)}</Badge>
+                  {p.payment_method_type ? <span>· {p.payment_method_type}</span> : null}
                 </span>
-                <span>{formatMoneyCents(p.amount_cents)}</span>
+                <span className="font-bold text-ink">{formatMoneyCents(p.amount_cents)}</span>
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </Card>
     </div>
   );
 }

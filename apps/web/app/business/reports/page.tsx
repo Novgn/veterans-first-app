@@ -1,30 +1,41 @@
 import Link from 'next/link';
 
+import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
+
+const REPORTS = [
+  {
+    href: '/business/reports/operations',
+    title: 'Operational metrics',
+    description: 'Rides, completion rate, no-show rate by window.',
+  },
+  {
+    href: '/business/reports/financial',
+    title: 'Financial summary',
+    description: 'Revenue, outstanding invoices, driver payouts.',
+  },
+] as const;
+
 export default function ReportsIndexPage() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Reports</h2>
-        <p className="text-sm text-zinc-600">Operational and financial reporting views.</p>
+        <h2 className="text-title-2 font-semibold text-ink">Reports</h2>
+        <p className="mt-1 text-body text-ink-secondary">
+          Operational and financial reporting views.
+        </p>
       </div>
-      <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <li className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50">
-          <Link href="/business/reports/operations" className="block">
-            <div className="text-sm font-semibold">Operational metrics</div>
-            <p className="mt-1 text-xs text-zinc-500">
-              Rides, completion rate, no-show rate by window.
-            </p>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {REPORTS.map((r) => (
+          <Link key={r.href} href={r.href} className="block">
+            <Card className="h-full transition-colors hover:border-border-strong">
+              <CardHeader>
+                <CardTitle>{r.title}</CardTitle>
+                <p className="text-callout text-ink-secondary">{r.description}</p>
+              </CardHeader>
+            </Card>
           </Link>
-        </li>
-        <li className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50">
-          <Link href="/business/reports/financial" className="block">
-            <div className="text-sm font-semibold">Financial summary</div>
-            <p className="mt-1 text-xs text-zinc-500">
-              Revenue, outstanding invoices, driver payouts.
-            </p>
-          </Link>
-        </li>
-      </ul>
+        ))}
+      </div>
     </div>
   );
 }
