@@ -13,6 +13,7 @@ import { ActivityIndicator, FlatList, Pressable, SafeAreaView, Text, View } from
 
 import { ConfirmRevokeModal } from '@/components/family/ConfirmRevokeModal';
 import { UndoToast } from '@/components/family/UndoToast';
+import { Button } from '@/components/ui';
 import { useFamilyLinks, type FamilyLinkView } from '@/hooks/useFamilyLinks';
 import { useRevokeWithUndo } from '@/hooks/useRevokeWithUndo';
 
@@ -26,11 +27,11 @@ function displayName(link: FamilyLinkView): string {
 function statusLabel(status: FamilyLinkView['status']): { text: string; tone: string } {
   switch (status) {
     case 'approved':
-      return { text: 'Approved', tone: 'bg-green-100 text-green-800' };
+      return { text: 'Approved', tone: 'bg-success-100 text-foreground' };
     case 'pending':
-      return { text: 'Pending', tone: 'bg-yellow-100 text-yellow-800' };
+      return { text: 'Pending', tone: 'bg-warning-100 text-foreground' };
     case 'revoked':
-      return { text: 'Revoked', tone: 'bg-gray-100 text-gray-600' };
+      return { text: 'Revoked', tone: 'bg-background text-ink-secondary' };
   }
 }
 
@@ -66,18 +67,20 @@ export default function FamilyAccessScreen() {
       <Stack.Screen options={{ title: 'Family Access' }} />
 
       <View className="flex-1 px-6 pt-4">
-        <Text className="mb-2 text-lg font-semibold text-foreground">Your family members</Text>
-        <Text className="mb-4 text-sm text-gray-600">
+        <Text className="mb-2 font-sans-semibold text-headline text-foreground">
+          Your family members
+        </Text>
+        <Text className="mb-4 font-sans text-footnote text-ink-secondary">
           Family members you&apos;ve invited can view your rides. You stay in control — revoke
           access any time.
         </Text>
 
         {isLoading ? (
-          <ActivityIndicator size="large" color="#1E40AF" className="mt-8" />
+          <ActivityIndicator size="large" color="#1F3A5F" className="mt-8" />
         ) : visibleLinks.length === 0 ? (
-          <View className="items-center rounded-xl bg-white p-6 shadow-sm">
-            <Ionicons name="people-outline" size={40} color="#6B7280" />
-            <Text className="mt-3 text-center text-base text-gray-600">
+          <View className="border-hairline items-center rounded-lg border bg-card p-6 shadow-card">
+            <Ionicons name="people-outline" size={40} color="#4F4A41" />
+            <Text className="mt-3 text-center font-sans text-body text-ink-secondary">
               You haven&apos;t invited anyone yet. Tap &quot;Add Family Member&quot; to share
               access.
             </Text>
@@ -92,18 +95,20 @@ export default function FamilyAccessScreen() {
               const status = statusLabel(item.status);
               return (
                 <View
-                  className="flex-row items-center rounded-xl bg-white p-4 shadow-sm"
+                  className="border-hairline flex-row items-center rounded-lg border bg-card p-4 shadow-card"
                   testID={`family-link-${item.id}`}>
-                  <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <Ionicons name="person" size={22} color="#1E40AF" />
+                  <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-primary-100">
+                    <Ionicons name="person" size={22} color="#1F3A5F" />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-foreground">{name}</Text>
+                    <Text className="font-sans-semibold text-body text-foreground">{name}</Text>
                     {item.relationship ? (
-                      <Text className="text-sm text-gray-500">{item.relationship}</Text>
+                      <Text className="font-sans text-footnote text-ink-secondary">
+                        {item.relationship}
+                      </Text>
                     ) : null}
                     <View className={`mt-1 self-start rounded-full px-2 py-0.5 ${status.tone}`}>
-                      <Text className="text-xs font-medium">{status.text}</Text>
+                      <Text className="font-sans-medium text-caption">{status.text}</Text>
                     </View>
                   </View>
                   <Pressable
@@ -112,7 +117,7 @@ export default function FamilyAccessScreen() {
                     accessibilityLabel={`Remove ${name}`}
                     accessibilityRole="button"
                     testID={`family-link-remove-${item.id}`}>
-                    <Ionicons name="trash-outline" size={20} color="#DC2626" />
+                    <Ionicons name="trash-outline" size={20} color="#A83A35" />
                   </Pressable>
                 </View>
               );
@@ -122,14 +127,12 @@ export default function FamilyAccessScreen() {
         )}
 
         <Link href="/profile/family-access/add" asChild>
-          <Pressable
-            className="min-h-[56px] flex-row items-center justify-center rounded-xl bg-primary"
+          <Button
+            label="Add Family Member"
+            leftIcon={<Ionicons name="person-add" size={22} color="#ffffff" />}
             accessibilityLabel="Add family member"
-            accessibilityRole="button"
-            testID="family-access-add-button">
-            <Ionicons name="person-add" size={22} color="#ffffff" />
-            <Text className="ml-2 text-lg font-semibold text-white">Add Family Member</Text>
-          </Pressable>
+            testID="family-access-add-button"
+          />
         </Link>
       </View>
 

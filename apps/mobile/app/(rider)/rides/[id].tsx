@@ -33,12 +33,15 @@ import {
   Linking,
 } from 'react-native';
 
+import { PriceLockBadge, WaitTimeIndicator } from '@/components/booking';
 import { DriverCard } from '@/components/drivers';
+import { PhoneButton } from '@/components/PhoneButton';
 import {
   CancellationSuccessScreen,
   ConfirmationModal,
   ContactDriverSheet,
   RideDetailCard,
+  StatusTimeline,
 } from '@/components/rides';
 import { DriverArrivedBanner } from '@/components/tracking';
 import {
@@ -53,6 +56,12 @@ import {
 import { useCancelRide, useDriverLocation, useRide } from '@/hooks';
 import type { Ride } from '@/hooks/useRide';
 import { SUPPORT_PHONE } from '@/lib/constants';
+
+/** Mock locked price in cents for MVP — mirrors the booking flow's price-lock. */
+const MOCK_PRICE_CENTS = 4500; // $45
+
+/** Default included wait time in minutes (counts up calmly, never a countdown). */
+const DEFAULT_WAIT_MINUTES = 20;
 
 /**
  * Maps a ride status from the data layer to a status supported by StatusBadge.
@@ -188,10 +197,12 @@ export default function RideDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <Stack.Screen options={{ headerShown: false }} />
-        <AppHeader mode="screen" title="Ride details" />
+        <AppHeader mode="screen" title="Ride details" rightSlot={<PhoneButton />} />
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#1E40AF" />
-          <Text className="text-stone-600 mt-4 text-lg">Loading ride details...</Text>
+          <ActivityIndicator size="large" color="#1F3A5F" />
+          <Text className="mt-4 font-sans text-body text-ink-secondary">
+            Loading ride details...
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -202,13 +213,13 @@ export default function RideDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <Stack.Screen options={{ headerShown: false }} />
-        <AppHeader mode="screen" title="Ride details" />
+        <AppHeader mode="screen" title="Ride details" rightSlot={<PhoneButton />} />
         <View className="flex-1 items-center justify-center px-6">
           <Alert
             variant="error"
             title="Unable to load ride"
-            message="We couldn't load the ride details. Please try again."
-            action={{ label: 'Go back', onPress: () => router.back() }}
+            message="We couldn't load the ride details. Your ride is still on — call us anytime."
+            action={{ label: 'Call us', onPress: callDispatch }}
           />
         </View>
       </SafeAreaView>
@@ -221,7 +232,7 @@ export default function RideDetailScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <Stack.Screen options={{ headerShown: false }} />
-      <AppHeader mode="screen" title="Ride details" />
+      <AppHeader mode="screen" title="Ride details" rightSlot={<PhoneButton />} />
 
       <ScrollView className="flex-1" contentContainerClassName="px-6 pt-4 pb-6">
         {/* Status hero — badge + scheduled time */}
@@ -235,11 +246,22 @@ export default function RideDetailScreen() {
               withDot
               testID="ride-status-badge"
             />
-            <Text className="text-stone-600 ml-3 text-footnote" numberOfLines={1}>
+            <Text className="ml-3 font-sans text-footnote text-ink-secondary" numberOfLines={1}>
               {scheduledLabel}
             </Text>
           </View>
         </Card>
+
+        {/*
+         * Status timeline — the canonical, text-labeled progression and the
+         * screen-reader text equivalent for the (secondary) live map. Hidden
+         * for completed/cancelled rides (timeline renders null there).
+         */}
+        {ride.status !== 'completed' && ride.status !== 'cancelled' && (
+          <Card variant="outlined" padding="md" className="mb-4">
+            <StatusTimeline currentStatus={ride.status} />
+          </Card>
+        )}
 
         {/* Driver Arrived Banner — shown when driver has arrived */}
         {showArrivedBanner && ride.driver && (
@@ -287,10 +309,20 @@ export default function RideDetailScreen() {
         {/* Ride Details Card — kept as-is for Phase 2. */}
         <RideDetailCard ride={ride} />
 
+        {/* Trust signals — locked price + included wait time, always visible. */}
+        <Card variant="flat" padding="md" className="mt-4">
+          <View className="gap-3">
+            <PriceLockBadge priceCents={MOCK_PRICE_CENTS} />
+            <WaitTimeIndicator waitMinutes={DEFAULT_WAIT_MINUTES} />
+          </View>
+        </Card>
+
         {/* Driver Info Section — shown when driver is assigned */}
         {ride.driver && (
           <View className="mt-6">
-            <Text className="mb-3 text-headline text-foreground">Your driver</Text>
+            <Text className="mb-3 font-sans-semibold text-headline text-foreground">
+              Your driver
+            </Text>
             <DriverCard
               driver={{
                 id: ride.driver.id,
@@ -308,13 +340,13 @@ export default function RideDetailScreen() {
             {canContact && (
               <Pressable
                 onPress={() => setShowContactSheet(true)}
-                className="mt-4 min-h-[56px] flex-row items-center justify-center rounded-xl border-2 border-primary active:bg-primary-50"
-                accessibilityLabel={`Contact ${ride.driver.firstName}`}
+                className="mt-4 min-h-touch-lg flex-row items-center justify-center rounded-md border-2 border-primary active:bg-primary-50"
+                accessibilityLabel={`Call ${ride.driver.firstName}`}
                 accessibilityRole="button"
                 accessibilityHint="Opens options to call or text driver">
-                <Ionicons name="call-outline" size={24} color="#1E40AF" />
-                <Text className="ml-3 text-lg font-bold text-primary">
-                  Contact {ride.driver.firstName}
+                <Ionicons name="call-outline" size={24} color="#1F3A5F" />
+                <Text className="ml-3 font-sans-semibold text-headline text-primary">
+                  Call {ride.driver.firstName}
                 </Text>
               </Pressable>
             )}
@@ -342,7 +374,7 @@ export default function RideDetailScreen() {
             label="Modify ride"
             variant="secondary"
             size="lg"
-            leftIcon={<Ionicons name="create-outline" size={22} color="#1E40AF" />}
+            leftIcon={<Ionicons name="create-outline" size={22} color="#1F3A5F" />}
             onPress={handleModify}
             accessibilityHint="Opens screen to change time or destination"
             testID="ride-detail-modify-button"
@@ -352,9 +384,9 @@ export default function RideDetailScreen() {
             accessibilityLabel="Cancel this ride"
             accessibilityRole="button"
             accessibilityHint="Opens cancellation confirmation"
-            className="mt-2 min-h-touch items-center justify-center rounded-xl active:bg-red-50"
+            className="mt-2 min-h-touch items-center justify-center rounded-md active:bg-error-100"
             testID="ride-detail-cancel-button">
-            <Text className="text-base font-semibold text-error">Cancel ride</Text>
+            <Text className="font-sans-semibold text-body text-error">Cancel ride</Text>
           </Pressable>
         </BottomActionBar>
       )}

@@ -64,8 +64,8 @@ interface TemperatureSelectorProps {
 export function TemperatureSelector({ value, onChange, testID }: TemperatureSelectorProps) {
   return (
     <View testID={testID}>
-      <Text className="mb-3 text-lg font-semibold text-foreground">Temperature</Text>
-      <Text className="mb-4 text-sm text-gray-600">
+      <Text className="mb-3 font-sans-semibold text-headline text-foreground">Temperature</Text>
+      <Text className="mb-4 font-sans text-footnote text-ink-secondary">
         What temperature do you prefer during your rides?
       </Text>
 
@@ -77,10 +77,10 @@ export function TemperatureSelector({ value, onChange, testID }: TemperatureSele
           <Pressable
             key={option.value}
             onPress={() => onChange(option.value)}
-            className={`min-h-[80px] flex-1 items-center justify-center rounded-xl px-2 py-3 ${
+            className={`min-h-[80px] flex-1 items-center justify-center rounded-lg px-2 py-3 ${
               value === option.value
-                ? 'border-2 border-primary bg-primary/10'
-                : 'border border-gray-200 bg-white'
+                ? 'border-2 border-primary bg-primary-100'
+                : 'border-strong border bg-card'
             }`}
             accessibilityLabel={option.label}
             accessibilityRole="radio"
@@ -90,10 +90,10 @@ export function TemperatureSelector({ value, onChange, testID }: TemperatureSele
             <Ionicons
               name={option.icon}
               size={28}
-              color={value === option.value ? '#1E40AF' : option.color}
+              color={value === option.value ? '#1F3A5F' : '#4F4A41'}
             />
             <Text
-              className={`mt-2 text-sm font-medium ${
+              className={`mt-2 font-sans-medium text-footnote ${
                 value === option.value ? 'text-primary' : 'text-foreground'
               }`}>
               {option.label}

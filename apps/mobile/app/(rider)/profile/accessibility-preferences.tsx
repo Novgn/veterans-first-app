@@ -17,7 +17,6 @@ import {
   Text,
   SafeAreaView,
   ScrollView,
-  Pressable,
   TextInput,
   Alert,
   ActivityIndicator,
@@ -27,6 +26,7 @@ import {
 } from 'react-native';
 
 import { MobilityAidSelector, AssistanceToggles } from '@/components/profile';
+import { Button } from '@/components/ui';
 import {
   useAccessibilityPreferences,
   useUpdateAccessibilityPreferences,
@@ -81,8 +81,8 @@ export default function AccessibilityPreferencesScreen() {
             headerBackTitle: 'Profile',
           }}
         />
-        <ActivityIndicator size="large" color="#1E40AF" />
-        <Text className="mt-4 text-lg text-gray-600">Loading preferences...</Text>
+        <ActivityIndicator size="large" color="#1F3A5F" />
+        <Text className="mt-4 font-sans text-body text-ink-secondary">Loading preferences...</Text>
       </SafeAreaView>
     );
   }
@@ -97,18 +97,20 @@ export default function AccessibilityPreferencesScreen() {
           }}
         />
         <View className="flex-1 items-center justify-center px-6">
-          <Ionicons name="alert-circle-outline" size={48} color="#EF4444" />
-          <Text className="mt-4 text-center text-lg text-gray-800">Unable to load preferences</Text>
-          <Text className="mt-2 text-center text-base text-gray-600">
+          <Ionicons name="alert-circle-outline" size={48} color="#A83A35" />
+          <Text className="mt-4 text-center font-sans-semibold text-headline text-foreground">
+            Unable to load preferences
+          </Text>
+          <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
             Please check your connection and try again
           </Text>
-          <Pressable
-            onPress={() => refetch()}
-            className="mt-6 h-[56px] w-full items-center justify-center rounded-xl bg-primary"
-            accessibilityLabel="Retry loading preferences"
-            accessibilityRole="button">
-            <Text className="text-lg font-semibold text-white">Try Again</Text>
-          </Pressable>
+          <View className="mt-6 w-full">
+            <Button
+              label="Try Again"
+              onPress={() => refetch()}
+              accessibilityLabel="Retry loading preferences"
+            />
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -130,7 +132,7 @@ export default function AccessibilityPreferencesScreen() {
           className="flex-1 px-6 pt-4"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
-          <Text className="mb-6 text-sm text-gray-600">
+          <Text className="mb-6 font-sans text-footnote text-ink-secondary">
             These preferences help drivers prepare for your ride and provide better assistance.
           </Text>
 
@@ -158,10 +160,10 @@ export default function AccessibilityPreferencesScreen() {
 
           {/* Special Notes Section */}
           <View className="mb-6">
-            <Text className="mb-3 text-lg font-semibold text-foreground">
+            <Text className="mb-3 font-sans-semibold text-headline text-foreground">
               Special Equipment Notes
             </Text>
-            <Text className="mb-3 text-sm text-gray-600">
+            <Text className="mb-3 font-sans text-footnote text-ink-secondary">
               Add any additional details about your mobility equipment or special needs.
             </Text>
             <TextInput
@@ -171,8 +173,8 @@ export default function AccessibilityPreferencesScreen() {
               numberOfLines={4}
               maxLength={500}
               placeholder="e.g., Folding wheelchair fits in trunk, need help folding it"
-              placeholderTextColor="#9CA3AF"
-              className="min-h-[100px] rounded-xl border border-gray-200 bg-white p-4 text-base text-foreground"
+              placeholderTextColor="#4F4A41"
+              className="border-strong min-h-[100px] rounded-sm border bg-card p-4 font-sans text-body text-foreground"
               textAlignVertical="top"
               accessibilityLabel="Special equipment notes"
               accessibilityHint="Enter any additional details about your mobility equipment (max 500 characters)"
@@ -181,25 +183,17 @@ export default function AccessibilityPreferencesScreen() {
           </View>
 
           {/* Save Button */}
-          <Pressable
-            onPress={handleSave}
-            disabled={updatePreferences.isPending}
-            className={`mb-8 min-h-[56px] flex-row items-center justify-center rounded-xl ${
-              updatePreferences.isPending ? 'bg-primary/50' : 'bg-primary'
-            }`}
-            accessibilityLabel="Save accessibility preferences"
-            accessibilityRole="button"
-            accessibilityState={{ disabled: updatePreferences.isPending }}
-            testID="save-button">
-            {updatePreferences.isPending ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <>
-                <Ionicons name="checkmark" size={24} color="#FFFFFF" />
-                <Text className="ml-2 text-lg font-semibold text-white">Save Preferences</Text>
-              </>
-            )}
-          </Pressable>
+          <View className="mb-8">
+            <Button
+              label="Save Preferences"
+              onPress={handleSave}
+              loading={updatePreferences.isPending}
+              disabled={updatePreferences.isPending}
+              leftIcon={<Ionicons name="checkmark" size={24} color="#FFFFFF" />}
+              accessibilityLabel="Save accessibility preferences"
+              testID="save-button"
+            />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

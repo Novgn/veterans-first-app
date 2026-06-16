@@ -191,8 +191,8 @@ export default function RidesScreen() {
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={refetch}
-                colors={['#1E40AF']}
-                tintColor="#1E40AF"
+                colors={['#1F3A5F']}
+                tintColor="#1F3A5F"
               />
             }
             ListFooterComponent={<View className="h-4" />}

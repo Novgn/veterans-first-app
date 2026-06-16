@@ -12,7 +12,6 @@ import {
   View,
   Text,
   TextInput,
-  Pressable,
   SafeAreaView,
   ScrollView,
   Switch,
@@ -26,6 +25,7 @@ import {
   GooglePlaceDetail,
 } from 'react-native-google-places-autocomplete';
 
+import { Button } from '@/components/ui';
 import { useDestinations, useUpdateDestination } from '@/hooks';
 
 export default function EditPlace() {
@@ -123,8 +123,8 @@ export default function EditPlace() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#1E40AF" />
-          <Text className="mt-4 text-lg text-gray-600">Loading place...</Text>
+          <ActivityIndicator size="large" color="#1F3A5F" />
+          <Text className="mt-4 font-sans text-body text-ink-secondary">Loading place...</Text>
         </View>
       </SafeAreaView>
     );
@@ -134,15 +134,13 @@ export default function EditPlace() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center px-6">
-          <Ionicons name="alert-circle-outline" size={48} color="#EF4444" />
-          <Text className="mt-4 text-center text-lg text-gray-800">Place not found</Text>
-          <Pressable
-            onPress={() => router.back()}
-            className="mt-6 h-[56px] w-full items-center justify-center rounded-xl bg-primary"
-            accessibilityLabel="Go back"
-            accessibilityRole="button">
-            <Text className="text-lg font-semibold text-white">Go Back</Text>
-          </Pressable>
+          <Ionicons name="alert-circle-outline" size={48} color="#A83A35" />
+          <Text className="mt-4 text-center font-sans-semibold text-headline text-foreground">
+            Place not found
+          </Text>
+          <View className="mt-6 w-full">
+            <Button label="Go Back" onPress={() => router.back()} accessibilityLabel="Go back" />
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -161,13 +159,13 @@ export default function EditPlace() {
           contentContainerStyle={{ flexGrow: 1 }}>
           {/* Label Input */}
           <View className="mb-6">
-            <Text className="mb-2 text-base font-medium text-gray-700">Name this place</Text>
+            <Text className="mb-2 font-sans-medium text-body text-foreground">Name this place</Text>
             <TextInput
               value={label}
               onChangeText={setLabel}
               placeholder="e.g., Home, Dr. Wilson, Harris Teeter"
-              placeholderTextColor="#9CA3AF"
-              className="h-[56px] rounded-xl border border-gray-300 bg-white px-4 text-lg text-foreground"
+              placeholderTextColor="#4F4A41"
+              className="border-strong h-[56px] rounded-sm border bg-card px-4 font-sans text-body text-foreground"
               accessibilityLabel="Place name"
               accessibilityHint="Enter a custom label for this destination"
               autoCapitalize="words"
@@ -177,7 +175,7 @@ export default function EditPlace() {
 
           {/* Address Search */}
           <View className="mb-6">
-            <Text className="mb-2 text-base font-medium text-gray-700">Address</Text>
+            <Text className="mb-2 font-sans-medium text-body text-foreground">Address</Text>
             {googlePlacesApiKey ? (
               <GooglePlacesAutocomplete
                 placeholder="Search for an address"
@@ -209,20 +207,20 @@ export default function EditPlace() {
                     height: 56,
                     fontSize: 18,
                     borderWidth: 1,
-                    borderColor: '#D1D5DB',
-                    borderRadius: 12,
+                    borderColor: '#6E685E',
+                    borderRadius: 8,
                     paddingHorizontal: 16,
-                    backgroundColor: 'white',
-                    color: '#1F2937',
+                    backgroundColor: '#FFFFFF',
+                    color: '#1A1813',
                   },
                   listView: {
-                    backgroundColor: 'white',
-                    borderRadius: 12,
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: 16,
                     marginTop: 4,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 4,
+                    shadowColor: '#1A1813',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.08,
+                    shadowRadius: 16,
                     elevation: 3,
                   },
                   row: {
@@ -232,7 +230,7 @@ export default function EditPlace() {
                   },
                   description: {
                     fontSize: 16,
-                    color: '#374151',
+                    color: '#1A1813',
                   },
                   poweredContainer: {
                     display: 'none',
@@ -245,8 +243,8 @@ export default function EditPlace() {
                 }}
               />
             ) : (
-              <View className="rounded-xl border border-yellow-300 bg-yellow-50 p-4">
-                <Text className="text-center text-base text-yellow-800">
+              <View className="rounded-lg border border-warning bg-warning-100 p-4">
+                <Text className="text-center font-sans text-body text-foreground">
                   Google Places API key not configured.
                   {'\n'}Please set EXPO_PUBLIC_GOOGLE_PLACES_API_KEY
                 </Text>
@@ -256,22 +254,28 @@ export default function EditPlace() {
 
           {/* Selected Address Display */}
           {selectedPlace && (
-            <View className="mb-6 rounded-xl bg-blue-50 p-4">
+            <View className="mb-6 rounded-lg bg-primary-100 p-4">
               <View className="flex-row items-start">
-                <Ionicons name="location" size={24} color="#1E40AF" />
+                <Ionicons name="location" size={24} color="#1F3A5F" />
                 <View className="ml-3 flex-1">
-                  <Text className="text-base font-medium text-gray-800">Current Address</Text>
-                  <Text className="mt-1 text-base text-gray-600">{selectedPlace.address}</Text>
+                  <Text className="font-sans-medium text-body text-foreground">
+                    Current Address
+                  </Text>
+                  <Text className="mt-1 font-sans text-body text-ink-secondary">
+                    {selectedPlace.address}
+                  </Text>
                 </View>
               </View>
             </View>
           )}
 
           {/* Default Pickup Toggle */}
-          <View className="mb-4 flex-row items-center justify-between rounded-xl bg-white p-4 shadow-sm">
+          <View className="border-hairline mb-4 flex-row items-center justify-between rounded-lg border bg-card p-4 shadow-card">
             <View className="flex-1 pr-4">
-              <Text className="text-lg font-medium text-gray-800">Default Pickup</Text>
-              <Text className="text-sm text-gray-500">Use as your default pickup location</Text>
+              <Text className="font-sans-medium text-headline text-foreground">Default Pickup</Text>
+              <Text className="font-sans text-footnote text-ink-secondary">
+                Use as your default pickup location
+              </Text>
             </View>
             <Switch
               value={isDefaultPickup}
@@ -279,18 +283,22 @@ export default function EditPlace() {
                 setIsDefaultPickup(value);
                 if (value) setIsDefaultDropoff(false);
               }}
-              trackColor={{ false: '#D1D5DB', true: '#93C5FD' }}
-              thumbColor={isDefaultPickup ? '#1E40AF' : '#F3F4F6'}
+              trackColor={{ false: '#DAD3C6', true: '#1F3A5F' }}
+              thumbColor="#FFFFFF"
               accessibilityLabel="Set as default pickup"
               accessibilityRole="switch"
             />
           </View>
 
           {/* Default Dropoff Toggle */}
-          <View className="mb-6 flex-row items-center justify-between rounded-xl bg-white p-4 shadow-sm">
+          <View className="border-hairline mb-6 flex-row items-center justify-between rounded-lg border bg-card p-4 shadow-card">
             <View className="flex-1 pr-4">
-              <Text className="text-lg font-medium text-gray-800">Default Dropoff</Text>
-              <Text className="text-sm text-gray-500">Use as your default destination</Text>
+              <Text className="font-sans-medium text-headline text-foreground">
+                Default Dropoff
+              </Text>
+              <Text className="font-sans text-footnote text-ink-secondary">
+                Use as your default destination
+              </Text>
             </View>
             <Switch
               value={isDefaultDropoff}
@@ -298,8 +306,8 @@ export default function EditPlace() {
                 setIsDefaultDropoff(value);
                 if (value) setIsDefaultPickup(false);
               }}
-              trackColor={{ false: '#D1D5DB', true: '#86EFAC' }}
-              thumbColor={isDefaultDropoff ? '#16A34A' : '#F3F4F6'}
+              trackColor={{ false: '#DAD3C6', true: '#1F3A5F' }}
+              thumbColor="#FFFFFF"
               accessibilityLabel="Set as default dropoff"
               accessibilityRole="switch"
             />
@@ -310,24 +318,14 @@ export default function EditPlace() {
 
         {/* Save Button - Fixed at bottom */}
         <View className="px-6 pb-6">
-          <Pressable
+          <Button
+            label={updateDestination.isPending ? 'Saving...' : 'Save Changes'}
             onPress={handleSave}
             disabled={!canSave}
-            className={`h-[56px] flex-row items-center justify-center rounded-xl ${
-              canSave ? 'bg-primary' : 'bg-gray-300'
-            }`}
+            loading={updateDestination.isPending}
+            leftIcon={<Ionicons name="checkmark" size={24} color="white" />}
             accessibilityLabel="Save changes"
-            accessibilityRole="button"
-            accessibilityState={{ disabled: !canSave }}>
-            {updateDestination.isPending ? (
-              <Text className="text-lg font-semibold text-white">Saving...</Text>
-            ) : (
-              <>
-                <Ionicons name="checkmark" size={24} color="white" />
-                <Text className="ml-2 text-lg font-semibold text-white">Save Changes</Text>
-              </>
-            )}
-          </Pressable>
+          />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -17,9 +17,9 @@ export default function ProfileLayout() {
           title: 'Saved Places',
           headerShown: true,
           headerStyle: {
-            backgroundColor: '#FAFAF9',
+            backgroundColor: '#F4F1EA',
           },
-          headerTintColor: '#1E40AF',
+          headerTintColor: '#1F3A5F',
           headerTitleStyle: {
             fontWeight: '600',
             fontSize: 18,
@@ -32,9 +32,9 @@ export default function ProfileLayout() {
           title: 'Add Place',
           headerShown: true,
           headerStyle: {
-            backgroundColor: '#FAFAF9',
+            backgroundColor: '#F4F1EA',
           },
-          headerTintColor: '#1E40AF',
+          headerTintColor: '#1F3A5F',
           headerTitleStyle: {
             fontWeight: '600',
             fontSize: 18,
@@ -48,9 +48,9 @@ export default function ProfileLayout() {
           title: 'Edit Place',
           headerShown: true,
           headerStyle: {
-            backgroundColor: '#FAFAF9',
+            backgroundColor: '#F4F1EA',
           },
-          headerTintColor: '#1E40AF',
+          headerTintColor: '#1F3A5F',
           headerTitleStyle: {
             fontWeight: '600',
             fontSize: 18,
@@ -63,8 +63,8 @@ export default function ProfileLayout() {
         options={{
           title: 'Family Access',
           headerShown: true,
-          headerStyle: { backgroundColor: '#FAFAF9' },
-          headerTintColor: '#1E40AF',
+          headerStyle: { backgroundColor: '#F4F1EA' },
+          headerTintColor: '#1F3A5F',
           headerTitleStyle: { fontWeight: '600', fontSize: 18 },
         }}
       />
@@ -73,8 +73,8 @@ export default function ProfileLayout() {
         options={{
           title: 'Add Family Member',
           headerShown: true,
-          headerStyle: { backgroundColor: '#FAFAF9' },
-          headerTintColor: '#1E40AF',
+          headerStyle: { backgroundColor: '#F4F1EA' },
+          headerTintColor: '#1F3A5F',
           headerTitleStyle: { fontWeight: '600', fontSize: 18 },
           presentation: 'modal',
         }}
@@ -84,8 +84,8 @@ export default function ProfileLayout() {
         options={{
           title: 'Notifications',
           headerShown: true,
-          headerStyle: { backgroundColor: '#FAFAF9' },
-          headerTintColor: '#1E40AF',
+          headerStyle: { backgroundColor: '#F4F1EA' },
+          headerTintColor: '#1F3A5F',
           headerTitleStyle: { fontWeight: '600', fontSize: 18 },
         }}
       />

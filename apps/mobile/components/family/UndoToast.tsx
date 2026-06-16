@@ -46,20 +46,20 @@ export function UndoToast({ memberName, expiresAt, onUndo, onExpire }: UndoToast
 
   return (
     <View
-      className="mx-6 mb-6 flex-row items-center rounded-xl bg-gray-900 px-4 py-3 shadow-lg"
+      className="mx-6 mb-6 flex-row items-center rounded-lg bg-foreground px-4 py-3 shadow-overlay"
       testID="family-revoke-undo-toast">
       <Ionicons name="information-circle" size={20} color="#ffffff" />
       <View className="ml-3 flex-1">
-        <Text className="font-semibold text-white">{memberName} removed</Text>
-        <Text className="text-xs text-gray-300">Undo ({secondsLeft}s)</Text>
+        <Text className="font-sans-semibold text-white">{memberName} removed</Text>
+        <Text className="font-sans text-caption text-white/80">Undo ({secondsLeft}s)</Text>
       </View>
       <Pressable
         onPress={onUndo}
-        className="min-h-[44px] items-center justify-center rounded-lg bg-primary px-4"
+        className="min-h-[44px] items-center justify-center rounded-md bg-primary px-4 active:bg-primary-700"
         accessibilityLabel={`Undo removing ${memberName}`}
         accessibilityRole="button"
         testID="family-revoke-undo-button">
-        <Text className="font-semibold text-white">Undo</Text>
+        <Text className="font-sans-semibold text-white">Undo</Text>
       </Pressable>
     </View>
   );

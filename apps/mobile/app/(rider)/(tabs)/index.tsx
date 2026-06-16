@@ -31,11 +31,13 @@ const TINT_CONTAINER: Record<QuickActionTint, string> = {
   success: 'bg-secondary-100',
 };
 
+// Veteran Honor icon tints: navy (primary), sage (secondary/success),
+// brass (accent — NON-TEXT, used here only as an icon tint).
 const TINT_ICON_COLOR: Record<QuickActionTint, string> = {
-  primary: '#1E40AF',
-  secondary: '#059669',
-  accent: '#D97706',
-  success: '#16A34A',
+  primary: '#1F3A5F',
+  secondary: '#4A6B54',
+  accent: '#9A7B3F',
+  success: '#356046',
 };
 
 /**
@@ -187,9 +189,13 @@ function QuickActionCard({ action }: { action: QuickAction }) {
               <Ionicons name={action.icon} size={20} color={TINT_ICON_COLOR[action.tint]} />
             </View>
             <View className="mt-3">
-              <Text className="text-callout font-semibold text-foreground">{action.title}</Text>
+              <Text className="font-sans-semibold text-callout text-foreground">
+                {action.title}
+              </Text>
               {action.subtitle ? (
-                <Text className="text-stone-600 mt-0.5 text-footnote">{action.subtitle}</Text>
+                <Text className="mt-0.5 font-sans text-footnote text-ink-secondary">
+                  {action.subtitle}
+                </Text>
               ) : null}
             </View>
           </View>
@@ -288,11 +294,11 @@ export default function Home() {
         showsVerticalScrollIndicator={false}>
         {/* Personalized greeting */}
         <View className="mb-6" accessible accessibilityRole="header">
-          <Text className="text-title-2 text-foreground">
+          <Text className="font-sans-bold text-title-2 text-foreground">
             {greeting}
             {firstName ? `, ${firstName}` : ''}
           </Text>
-          <Text className="text-stone-600 mt-1 text-callout">{supportingLine}</Text>
+          <Text className="mt-1 font-sans text-callout text-ink-secondary">{supportingLine}</Text>
         </View>
 
         {/* Primary CTA */}
@@ -330,7 +336,7 @@ export default function Home() {
                 return (
                   <ListRow
                     key={saved.id}
-                    leading={<Ionicons name={iconName} size={22} color="#1E40AF" />}
+                    leading={<Ionicons name={iconName} size={22} color="#1F3A5F" />}
                     leadingTint="primary"
                     title={saved.label}
                     subtitle={shortAddress}
@@ -344,7 +350,7 @@ export default function Home() {
         ) : null}
 
         {/* Quick actions grid (2x2) */}
-        <View>
+        <View className="mb-8">
           <SectionHeader title="Quick actions" />
           <View className="-mx-1 flex-row flex-wrap">
             {quickActions.map((action) => (
@@ -352,6 +358,24 @@ export default function Home() {
             ))}
           </View>
         </View>
+
+        {/* Always-visible human escalation — a feature, never a fallback */}
+        <Card variant="outlined" padding="lg" className="items-center">
+          <Text className="font-sans-semibold text-headline text-foreground">Call us anytime</Text>
+          <Text className="mb-4 mt-1 text-center font-sans text-callout text-ink-secondary">
+            A real person is here to help with anything you need.
+          </Text>
+          <Button
+            label="Call us anytime"
+            variant="secondary"
+            size="lg"
+            fullWidth
+            leftIcon={<Ionicons name="call" size={22} color="#1F3A5F" />}
+            onPress={() => void handleCallDispatch()}
+            accessibilityLabel="Call us anytime"
+            accessibilityHint="Calls Veterans 1st to reach a person"
+          />
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );

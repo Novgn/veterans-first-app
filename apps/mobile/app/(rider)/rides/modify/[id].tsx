@@ -21,15 +21,15 @@ import {
   View,
   Text,
   SafeAreaView,
-  Pressable,
   ScrollView,
   ActivityIndicator,
   TextInput,
   Alert,
 } from 'react-native';
 
-import { Header } from '@/components/Header';
 import { DateSelector, TimeSlot } from '@/components/booking';
+import { PhoneButton } from '@/components/PhoneButton';
+import { AppHeader, BottomActionBar, Button } from '@/components/ui';
 import { useRide, useModifyRide } from '@/hooks';
 
 /**
@@ -180,10 +180,10 @@ export default function ModifyRideScreen() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <Stack.Screen options={{ headerShown: false }} />
-        <Header showBackButton onBack={() => router.back()} title="Modify Ride" />
+        <AppHeader mode="screen" title="Modify Ride" rightSlot={<PhoneButton />} />
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#1E40AF" />
-          <Text className="mt-4 text-lg text-gray-600">Loading ride...</Text>
+          <ActivityIndicator size="large" color="#1F3A5F" />
+          <Text className="mt-4 font-sans text-body text-ink-secondary">Loading ride...</Text>
         </View>
       </SafeAreaView>
     );
@@ -194,22 +194,27 @@ export default function ModifyRideScreen() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <Stack.Screen options={{ headerShown: false }} />
-        <Header showBackButton onBack={() => router.back()} title="Modify Ride" />
+        <AppHeader mode="screen" title="Modify Ride" rightSlot={<PhoneButton />} />
         <View className="flex-1 items-center justify-center px-6">
-          <View className="h-20 w-20 items-center justify-center rounded-full bg-red-100">
-            <Ionicons name="alert-circle" size={40} color="#DC2626" />
+          <View className="h-20 w-20 items-center justify-center rounded-full bg-error-100">
+            <Ionicons name="alert-circle" size={40} color="#A83A35" />
           </View>
-          <Text className="mt-4 text-xl font-bold text-foreground">Unable to Load Ride</Text>
-          <Text className="mt-2 text-center text-lg text-gray-600">
+          <Text className="mt-4 font-sans-bold text-title-2 text-foreground">
+            Unable to Load Ride
+          </Text>
+          <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
             We couldn&apos;t load the ride details. Please try again.
           </Text>
-          <Pressable
-            onPress={() => router.back()}
-            className="mt-6 min-h-[56px] items-center justify-center rounded-xl bg-primary px-8 active:opacity-80"
-            accessibilityLabel="Go back"
-            accessibilityRole="button">
-            <Text className="text-lg font-bold text-white">Go Back</Text>
-          </Pressable>
+          <View className="mt-6 w-full max-w-[280px]">
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              label="Go Back"
+              onPress={() => router.back()}
+              accessibilityLabel="Go back"
+            />
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -221,22 +226,25 @@ export default function ModifyRideScreen() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <Stack.Screen options={{ headerShown: false }} />
-        <Header showBackButton onBack={() => router.back()} title="Modify Ride" />
+        <AppHeader mode="screen" title="Modify Ride" rightSlot={<PhoneButton />} />
         <View className="flex-1 items-center justify-center px-6">
-          <View className="h-20 w-20 items-center justify-center rounded-full bg-yellow-100">
-            <Ionicons name="lock-closed" size={40} color="#F59E0B" />
+          <View className="h-20 w-20 items-center justify-center rounded-full bg-warning-100">
+            <Ionicons name="lock-closed" size={40} color="#8A6420" />
           </View>
-          <Text className="mt-4 text-xl font-bold text-foreground">Cannot Modify</Text>
-          <Text className="mt-2 text-center text-lg text-gray-600">
+          <Text className="mt-4 font-sans-bold text-title-2 text-foreground">Cannot Modify</Text>
+          <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
             This ride cannot be modified because it is {ride.status}.
           </Text>
-          <Pressable
-            onPress={() => router.back()}
-            className="mt-6 min-h-[56px] items-center justify-center rounded-xl bg-primary px-8 active:opacity-80"
-            accessibilityLabel="Go back"
-            accessibilityRole="button">
-            <Text className="text-lg font-bold text-white">Go Back</Text>
-          </Pressable>
+          <View className="mt-6 w-full max-w-[280px]">
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              label="Go Back"
+              onPress={() => router.back()}
+              accessibilityLabel="Go back"
+            />
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -245,27 +253,33 @@ export default function ModifyRideScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <Stack.Screen options={{ headerShown: false }} />
-      <Header showBackButton onBack={() => router.back()} title="Modify Ride" />
+      <AppHeader mode="screen" title="Modify Ride" rightSlot={<PhoneButton />} />
 
       <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
         {/* Current Pickup */}
         <View className="mb-6">
-          <Text className="mb-2 text-sm font-medium text-gray-500">Pickup Location</Text>
-          <View className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-4">
-            <Text className="text-lg text-foreground">{ride.pickup_address}</Text>
-            <Text className="mt-1 text-sm text-gray-500">Cannot be changed</Text>
+          <Text className="mb-2 font-sans-medium text-footnote text-ink-secondary">
+            Pickup Location
+          </Text>
+          <View className="rounded-lg bg-card px-4 py-4">
+            <Text className="font-sans text-body text-foreground">{ride.pickup_address}</Text>
+            <Text className="mt-1 font-sans text-footnote text-ink-secondary">
+              Cannot be changed
+            </Text>
           </View>
         </View>
 
         {/* Destination (editable) */}
         <View className="mb-6">
-          <Text className="mb-2 text-sm font-medium text-gray-500">Destination</Text>
+          <Text className="mb-2 font-sans-medium text-footnote text-ink-secondary">
+            Destination
+          </Text>
           <TextInput
-            className="min-h-[56px] rounded-xl border border-gray-300 bg-white px-4 text-lg"
+            className="border-strong min-h-touch-lg rounded-sm border bg-card px-4 font-sans text-body text-foreground"
             value={destination}
             onChangeText={setDestination}
             placeholder="Enter destination address"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#6E685E"
             accessibilityLabel="Destination address"
             accessibilityHint="Enter the destination for your ride"
           />
@@ -276,7 +290,9 @@ export default function ModifyRideScreen() {
 
         {/* Time Selection */}
         <View className="mb-6">
-          <Text className="mb-3 text-lg font-semibold text-gray-700">Select a time</Text>
+          <Text className="mb-3 font-sans-semibold text-headline text-foreground">
+            Select a time
+          </Text>
           <View className="flex-row flex-wrap">
             {timeSlots.map((time) => (
               <TimeSlot
@@ -293,14 +309,21 @@ export default function ModifyRideScreen() {
         <View className="h-24" />
       </ScrollView>
 
-      {/* Save Button */}
-      <View className="border-t border-gray-200 bg-background px-6 pb-8 pt-4">
-        <Pressable
-          onPress={handleSave}
+      {/* Save Button — safe-area aware sticky footer */}
+      <BottomActionBar>
+        <Button
+          variant="primary"
+          size="lg"
+          fullWidth
+          label={modifyMutation.isPending ? 'Saving...' : 'Save Changes'}
+          loading={modifyMutation.isPending}
           disabled={!hasChanges || modifyMutation.isPending}
-          className={`min-h-[56px] flex-row items-center justify-center rounded-xl active:opacity-80 ${
-            hasChanges && !modifyMutation.isPending ? 'bg-primary' : 'bg-gray-300'
-          }`}
+          leftIcon={
+            modifyMutation.isPending ? undefined : (
+              <Ionicons name="checkmark-circle" size={24} color="#FFFFFF" />
+            )
+          }
+          onPress={handleSave}
           accessibilityLabel={
             modifyMutation.isPending
               ? 'Saving changes'
@@ -308,27 +331,14 @@ export default function ModifyRideScreen() {
                 ? 'Save changes to your ride'
                 : 'No changes to save'
           }
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !hasChanges || modifyMutation.isPending }}>
-          {modifyMutation.isPending ? (
-            <>
-              <ActivityIndicator size="small" color="#FFFFFF" />
-              <Text className="ml-3 text-lg font-bold text-white">Saving...</Text>
-            </>
-          ) : (
-            <>
-              <Ionicons name="checkmark-circle" size={24} color="#FFFFFF" />
-              <Text className="ml-3 text-lg font-bold text-white">Save Changes</Text>
-            </>
-          )}
-        </Pressable>
+        />
 
         {!hasChanges && (
-          <Text className="mt-2 text-center text-sm text-gray-500">
+          <Text className="mt-2 text-center font-sans text-footnote text-ink-secondary">
             Make changes to your ride to enable saving
           </Text>
         )}
-      </View>
+      </BottomActionBar>
     </SafeAreaView>
   );
 }

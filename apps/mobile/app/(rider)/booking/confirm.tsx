@@ -39,6 +39,7 @@ import {
   BookingSuccessScreen,
 } from '@/components/booking';
 import { DriverPreferenceRow, DriverSelectionSheet } from '@/components/drivers';
+import { PhoneButton } from '@/components/PhoneButton';
 import { useBookRide } from '@/hooks/useBookRide';
 import { usePreferredDriver } from '@/hooks/usePreferredDriver';
 import { useSupabaseUserId } from '@/hooks/useSupabaseUserId';
@@ -77,18 +78,6 @@ function formatDateDisplay(dateStr: string): string {
     month: 'short',
     day: 'numeric',
   });
-}
-
-/**
- * Formats a whole-dollar price from cents.
- * "$45" for even amounts, "$45.50" otherwise.
- */
-function formatPrice(cents: number): string {
-  const dollars = cents / 100;
-  if (cents % 100 === 0) {
-    return `$${dollars.toFixed(0)}`;
-  }
-  return `$${dollars.toFixed(2)}`;
 }
 
 export default function BookingStep3() {
@@ -196,9 +185,14 @@ export default function BookingStep3() {
   if (!dropoffDestination) {
     return (
       <SafeAreaView className="flex-1 bg-background">
-        <AppHeader mode="screen" title="Confirm ride" onBack={handleBack} />
+        <AppHeader
+          mode="screen"
+          title="Review your ride"
+          onBack={handleBack}
+          rightSlot={<PhoneButton />}
+        />
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-lg text-gray-600">No destination selected.</Text>
+          <Text className="font-sans text-body text-ink-secondary">No destination selected.</Text>
           <View className="mt-4 w-full max-w-[280px]">
             <Button
               variant="primary"
@@ -230,17 +224,23 @@ export default function BookingStep3() {
     address: dropoffDestination.address,
   };
 
-  const priceFormatted = formatPrice(MOCK_PRICE_CENTS);
   const isSubmitting = bookRideMutation.isPending;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <AppHeader mode="screen" title="Confirm ride" onBack={handleBack} />
+      <AppHeader
+        mode="screen"
+        title="Review your ride"
+        onBack={handleBack}
+        rightSlot={<PhoneButton />}
+      />
 
       <ScrollView className="flex-1">
         <View className="gap-4 px-6 pb-6 pt-4">
           {/* Step indicator (canonical progress widget) */}
           <StepIndicator currentStep={3} totalSteps={3} />
+
+          <Text className="font-sans-bold text-title-1 text-foreground">Review your ride</Text>
 
           {/* Route */}
           <Card variant="elevated" padding="lg">
@@ -250,14 +250,14 @@ export default function BookingStep3() {
           {/* Schedule summary */}
           <Card variant="outlined" padding="none">
             <ListRow
-              leading={<Ionicons name="time" size={22} color="#1E40AF" />}
+              leading={<Ionicons name="time" size={22} color="#1F3A5F" />}
               leadingTint="primary"
               title={scheduleTitle}
               subtitle={recurringDescription}
             />
           </Card>
 
-          {/* Trust signals — price lock + included wait time grouped visually */}
+          {/* Trust signals — locked price + included wait time grouped visually */}
           <Card variant="flat" padding="md">
             <View className="gap-3">
               <PriceLockBadge priceCents={MOCK_PRICE_CENTS} />
@@ -273,23 +273,11 @@ export default function BookingStep3() {
             testID="driver-preference-row"
           />
 
-          {/* Price */}
-          <Card variant="outlined" padding="md">
-            <View className="flex-row items-baseline justify-between">
-              <Text className="text-base font-medium text-gray-600">Estimated price</Text>
-              <Text
-                className="text-2xl font-bold text-foreground"
-                accessibilityLabel={`Estimated price ${priceFormatted}`}>
-                {priceFormatted}
-              </Text>
-            </View>
-            <View className="mt-3">
-              <Alert
-                variant="info"
-                message="Final price confirmed after your driver is assigned."
-              />
-            </View>
-          </Card>
+          {/* Calm reassurance — price is final once a driver is assigned */}
+          <Alert
+            variant="info"
+            message="Your locked price is confirmed when your driver is assigned. Take your time."
+          />
         </View>
       </ScrollView>
 
@@ -299,11 +287,11 @@ export default function BookingStep3() {
           variant="primary"
           size="lg"
           fullWidth
-          label="Book this ride"
+          label="Book This Ride"
           loading={isSubmitting}
           disabled={isSubmitting}
           onPress={handleBookRide}
-          accessibilityLabel={isSubmitting ? 'Booking in progress' : 'Book this ride'}
+          accessibilityLabel={isSubmitting ? 'Booking in progress' : 'Book This Ride'}
         />
       </BottomActionBar>
 

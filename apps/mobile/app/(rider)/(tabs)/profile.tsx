@@ -29,12 +29,14 @@ import {
 import { usePreferredDriver } from '@/hooks/usePreferredDriver';
 import { useSupabaseUserId } from '@/hooks/useSupabaseUserId';
 
-const PRIMARY = '#1E40AF';
-const ACCENT_PURPLE = '#7C3AED';
-const SUCCESS = '#059669';
-const STONE = '#57534E';
-const ORANGE = '#EA580C';
-const ERROR = '#DC2626';
+// Veteran Honor icon tints. Brass (accent) is NON-TEXT — used here only as an
+// icon tint on the accessibility/family rows. Ink-secondary stands in for the
+// muted "stone" leading glyphs.
+const PRIMARY = '#1F3A5F'; // navy
+const ACCENT_BRASS = '#9A7B3F'; // brass (icon/border only)
+const SUCCESS = '#356046'; // success
+const STONE = '#4F4A41'; // ink-secondary
+const ERROR = '#A83A35'; // error
 
 /** Derive accessibility subtitle from current preferences (Story 2.13). */
 function buildAccessibilitySubtitle(
@@ -155,9 +157,9 @@ export default function Profile() {
               <Ionicons name="person" size={40} color={PRIMARY} />
             </View>
           )}
-          <Text className="text-title-3 text-foreground">{displayName}</Text>
+          <Text className="font-sans-semibold text-title-3 text-foreground">{displayName}</Text>
           {phoneNumber ? (
-            <Text className="text-stone-500 mt-1 text-footnote">{phoneNumber}</Text>
+            <Text className="mt-1 font-sans text-footnote text-ink-secondary">{phoneNumber}</Text>
           ) : null}
           <View className="mt-4">
             <Button
@@ -209,7 +211,7 @@ export default function Profile() {
             accessibilityHint="Navigate to your saved places"
           />
           <ListRow
-            leading={<Ionicons name="accessibility" size={22} color={ACCENT_PURPLE} />}
+            leading={<Ionicons name="accessibility" size={22} color={ACCENT_BRASS} />}
             leadingTint="accent"
             title="Accessibility"
             subtitle={accessibilitySubtitle}
@@ -287,7 +289,7 @@ export default function Profile() {
         <SectionHeader title="Family & access" />
         <SectionGroup className="mb-6">
           <ListRow
-            leading={<Ionicons name="people" size={22} color={ORANGE} />}
+            leading={<Ionicons name="people" size={22} color={ACCENT_BRASS} />}
             leadingTint="accent"
             title="Family access"
             subtitle="Share ride visibility with loved ones"
