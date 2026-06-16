@@ -12,6 +12,9 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { getServerSupabase } from '@/lib/supabase';
 import { formatDateTime, humanStatus } from '@/lib/format';
 
@@ -86,70 +89,82 @@ export default async function AssignmentsPage() {
   const { rides, drivers } = await fetchData();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Ride Assignments</h2>
-        <p className="text-sm text-zinc-600">
+        <h2 className="text-title-2 font-semibold text-ink">Ride Assignments</h2>
+        <p className="text-body text-ink-secondary">
           Assign or reassign drivers to pending and confirmed rides.
         </p>
       </div>
 
       {rides.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+        <Card className="border-dashed p-8 text-center text-body text-ink-secondary">
           No rides awaiting assignment.
-        </div>
+        </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {rides.map((ride) => (
-            <form
-              key={ride.id}
-              action={assignRideAction}
-              className="grid grid-cols-1 gap-3 rounded-xl border border-zinc-200 p-4 sm:grid-cols-[1fr_auto]"
-            >
-              <input type="hidden" name="rideId" value={ride.id} />
-              <div className="text-sm">
-                <div className="font-semibold">
-                  {ride.rider?.first_name} {ride.rider?.last_name}{' '}
-                  <span className="ml-2 text-xs font-normal text-zinc-500">
-                    {ride.rider?.phone ?? 'no phone'}
-                  </span>
-                </div>
-                <div className="mt-1 text-xs text-zinc-500">
-                  {humanStatus(ride.status)} • {formatDateTime(ride.scheduled_pickup_time)}
-                </div>
-                <div className="mt-2">
-                  <span className="text-zinc-500">Pickup:</span> {ride.pickup_address}
-                </div>
+            <Card key={ride.id} className="p-6">
+              <form
+                action={assignRideAction}
+                className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto] sm:items-start"
+              >
+                <input type="hidden" name="rideId" value={ride.id} />
                 <div>
-                  <span className="text-zinc-500">Dropoff:</span> {ride.dropoff_address}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-title-3 font-semibold text-ink">
+                      {ride.rider?.first_name} {ride.rider?.last_name}
+                    </span>
+                    {ride.rider?.phone ? (
+                      <a
+                        href={`tel:${ride.rider.phone}`}
+                        className="text-callout font-semibold text-sage hover:text-sage-700"
+                      >
+                        Call {ride.rider.phone}
+                      </a>
+                    ) : (
+                      <span className="text-callout text-ink-secondary">no phone</span>
+                    )}
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
+                    <Badge variant="default">{humanStatus(ride.status)}</Badge>
+                    <span className="text-callout text-ink-secondary">
+                      {formatDateTime(ride.scheduled_pickup_time)}
+                    </span>
+                  </div>
+                  <div className="mt-3 space-y-1 text-body text-ink">
+                    <div>
+                      <span className="text-ink-secondary">Pickup:</span> {ride.pickup_address}
+                    </div>
+                    <div>
+                      <span className="text-ink-secondary">Dropoff:</span> {ride.dropoff_address}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-2">
-                <label className="sr-only" htmlFor={`driver-${ride.id}`}>
-                  Driver
-                </label>
-                <select
-                  id={`driver-${ride.id}`}
-                  name="driverId"
-                  defaultValue={ride.driver_id ?? ''}
-                  className="min-h-[40px] rounded-md border border-zinc-300 px-3 text-sm"
-                >
-                  <option value="">Select driver…</option>
-                  {drivers.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.first_name} {d.last_name}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="submit"
-                  className="min-h-[40px] rounded-md bg-blue-600 px-3 text-sm font-semibold text-white hover:bg-blue-700"
-                >
-                  {ride.driver_id ? 'Reassign' : 'Assign'}
-                </button>
-              </div>
-            </form>
+                <div className="flex items-center gap-3">
+                  <label className="sr-only" htmlFor={`driver-${ride.id}`}>
+                    Driver
+                  </label>
+                  <select
+                    id={`driver-${ride.id}`}
+                    name="driverId"
+                    defaultValue={ride.driver_id ?? ''}
+                    className="h-12 rounded-sm border border-border-strong bg-white px-3 text-body text-ink"
+                  >
+                    <option value="">Select driver…</option>
+                    {drivers.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.first_name} {d.last_name}
+                      </option>
+                    ))}
+                  </select>
+                  <Button type="submit" size="md">
+                    {ride.driver_id ? 'Reassign' : 'Assign'}
+                  </Button>
+                </div>
+              </form>
+            </Card>
           ))}
         </div>
       )}

@@ -7,6 +7,7 @@
 
 import Link from 'next/link';
 
+import { Card } from '@/components/ui/Card';
 import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -47,10 +48,14 @@ function StatCard({ label, value, href }: StatCardProps) {
   return (
     <Link
       href={href}
-      className="block rounded-xl border border-zinc-200 p-5 transition-colors hover:border-blue-400"
+      className="block rounded-lg outline-offset-2 transition-shadow hover:shadow-raised"
     >
-      <div className="text-xs font-semibold uppercase text-zinc-500">{label}</div>
-      <div className="mt-1 text-3xl font-bold text-zinc-900">{value}</div>
+      <Card className="p-6 transition-colors hover:border-navy">
+        <div className="text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+          {label}
+        </div>
+        <div className="mt-2 text-display font-bold text-ink">{value}</div>
+      </Card>
     </Link>
   );
 }
@@ -60,7 +65,7 @@ export default async function DispatchHome() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Today at a glance</h2>
+      <h2 className="text-title-2 font-semibold text-ink">Today at a glance</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard label="Pending bookings" value={counts.pending} href="/dispatch/assignments" />
         <StatCard label="Active trips" value={counts.active} href="/dispatch/fleet" />

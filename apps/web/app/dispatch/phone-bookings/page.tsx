@@ -8,6 +8,8 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -57,87 +59,94 @@ async function createPhoneBookingAction(formData: FormData): Promise<void> {
   revalidatePath('/dispatch/assignments');
 }
 
+// Shared field styling so the native <select>, text, and datetime inputs read
+// like the DS Input: 56px tall, white surface, perceivable border-strong edge,
+// rounded-sm (8px). The global 4px navy focus ring (tokens.css) handles focus.
+const fieldClass =
+  'h-14 w-full rounded-sm border border-border-strong bg-card px-4 text-body text-ink placeholder:text-ink-secondary';
+const labelClass = 'mb-2 block text-callout font-semibold text-ink';
+
 export default async function PhoneBookingsPage() {
   const riders = await fetchRiders();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">New Phone Booking</h2>
-        <p className="text-sm text-zinc-600">
-          Create a ride for a caller. It lands in Assignments as Pending.
+        <h2 className="text-title-2 font-semibold text-ink">New Phone Booking</h2>
+        <p className="mt-1 text-body text-ink-secondary">
+          Look up the caller, pre-fill the ride, and book it. It lands in Assignments as Pending.
         </p>
       </div>
 
-      <form
-        action={createPhoneBookingAction}
-        className="grid grid-cols-1 gap-4 rounded-xl border border-zinc-200 p-4 sm:grid-cols-2"
-      >
-        <div className="sm:col-span-2">
-          <label htmlFor="riderId" className="mb-1 block text-sm font-semibold">
-            Rider
-          </label>
-          <select
-            id="riderId"
-            name="riderId"
-            required
-            className="min-h-[40px] w-full rounded-md border border-zinc-300 px-3 text-sm"
-          >
-            <option value="">Select rider…</option>
-            {riders.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.last_name}, {r.first_name} — {r.phone}
-              </option>
-            ))}
-          </select>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Ride details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={createPhoneBookingAction} className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label htmlFor="riderId" className={labelClass}>
+                Rider
+              </label>
+              <select id="riderId" name="riderId" required className={fieldClass}>
+                <option value="">Look up caller by phone or name…</option>
+                {riders.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.last_name}, {r.first_name} — {r.phone}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div>
-          <label htmlFor="pickupAddress" className="mb-1 block text-sm font-semibold">
-            Pickup address
-          </label>
-          <input
-            id="pickupAddress"
-            name="pickupAddress"
-            required
-            className="min-h-[40px] w-full rounded-md border border-zinc-300 px-3 text-sm"
-          />
-        </div>
+            <div>
+              <label htmlFor="pickupAddress" className={labelClass}>
+                Pickup address
+              </label>
+              <input id="pickupAddress" name="pickupAddress" required className={fieldClass} />
+            </div>
 
-        <div>
-          <label htmlFor="dropoffAddress" className="mb-1 block text-sm font-semibold">
-            Dropoff address
-          </label>
-          <input
-            id="dropoffAddress"
-            name="dropoffAddress"
-            required
-            className="min-h-[40px] w-full rounded-md border border-zinc-300 px-3 text-sm"
-          />
-        </div>
+            <div>
+              <label htmlFor="dropoffAddress" className={labelClass}>
+                Dropoff address
+              </label>
+              <input id="dropoffAddress" name="dropoffAddress" required className={fieldClass} />
+            </div>
 
-        <div className="sm:col-span-2">
-          <label htmlFor="scheduledPickupTime" className="mb-1 block text-sm font-semibold">
-            Scheduled pickup time
-          </label>
-          <input
-            id="scheduledPickupTime"
-            name="scheduledPickupTime"
-            type="datetime-local"
-            required
-            className="min-h-[40px] w-full rounded-md border border-zinc-300 px-3 text-sm"
-          />
-        </div>
+            <div>
+              <label htmlFor="scheduledPickupTime" className={labelClass}>
+                Scheduled pickup time
+              </label>
+              <input
+                id="scheduledPickupTime"
+                name="scheduledPickupTime"
+                type="datetime-local"
+                required
+                className={fieldClass}
+              />
+            </div>
 
-        <div className="sm:col-span-2">
-          <button
-            type="submit"
-            className="min-h-[44px] rounded-md bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700"
-          >
-            Create booking
-          </button>
-        </div>
-      </form>
+            <div>
+              <label htmlFor="referralSource" className={labelClass}>
+                Referral source <span className="font-normal text-ink-secondary">(optional)</span>
+              </label>
+              <select id="referralSource" name="referralSource" className={fieldClass}>
+                <option value="">Select referral source…</option>
+                <option value="partner_clinic">Partner clinic</option>
+                <option value="va">VA</option>
+                <option value="hospital_discharge">Hospital discharge</option>
+                <option value="self">Self</option>
+                <option value="family">Family</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <Button type="submit" size="lg" className="w-full sm:w-auto">
+                Book This Ride
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
