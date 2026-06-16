@@ -18,6 +18,8 @@ export type CardProps = {
   variant?: CardVariant;
   padding?: CardPadding;
   className?: string;
+  /** Optional testID forwarded to the root element. */
+  testID?: string;
   children: ReactNode;
 };
 
@@ -36,10 +38,20 @@ const PADDING_CLASS: Record<CardPadding, string> = {
   lg: 'p-6',
 };
 
-export function Card({ variant = 'elevated', padding = 'md', className, children }: CardProps) {
+export function Card({
+  variant = 'elevated',
+  padding = 'md',
+  className,
+  testID,
+  children,
+}: CardProps) {
   const classes = [VARIANT_CLASS[variant], PADDING_CLASS[padding], className]
     .filter(Boolean)
     .join(' ');
 
-  return <View className={classes}>{children}</View>;
+  return (
+    <View className={classes} testID={testID}>
+      {children}
+    </View>
+  );
 }

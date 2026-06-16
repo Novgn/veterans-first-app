@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
+import { StatusBadge } from '@/components/ui';
 import { formatMoneyCents, useDriverEarnings } from '@/hooks/useDriverEarnings';
 
 interface StatCardProps {
@@ -24,17 +25,25 @@ interface StatCardProps {
 function StatCard({ label, amount, count, emphasis, testID }: StatCardProps) {
   return (
     <View
-      className={`rounded-2xl p-4 ${emphasis ? 'bg-primary' : 'border border-gray-200 bg-white'}`}
+      className={`rounded-lg p-6 ${
+        emphasis ? 'bg-primary' : 'border-hairline border bg-card shadow-card'
+      }`}
       testID={testID}>
       <Text
-        className={`text-xs font-semibold uppercase ${emphasis ? 'text-white/80' : 'text-gray-500'}`}>
+        className={`font-sans-semibold text-caption uppercase ${
+          emphasis ? 'text-white/80' : 'text-ink-secondary'
+        }`}>
         {label}
       </Text>
-      <Text className={`mt-1 text-3xl font-bold ${emphasis ? 'text-white' : 'text-foreground'}`}>
+      <Text
+        className={`mt-1 font-sans-bold text-display ${emphasis ? 'text-white' : 'text-foreground'}`}>
         {formatMoneyCents(amount)}
       </Text>
       {typeof count === 'number' ? (
-        <Text className={`mt-1 text-sm ${emphasis ? 'text-white/70' : 'text-gray-500'}`}>
+        <Text
+          className={`mt-1 font-sans text-footnote ${
+            emphasis ? 'text-white/80' : 'text-ink-secondary'
+          }`}>
           {count} {count === 1 ? 'trip' : 'trips'}
         </Text>
       ) : null}
@@ -48,7 +57,7 @@ export default function EarningsScreen() {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" color="#1E40AF" />
+        <ActivityIndicator size="large" color="#1F3A5F" />
       </SafeAreaView>
     );
   }
@@ -56,8 +65,10 @@ export default function EarningsScreen() {
   if (error || !data) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background px-6">
-        <Ionicons name="alert-circle" size={32} color="#DC2626" />
-        <Text className="mt-2 text-lg font-semibold text-foreground">Could not load earnings</Text>
+        <Ionicons name="alert-circle" size={32} color="#A83A35" />
+        <Text className="mt-2 font-sans-semibold text-headline text-foreground">
+          Could not load earnings
+        </Text>
       </SafeAreaView>
     );
   }
@@ -65,9 +76,11 @@ export default function EarningsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="border-b border-gray-200 px-4 py-4">
-          <Text className="text-xl font-bold text-foreground">Earnings</Text>
-          <Text className="mt-1 text-sm text-gray-600">From completed rides only.</Text>
+        <View className="border-hairline border-b px-4 py-4">
+          <Text className="font-sans-bold text-title-1 text-foreground">Earnings</Text>
+          <Text className="mt-1 font-sans text-footnote text-ink-secondary">
+            From completed rides only.
+          </Text>
         </View>
 
         <View className="gap-3 px-4 py-4">
@@ -98,21 +111,23 @@ export default function EarningsScreen() {
           </View>
 
           <View
-            className="mt-1 rounded-2xl border border-gray-200 bg-white p-4"
+            className="border-hairline mt-1 rounded-lg border bg-card p-6 shadow-card"
             testID="stat-alltime">
-            <Text className="text-xs font-semibold uppercase text-gray-500">All Time</Text>
-            <Text className="mt-1 text-2xl font-bold text-foreground">
+            <Text className="font-sans-semibold text-caption uppercase text-ink-secondary">
+              All Time
+            </Text>
+            <Text className="mt-1 font-sans-bold text-title-1 text-foreground">
               {formatMoneyCents(data.allTimeCents)}
             </Text>
           </View>
         </View>
 
         <View className="px-4">
-          <Text className="mb-2 text-lg font-semibold text-foreground">Recent Trips</Text>
+          <Text className="mb-2 font-sans-semibold text-title-3 text-foreground">Recent Trips</Text>
           {data.recent.length === 0 ? (
             <View className="items-center py-12">
-              <Ionicons name="car-outline" size={48} color="#9CA3AF" />
-              <Text className="mt-2 text-center text-gray-500">
+              <Ionicons name="car-outline" size={48} color="#6E685E" />
+              <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
                 Completed trips will appear here.
               </Text>
             </View>
@@ -121,22 +136,25 @@ export default function EarningsScreen() {
               {data.recent.map((trip) => (
                 <View
                   key={trip.id}
-                  className="rounded-xl border border-gray-200 bg-white p-4"
+                  className="border-hairline rounded-lg border bg-card p-6 shadow-card"
                   testID={`recent-trip-${trip.id}`}>
                   <View className="flex-row items-center justify-between">
-                    <Text className="text-sm text-gray-500">
+                    <Text className="font-sans text-footnote text-ink-secondary">
                       {trip.completedAt ? format(new Date(trip.completedAt), 'MMM d, h:mm a') : '—'}
                     </Text>
-                    <Text className="text-base font-bold text-green-700">
+                    <Text className="font-sans-bold text-headline text-foreground">
                       {formatMoneyCents(trip.fareCents)}
                     </Text>
                   </View>
-                  <Text className="mt-2 text-sm text-foreground" numberOfLines={1}>
+                  <Text className="mt-2 font-sans text-body text-foreground" numberOfLines={1}>
                     {trip.pickupAddress}
                   </Text>
-                  <Text className="text-sm text-gray-600" numberOfLines={1}>
+                  <Text className="font-sans text-body text-ink-secondary" numberOfLines={1}>
                     → {trip.dropoffAddress}
                   </Text>
+                  <View className="mt-2">
+                    <StatusBadge status="completed" size="sm" />
+                  </View>
                 </View>
               ))}
             </View>

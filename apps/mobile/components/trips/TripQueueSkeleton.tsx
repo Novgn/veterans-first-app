@@ -37,32 +37,34 @@ function SkeletonCard() {
   }, [opacity]);
 
   return (
-    <Animated.View style={{ opacity }} className="mb-3 rounded-xl bg-white p-4 shadow-sm">
+    <Animated.View
+      style={{ opacity }}
+      className="border-hairline mb-3 rounded-lg border bg-card p-4 shadow-card">
       {/* Header skeleton */}
       <View className="mb-3 flex-row items-center justify-between">
-        <View className="h-6 w-32 rounded-md bg-gray-200" />
-        <View className="h-6 w-20 rounded-full bg-gray-200" />
+        <View className="h-6 w-32 rounded-md bg-background" />
+        <View className="h-6 w-20 rounded-full bg-background" />
       </View>
 
       {/* Rider info skeleton */}
       <View className="mb-3 flex-row items-center">
-        <View className="h-12 w-12 rounded-full bg-gray-200" />
+        <View className="h-12 w-12 rounded-full bg-background" />
         <View className="ml-3 flex-1">
-          <View className="h-5 w-32 rounded-md bg-gray-200" />
-          <View className="mt-2 h-4 w-24 rounded-md bg-gray-200" />
+          <View className="h-5 w-32 rounded-md bg-background" />
+          <View className="mt-2 h-4 w-24 rounded-md bg-background" />
         </View>
       </View>
 
       {/* Address skeleton */}
       <View className="mb-2">
         <View className="flex-row items-center">
-          <View className="h-4 w-4 rounded-full bg-gray-200" />
-          <View className="ml-2 h-4 flex-1 rounded-md bg-gray-200" />
+          <View className="h-4 w-4 rounded-full bg-background" />
+          <View className="ml-2 h-4 flex-1 rounded-md bg-background" />
         </View>
-        <View className="my-2 ml-2 h-4 w-px bg-gray-200" />
+        <View className="my-2 ml-2 h-4 w-px bg-background" />
         <View className="flex-row items-center">
-          <View className="h-4 w-4 rounded-full bg-gray-200" />
-          <View className="ml-2 h-4 flex-1 rounded-md bg-gray-200" />
+          <View className="h-4 w-4 rounded-full bg-background" />
+          <View className="ml-2 h-4 flex-1 rounded-md bg-background" />
         </View>
       </View>
     </Animated.View>

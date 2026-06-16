@@ -93,39 +93,44 @@ export function ContactRiderSheet({
         accessibilityRole="button"
         accessibilityLabel="Close contact options"
       />
-      <View className="rounded-t-3xl bg-white px-6 pb-8 pt-6">
-        <Text className="mb-6 text-center text-xl font-bold text-foreground">
+      <View className="rounded-t-3xl bg-card px-6 pb-8 pt-6">
+        <Text className="mb-6 text-center font-sans-bold text-title-2 text-foreground">
           Contact {riderName}
         </Text>
 
+        {/* Call — sage supportive fill (matches RiderProfileCard convention) */}
         <Pressable
           onPress={handleCall}
-          className="mb-4 min-h-[56px] flex-row items-center justify-center rounded-xl bg-primary active:opacity-80"
+          className="mb-4 min-h-touch-lg flex-row items-center justify-center rounded-md bg-secondary active:opacity-80"
           accessibilityLabel={`Call ${riderName}`}
           accessibilityRole="button"
           accessibilityHint="Opens phone app to call rider"
           testID="contact-rider-call">
           <Ionicons name="call" size={24} color="#FFFFFF" />
-          <Text className="ml-3 text-lg font-bold text-white">Call {riderName}</Text>
+          <Text className="ml-3 font-sans-semibold text-headline text-white">Call {riderName}</Text>
         </Pressable>
 
+        {/* Text — outlined navy secondary */}
         <Pressable
           onPress={handleText}
-          className="mb-4 min-h-[56px] flex-row items-center justify-center rounded-xl border-2 border-primary active:bg-primary/5"
+          className="mb-4 min-h-touch-lg flex-row items-center justify-center rounded-md border border-primary active:bg-primary/5"
           accessibilityLabel={`Text ${riderName}`}
           accessibilityRole="button"
           accessibilityHint="Opens messages app to text rider"
           testID="contact-rider-text">
-          <Ionicons name="chatbubble" size={24} color="#1E40AF" />
-          <Text className="ml-3 text-lg font-bold text-primary">Text {riderName}</Text>
+          <Ionicons name="chatbubble" size={24} color="#1F3A5F" />
+          <Text className="ml-3 font-sans-semibold text-headline text-primary">
+            Text {riderName}
+          </Text>
         </Pressable>
 
+        {/* Cancel — tertiary text-only */}
         <Pressable
           onPress={onClose}
-          className="min-h-[56px] items-center justify-center rounded-xl active:bg-gray-100"
+          className="min-h-touch-lg items-center justify-center rounded-md active:bg-background"
           accessibilityLabel="Cancel"
           accessibilityRole="button">
-          <Text className="text-lg font-medium text-gray-600">Cancel</Text>
+          <Text className="font-sans-medium text-headline text-ink-secondary">Cancel</Text>
         </Pressable>
       </View>
     </Modal>

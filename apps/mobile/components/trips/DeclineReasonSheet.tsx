@@ -73,10 +73,12 @@ export function DeclineReasonSheet({
       onRequestClose={handleClose}
       testID={testID}>
       <View className="flex-1 justify-end bg-black/50">
-        <View className="rounded-t-3xl bg-white p-6">
+        <View className="rounded-t-3xl bg-card p-6">
           {/* Header */}
-          <Text className="mb-2 text-xl font-bold text-foreground">Why are you declining?</Text>
-          <Text className="mb-4 text-sm text-gray-600">
+          <Text className="mb-2 font-sans-bold text-title-2 text-foreground">
+            Why are you declining?
+          </Text>
+          <Text className="mb-4 font-sans text-caption text-ink-secondary">
             This helps dispatch understand driver availability (optional)
           </Text>
 
@@ -86,10 +88,10 @@ export function DeclineReasonSheet({
               <Pressable
                 key={reason.id}
                 onPress={() => setSelectedReason(reason.id)}
-                className={`mb-2 min-h-[56px] flex-row items-center rounded-xl border px-4 ${
+                className={`mb-2 min-h-touch-lg flex-row items-center rounded-md border px-4 ${
                   selectedReason === reason.id
-                    ? 'border-primary bg-primary/10'
-                    : 'border-gray-200 bg-white'
+                    ? 'border-primary bg-primary-100'
+                    : 'border-hairline bg-card'
                 }`}
                 accessibilityLabel={reason.label}
                 accessibilityRole="radio"
@@ -98,38 +100,40 @@ export function DeclineReasonSheet({
                 <Ionicons
                   name={reason.icon as any}
                   size={24}
-                  color={selectedReason === reason.id ? '#1E40AF' : '#6B7280'}
+                  color={selectedReason === reason.id ? '#1F3A5F' : '#6E685E'}
                 />
                 <Text
-                  className={`ml-3 flex-1 text-base ${
-                    selectedReason === reason.id ? 'font-semibold text-primary' : 'text-foreground'
+                  className={`ml-3 flex-1 text-body ${
+                    selectedReason === reason.id
+                      ? 'font-sans-semibold text-primary'
+                      : 'font-sans text-foreground'
                   }`}>
                   {reason.label}
                 </Text>
                 {selectedReason === reason.id && (
-                  <Ionicons name="checkmark-circle" size={24} color="#1E40AF" />
+                  <Ionicons name="checkmark-circle" size={24} color="#1F3A5F" />
                 )}
               </Pressable>
             ))}
           </View>
 
-          {/* Action Buttons */}
+          {/* Action Buttons — Skip (secondary outline), Decline (destructive) */}
           <View className="flex-row gap-4">
             <Pressable
               onPress={handleSkip}
-              className="min-h-[48px] flex-1 items-center justify-center rounded-xl border border-gray-300"
+              className="min-h-touch flex-1 items-center justify-center rounded-md border border-primary"
               accessibilityLabel="Skip providing reason"
               accessibilityRole="button"
               testID="decline-skip-button">
-              <Text className="font-semibold text-gray-600">Skip</Text>
+              <Text className="font-sans-semibold text-primary">Skip</Text>
             </Pressable>
             <Pressable
               onPress={handleSubmit}
-              className="min-h-[48px] flex-1 items-center justify-center rounded-xl bg-red-500"
+              className="min-h-touch flex-1 items-center justify-center rounded-md bg-error"
               accessibilityLabel="Confirm decline"
               accessibilityRole="button"
               testID="decline-confirm-button">
-              <Text className="font-semibold text-white">Decline Ride</Text>
+              <Text className="font-sans-semibold text-white">Decline Ride</Text>
             </Pressable>
           </View>
         </View>

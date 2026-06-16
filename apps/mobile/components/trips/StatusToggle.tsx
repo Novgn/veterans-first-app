@@ -7,31 +7,35 @@ interface StatusOption {
   value: DriverStatus;
   label: string;
   icon: keyof typeof Ionicons.glyphMap;
+  /** Veteran Honor fill + border when this status is active. */
   activeColor: string;
   activeBgColor: string;
 }
 
+// Veteran Honor mapping: Available = sage (supportive/availability), On Trip =
+// navy (active/authoritative), Offline = neutral ink on stone. Color is never
+// the sole signal — each option carries an icon + label as well.
 const STATUS_OPTIONS: StatusOption[] = [
   {
     value: 'available',
     label: 'Available',
     icon: 'checkmark-circle',
-    activeColor: '#059669',
-    activeBgColor: '#D1FAE5',
+    activeColor: '#4A6B54', // sage
+    activeBgColor: '#E3EAE3', // sage100
   },
   {
     value: 'on_trip',
     label: 'On Trip',
     icon: 'car',
-    activeColor: '#1E40AF',
-    activeBgColor: '#DBEAFE',
+    activeColor: '#1F3A5F', // navy
+    activeBgColor: '#E4E9F0', // navy100
   },
   {
     value: 'offline',
     label: 'Offline',
     icon: 'moon',
-    activeColor: '#6B7280',
-    activeBgColor: '#F3F4F6',
+    activeColor: '#4F4A41', // ink-secondary
+    activeBgColor: '#F4F1EA', // stone
   },
 ];
 
@@ -44,8 +48,8 @@ interface StatusToggleProps {
 
 export function StatusToggle({ value, onChange, disabled = false, testID }: StatusToggleProps) {
   return (
-    <View testID={testID} className="rounded-xl bg-white p-4 shadow-sm">
-      <Text className="mb-3 text-sm font-medium text-gray-500">Your Status</Text>
+    <View testID={testID} className="border-hairline rounded-lg border bg-card p-4 shadow-card">
+      <Text className="mb-3 font-sans-medium text-caption text-ink-secondary">Your Status</Text>
 
       <View className="flex-row gap-2">
         {STATUS_OPTIONS.map((option) => {
@@ -61,8 +65,8 @@ export function StatusToggle({ value, onChange, disabled = false, testID }: Stat
                   borderColor: option.activeColor,
                 },
               ]}
-              className={`min-h-[56px] flex-1 flex-row items-center justify-center rounded-xl border-2 px-3 py-2 ${
-                isSelected ? '' : 'border-gray-200 bg-white'
+              className={`min-h-touch-lg flex-1 flex-row items-center justify-center rounded-md border px-3 py-2 ${
+                isSelected ? '' : 'border-hairline bg-card'
               } ${disabled ? 'opacity-50' : ''}`}
               accessibilityLabel={option.label}
               accessibilityRole="radio"
@@ -72,11 +76,13 @@ export function StatusToggle({ value, onChange, disabled = false, testID }: Stat
               <Ionicons
                 name={option.icon}
                 size={20}
-                color={isSelected ? option.activeColor : '#9CA3AF'}
+                color={isSelected ? option.activeColor : '#6E685E'}
               />
               <Text
                 style={[isSelected && { color: option.activeColor }]}
-                className={`ml-2 text-sm font-semibold ${isSelected ? '' : 'text-gray-500'}`}>
+                className={`ml-2 font-sans-semibold text-caption ${
+                  isSelected ? '' : 'text-ink-secondary'
+                }`}>
                 {option.label}
               </Text>
             </Pressable>

@@ -8,9 +8,10 @@ export default function FamilyLayout() {
     <RoleGate allowedRoles="family" fallback={<WrongRoleScreen expected="family" />}>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: '#FAFAF9' },
-          headerTintColor: '#1E40AF',
-          headerTitleStyle: { fontWeight: '600', fontSize: 18 },
+          // Veteran Honor: warm stone canvas, navy controls, Lexend semibold title.
+          headerStyle: { backgroundColor: '#F4F1EA' },
+          headerTintColor: '#1F3A5F',
+          headerTitleStyle: { fontFamily: 'Lexend_600SemiBold', fontSize: 18 },
         }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="rider/[id]/index" options={{ title: 'Rides' }} />

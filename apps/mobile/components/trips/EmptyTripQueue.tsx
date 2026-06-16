@@ -15,13 +15,15 @@ export function EmptyTripQueue({ testID }: EmptyTripQueueProps) {
   return (
     <View
       testID={testID}
-      className="items-center justify-center rounded-xl bg-white p-8 shadow-sm"
+      className="border-hairline items-center justify-center rounded-lg border bg-card p-8 shadow-card"
       accessibilityLabel="No rides assigned yet">
-      <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-        <Ionicons name="calendar-outline" size={32} color="#1E40AF" />
+      <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-primary-100">
+        <Ionicons name="calendar-outline" size={32} color="#1F3A5F" />
       </View>
-      <Text className="text-lg font-semibold text-foreground">No rides assigned yet</Text>
-      <Text className="mt-2 text-center text-gray-600">
+      <Text className="font-sans-semibold text-headline text-foreground">
+        No rides assigned yet
+      </Text>
+      <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
         When you&apos;re available, assigned rides will appear here.
       </Text>
     </View>

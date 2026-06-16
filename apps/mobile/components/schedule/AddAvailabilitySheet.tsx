@@ -58,14 +58,18 @@ export function AddAvailabilitySheet({
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/50" testID={testID}>
-        <View className="max-h-[80%] rounded-t-3xl bg-white">
-          <View className="border-b border-gray-200 px-6 py-4">
-            <Text className="text-xl font-bold text-foreground">Add Availability</Text>
+      <View className="flex-1 justify-end bg-ink/40" testID={testID}>
+        <View className="max-h-[80%] rounded-t-lg bg-card shadow-overlay">
+          <View className="border-hairline border-b px-6 py-4">
+            <Text className="font-sans-semibold text-title-2 text-foreground">
+              Add Availability
+            </Text>
           </View>
 
           <ScrollView className="px-6 py-4">
-            <Text className="mb-2 text-sm font-semibold text-gray-600">Day of week</Text>
+            <Text className="mb-2 font-sans-semibold text-footnote text-ink-secondary">
+              Day of week
+            </Text>
             <View className="flex-row flex-wrap gap-2">
               {DAYS_OF_WEEK.map((day, index) => {
                 const selected = dayOfWeek === index;
@@ -73,14 +77,17 @@ export function AddAvailabilitySheet({
                   <Pressable
                     key={day}
                     onPress={() => setDayOfWeek(index as DayOfWeek)}
-                    className={`min-h-[48px] items-center justify-center rounded-full px-4 ${
-                      selected ? 'bg-primary' : 'border border-gray-300 bg-white'
+                    className={`min-h-touch items-center justify-center rounded-full px-4 ${
+                      selected ? 'bg-primary' : 'border-strong border bg-background'
                     }`}
                     accessibilityLabel={day}
                     accessibilityRole="button"
                     accessibilityState={{ selected }}
                     testID={`day-${index}`}>
-                    <Text className={selected ? 'font-semibold text-white' : 'text-gray-700'}>
+                    <Text
+                      className={`text-callout ${
+                        selected ? 'font-sans-semibold text-white' : 'font-sans text-foreground'
+                      }`}>
                       {day.slice(0, 3)}
                     </Text>
                   </Pressable>
@@ -88,7 +95,9 @@ export function AddAvailabilitySheet({
               })}
             </View>
 
-            <Text className="mb-2 mt-6 text-sm font-semibold text-gray-600">Start time</Text>
+            <Text className="mb-2 mt-6 font-sans-semibold text-footnote text-ink-secondary">
+              Start time
+            </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View className="flex-row gap-2">
                 {timeOptions.map((t) => {
@@ -97,13 +106,16 @@ export function AddAvailabilitySheet({
                     <Pressable
                       key={`start-${t}`}
                       onPress={() => setStartTime(t)}
-                      className={`min-h-[48px] items-center justify-center rounded-full px-4 ${
-                        selected ? 'bg-primary' : 'border border-gray-300 bg-white'
+                      className={`min-h-touch items-center justify-center rounded-full px-4 ${
+                        selected ? 'bg-primary' : 'border-strong border bg-background'
                       }`}
                       accessibilityLabel={`Start ${fmtTime(t)}`}
                       accessibilityRole="button"
                       accessibilityState={{ selected }}>
-                      <Text className={selected ? 'font-semibold text-white' : 'text-gray-700'}>
+                      <Text
+                        className={`text-callout ${
+                          selected ? 'font-sans-semibold text-white' : 'font-sans text-foreground'
+                        }`}>
                         {fmtTime(t)}
                       </Text>
                     </Pressable>
@@ -112,7 +124,9 @@ export function AddAvailabilitySheet({
               </View>
             </ScrollView>
 
-            <Text className="mb-2 mt-6 text-sm font-semibold text-gray-600">End time</Text>
+            <Text className="mb-2 mt-6 font-sans-semibold text-footnote text-ink-secondary">
+              End time
+            </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View className="flex-row gap-2">
                 {timeOptions.map((t) => {
@@ -121,13 +135,16 @@ export function AddAvailabilitySheet({
                     <Pressable
                       key={`end-${t}`}
                       onPress={() => setEndTime(t)}
-                      className={`min-h-[48px] items-center justify-center rounded-full px-4 ${
-                        selected ? 'bg-primary' : 'border border-gray-300 bg-white'
+                      className={`min-h-touch items-center justify-center rounded-full px-4 ${
+                        selected ? 'bg-primary' : 'border-strong border bg-background'
                       }`}
                       accessibilityLabel={`End ${fmtTime(t)}`}
                       accessibilityRole="button"
                       accessibilityState={{ selected }}>
-                      <Text className={selected ? 'font-semibold text-white' : 'text-gray-700'}>
+                      <Text
+                        className={`text-callout ${
+                          selected ? 'font-sans-semibold text-white' : 'font-sans text-foreground'
+                        }`}>
                         {fmtTime(t)}
                       </Text>
                     </Pressable>
@@ -137,29 +154,31 @@ export function AddAvailabilitySheet({
             </ScrollView>
 
             {!canSubmit ? (
-              <Text className="mt-4 text-sm text-red-600">End time must be after start time.</Text>
+              <Text className="mt-4 font-sans text-footnote text-error">
+                End time must be after start time.
+              </Text>
             ) : null}
           </ScrollView>
 
-          <View className="flex-row gap-3 border-t border-gray-200 px-6 py-4">
+          <View className="border-hairline flex-row gap-3 border-t px-6 py-4">
             <Pressable
               onPress={onClose}
-              className="min-h-[56px] flex-1 items-center justify-center rounded-xl border-2 border-gray-300"
+              className="min-h-touch-lg flex-1 items-center justify-center rounded-md border-2 border-primary bg-transparent active:bg-primary-50"
               accessibilityLabel="Cancel"
               accessibilityRole="button">
-              <Text className="text-lg font-semibold text-gray-700">Cancel</Text>
+              <Text className="font-sans-semibold text-headline text-primary">Cancel</Text>
             </Pressable>
             <Pressable
               onPress={handleSubmit}
               disabled={!canSubmit}
-              className={`min-h-[56px] flex-1 items-center justify-center rounded-xl ${
-                canSubmit ? 'bg-primary' : 'bg-gray-300'
+              className={`min-h-touch-lg flex-1 items-center justify-center rounded-md bg-primary ${
+                canSubmit ? 'active:bg-primary-700' : 'opacity-45'
               }`}
               accessibilityLabel="Save availability"
               accessibilityRole="button"
               accessibilityState={{ disabled: !canSubmit }}
               testID="save-availability">
-              <Text className="text-lg font-semibold text-white">Save</Text>
+              <Text className="font-sans-semibold text-headline text-white">Save</Text>
             </Pressable>
           </View>
         </View>

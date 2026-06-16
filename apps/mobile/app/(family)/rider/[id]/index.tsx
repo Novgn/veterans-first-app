@@ -3,6 +3,10 @@
  *
  * Read-only view of a linked rider's upcoming and past rides. No
  * modify/cancel actions — those stay in the rider app.
+ *
+ * Veteran Honor: white ride cards on the stone canvas, navy/sage route dots,
+ * StatusBadge pill, Lexend type, warm read-only voice. Family sees no
+ * modify/cancel affordances.
  */
 
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +14,8 @@ import { Link, Stack, useLocalSearchParams } from 'expo-router';
 import { format } from 'date-fns';
 import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
+import { Button } from '@/components/ui/Button';
+import { StatusBadge, type StatusBadgeStatus } from '@/components/ui/StatusBadge';
 import { useFamilyLinks } from '@/hooks/useFamilyLinks';
 import { useFamilyRiderRides, type FamilyRideRow } from '@/hooks/useFamilyRiderRides';
 
@@ -21,19 +27,25 @@ function formatPickup(ride: FamilyRideRow): string {
   }
 }
 
-function statusTone(status: string): string {
+// Map the family ride status strings onto the StatusBadge color union without
+// changing the displayed text — the human-readable label is always shown.
+function badgeStatus(status: string): StatusBadgeStatus {
   switch (status) {
     case 'completed':
-      return 'bg-green-100 text-green-800';
+      return 'completed';
     case 'cancelled':
     case 'no_show':
-      return 'bg-red-100 text-red-800';
+      return 'cancelled';
     case 'in_progress':
     case 'en_route':
     case 'arrived':
-      return 'bg-blue-100 text-blue-800';
+      return 'in_progress';
+    case 'assigned':
+      return 'assigned';
+    case 'confirmed':
+      return 'confirmed';
     default:
-      return 'bg-gray-100 text-gray-700';
+      return 'pending';
   }
 }
 
@@ -46,27 +58,34 @@ function RideCard({ ride }: { ride: FamilyRideRow }) {
       }}
       asChild>
       <Pressable
-        className="mb-3 rounded-xl bg-white p-4 shadow-sm"
+        className="border-hairline mb-3 rounded-lg border bg-card p-6 shadow-card active:bg-background"
         accessibilityLabel={`View ride details for ${formatPickup(ride)}`}
         accessibilityRole="button"
         testID={`family-ride-card-${ride.id}`}>
-        <View className="mb-2 flex-row items-center justify-between">
-          <Text className="text-base font-semibold text-foreground">{formatPickup(ride)}</Text>
-          <View className={`rounded-full px-2 py-0.5 ${statusTone(ride.status)}`}>
-            <Text className="text-xs font-medium">{ride.status.replace(/_/g, ' ')}</Text>
+        <View className="mb-3 flex-row items-center justify-between">
+          <Text className="font-sans-semibold text-headline text-foreground">
+            {formatPickup(ride)}
+          </Text>
+          <StatusBadge status={badgeStatus(ride.status)} label={ride.status.replace(/_/g, ' ')} />
+        </View>
+        <View className="flex-row">
+          {/* Route line — sage pickup, navy dropoff, hairline connector */}
+          <View className="mr-3 items-center pt-1">
+            <View className="h-2.5 w-2.5 rounded-full bg-secondary" />
+            <View className="h-6 w-0.5 bg-border-hairline" />
+            <View className="h-2.5 w-2.5 rounded-full bg-primary" />
           </View>
-        </View>
-        <View className="flex-row items-start">
-          <Ionicons name="navigate" size={16} color="#1E40AF" />
-          <Text className="ml-2 flex-1 text-sm text-gray-700" numberOfLines={1}>
-            {ride.pickup_address}
-          </Text>
-        </View>
-        <View className="mt-1 flex-row items-start">
-          <Ionicons name="flag" size={16} color="#059669" />
-          <Text className="ml-2 flex-1 text-sm text-gray-700" numberOfLines={1}>
-            {ride.dropoff_address}
-          </Text>
+          <View className="flex-1">
+            <Text className="font-sans text-caption text-ink-secondary">Pickup</Text>
+            <Text className="font-sans-medium text-base text-foreground" numberOfLines={1}>
+              {ride.pickup_address}
+            </Text>
+            <View className="h-2" />
+            <Text className="font-sans text-caption text-ink-secondary">Destination</Text>
+            <Text className="font-sans-medium text-base text-foreground" numberOfLines={1}>
+              {ride.dropoff_address}
+            </Text>
+          </View>
         </View>
       </Pressable>
     </Link>
@@ -82,41 +101,45 @@ export default function FamilyRiderDashboard() {
   const history = data?.history ?? [];
   const link = links.find((l) => l.rider_id === id && l.status === 'approved');
   const canBook = !!link?.permissions?.book_rides;
+  const riderFirstName = link?.counterpart?.first_name;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
       <Stack.Screen options={{ title: 'Rides' }} />
 
       {isLoading ? (
-        <ActivityIndicator size="large" color="#1E40AF" className="mt-12" />
+        <ActivityIndicator size="large" color="#1F3A5F" className="mt-12" />
       ) : (
         <ScrollView className="flex-1 px-6 pt-4" testID="family-rider-dashboard">
           {canBook ? (
             <Link href={{ pathname: '/rider/[id]/book', params: { id: id ?? '' } }} asChild>
-              <Pressable
-                className="mb-4 min-h-[56px] flex-row items-center justify-center rounded-xl bg-primary"
+              <Button
+                label={riderFirstName ? `Book for ${riderFirstName}` : 'Book a Ride'}
+                variant="primary"
+                size="lg"
+                className="mb-4"
+                leftIcon={<Ionicons name="car" size={22} color="#FFFFFF" />}
                 accessibilityLabel="Book a ride"
-                accessibilityRole="button"
-                testID="family-book-ride-button">
-                <Ionicons name="car" size={22} color="#ffffff" />
-                <Text className="ml-2 text-lg font-semibold text-white">Book a Ride</Text>
-              </Pressable>
+                testID="family-book-ride-button"
+              />
             </Link>
           ) : null}
 
-          <Text className="mb-3 text-lg font-semibold text-foreground">Upcoming</Text>
+          <Text className="mb-3 font-sans-semibold text-title-3 text-foreground">Upcoming</Text>
           {upcoming.length === 0 ? (
-            <View className="mb-6 items-center rounded-xl bg-white p-4 shadow-sm">
-              <Text className="text-sm text-gray-600">No upcoming rides.</Text>
+            <View className="border-hairline mb-6 items-center rounded-lg border bg-card p-6 shadow-card">
+              <Text className="font-sans text-body text-ink-secondary">No upcoming rides.</Text>
             </View>
           ) : (
             upcoming.map((ride) => <RideCard key={ride.id} ride={ride} />)
           )}
 
-          <Text className="mb-3 mt-4 text-lg font-semibold text-foreground">History</Text>
+          <Text className="mb-3 mt-4 font-sans-semibold text-title-3 text-foreground">History</Text>
           {history.length === 0 ? (
-            <View className="mb-12 items-center rounded-xl bg-white p-4 shadow-sm">
-              <Text className="text-sm text-gray-600">No completed rides yet.</Text>
+            <View className="border-hairline mb-12 items-center rounded-lg border bg-card p-6 shadow-card">
+              <Text className="font-sans text-body text-ink-secondary">
+                No completed rides yet.
+              </Text>
             </View>
           ) : (
             history.map((ride) => <RideCard key={ride.id} ride={ride} />)
