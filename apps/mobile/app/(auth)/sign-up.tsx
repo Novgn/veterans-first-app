@@ -7,6 +7,7 @@ import {
   AuthScaffold,
   BrandMark,
   Button,
+  Card,
   Link,
   PhoneField,
   ScreenHeader,
@@ -106,53 +107,62 @@ export default function SignUp() {
       </View>
 
       <View className="mt-8">
-        <Text className="text-center text-title-1 text-foreground">Create your account</Text>
-        <Text className="text-stone-600 mt-2 text-center text-body">
+        <Text className="text-center font-sans-bold text-title-1 text-foreground">
+          Create your account
+        </Text>
+        <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
           Join Veterans First for easy, dignified rides.
         </Text>
       </View>
 
-      <View className="mt-8 gap-5">
-        <View className="flex-row gap-3">
-          <View className="flex-1">
-            <TextField
-              label="First name"
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholder="John"
-              autoComplete="given-name"
-              autoCapitalize="words"
-              editable={!isLoading}
-            />
+      <Card variant="elevated" padding="lg" className="mt-8">
+        <View className="gap-5">
+          <View className="flex-row gap-3">
+            <View className="flex-1">
+              <TextField
+                label="First name"
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="John"
+                autoComplete="given-name"
+                autoCapitalize="words"
+                editable={!isLoading}
+              />
+            </View>
+            <View className="flex-1">
+              <TextField
+                label="Last name"
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Doe"
+                autoComplete="family-name"
+                autoCapitalize="words"
+                editable={!isLoading}
+              />
+            </View>
           </View>
-          <View className="flex-1">
-            <TextField
-              label="Last name"
-              value={lastName}
-              onChangeText={setLastName}
-              placeholder="Doe"
-              autoComplete="family-name"
-              autoCapitalize="words"
-              editable={!isLoading}
-            />
-          </View>
+
+          <PhoneField
+            label="Phone Number"
+            value={phone}
+            onChangeText={setPhone}
+            helperText="We'll text you a 6-digit code."
+            error={error || undefined}
+            editable={!isLoading}
+          />
+
+          <Button
+            label="Create account"
+            onPress={onSignUp}
+            loading={isLoading}
+            disabled={!isValid}
+          />
         </View>
+      </Card>
 
-        <PhoneField
-          label="Phone Number"
-          value={phone}
-          onChangeText={setPhone}
-          helperText="We'll text you a 6-digit code."
-          error={error || undefined}
-          editable={!isLoading}
-        />
-
-        <Button label="Create Account" onPress={onSignUp} loading={isLoading} disabled={!isValid} />
-
-        <View className="mt-2 flex-row items-center justify-center gap-2">
-          <Text className="text-stone-600 text-body">Already have an account?</Text>
-          <Link label="Sign in" onPress={() => router.push('/(auth)/sign-in')} />
-        </View>
+      <View className="mt-6 flex-row items-center justify-center gap-2">
+        <Text className="font-sans text-body text-ink-secondary">Already have an account?</Text>
+        <Link label="Sign in" onPress={() => router.push('/(auth)/sign-in')} />
       </View>
     </AuthScaffold>
   );

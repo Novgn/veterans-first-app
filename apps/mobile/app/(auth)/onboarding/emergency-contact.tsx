@@ -1,19 +1,9 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 
+import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
 import { AuthScaffold, Button, PhoneField, ScreenHeader, TextField } from '@/components/ui';
 import { useOnboardingStore } from '@/stores/onboarding';
-
-function ProgressBar({ percent }: { percent: number }) {
-  return (
-    <View
-      className="bg-stone-200 mx-6 mb-2 h-2 overflow-hidden rounded-full"
-      accessibilityRole="progressbar"
-      accessibilityValue={{ now: percent, min: 0, max: 100 }}>
-      <View className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
-    </View>
-  );
-}
 
 export default function OnboardingEmergencyContact() {
   const router = useRouter();
@@ -29,7 +19,7 @@ export default function OnboardingEmergencyContact() {
       header={
         <View>
           <ScreenHeader title="Step 3 of 4" />
-          <ProgressBar percent={75} />
+          <OnboardingProgress percent={75} />
         </View>
       }
       footer={
@@ -40,8 +30,8 @@ export default function OnboardingEmergencyContact() {
         />
       }>
       <View>
-        <Text className="text-title-1 text-foreground">Emergency contact</Text>
-        <Text className="text-stone-600 mt-2 text-body">
+        <Text className="font-sans-bold text-title-1 text-foreground">Emergency contact</Text>
+        <Text className="mt-2 font-sans text-body text-ink-secondary">
           In case of an issue during your ride, we&apos;ll contact this person.
         </Text>
       </View>

@@ -15,7 +15,7 @@ export default function Welcome() {
     <AuthScaffold
       footer={
         <View className="items-center">
-          <Link tone="accent" label="Need help? Call us" onPress={onNeedHelp} />
+          <Link label="Call us anytime" onPress={onNeedHelp} />
         </View>
       }>
       <View className="items-center">
@@ -23,16 +23,14 @@ export default function Welcome() {
       </View>
 
       <View className="mt-12">
-        <Text className="text-center text-display text-foreground">
-          Rides for those who served.
-        </Text>
-        <Text className="text-stone-600 mt-4 text-center text-body">
-          Safe, dignified rides for veterans, booked by you or a family member.
+        <Text className="text-center font-sans-bold text-display text-foreground">Welcome</Text>
+        <Text className="mt-4 text-center font-sans text-body text-ink-secondary">
+          Safe, dignified rides for veterans — booked by you or a family member. No surge, ever.
         </Text>
       </View>
 
       <View className="mt-12 gap-4">
-        <Button label="Get Started" onPress={onGetStarted} />
+        <Button label="Get started" onPress={onGetStarted} />
         <Button label="I already have an account" variant="secondary" onPress={onSignIn} />
       </View>
     </AuthScaffold>

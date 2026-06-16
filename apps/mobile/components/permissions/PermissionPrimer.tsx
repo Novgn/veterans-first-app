@@ -21,7 +21,9 @@ export type PermissionPrimerProps = {
   isLoading?: boolean;
 };
 
-const PRIMARY_NAVY = '#1E40AF';
+// Veteran Honor deep navy ({colors.primary}). Brass is reserved for honor and is
+// non-text only, so the primer's icons/glyphs render in navy, not brass.
+const PRIMARY_NAVY = '#1F3A5F';
 
 export function PermissionPrimer({
   iconName,
@@ -44,8 +46,10 @@ export function PermissionPrimer({
       </View>
 
       <View className="mt-8">
-        <Text className="text-center text-title-1 text-foreground">{title}</Text>
-        <Text className="text-stone-600 mt-3 text-center text-body">{description}</Text>
+        <Text className="text-center font-sans-bold text-title-1 text-foreground">{title}</Text>
+        <Text className="mt-3 text-center font-sans text-body text-ink-secondary">
+          {description}
+        </Text>
       </View>
 
       <View className="mt-10 gap-4">
@@ -54,7 +58,7 @@ export function PermissionPrimer({
             <View className="mt-1">
               <Ionicons name={bullet.iconName} size={20} color={PRIMARY_NAVY} />
             </View>
-            <Text className="flex-1 text-base text-foreground">{bullet.text}</Text>
+            <Text className="flex-1 font-sans text-body text-foreground">{bullet.text}</Text>
           </View>
         ))}
       </View>
