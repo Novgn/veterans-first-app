@@ -39,37 +39,37 @@ describe('StatusTimeline', () => {
     it('highlights Booked step when status is pending', () => {
       render(<StatusTimeline currentStatus="pending" />);
 
-      // The current step should have semibold styling (font-semibold)
+      // The current step should have semibold styling (Lexend SemiBold family)
       const bookedText = screen.getByText('Booked');
-      expect(bookedText.props.className).toContain('font-semibold');
+      expect(bookedText.props.className).toContain('font-sans-semibold');
     });
 
     it('highlights Confirmed step when status is confirmed', () => {
       render(<StatusTimeline currentStatus="confirmed" />);
 
       const confirmedText = screen.getByText('Confirmed');
-      expect(confirmedText.props.className).toContain('font-semibold');
+      expect(confirmedText.props.className).toContain('font-sans-semibold');
     });
 
     it('highlights Assigned step when status is assigned', () => {
       render(<StatusTimeline currentStatus="assigned" />);
 
       const assignedText = screen.getByText('Assigned');
-      expect(assignedText.props.className).toContain('font-semibold');
+      expect(assignedText.props.className).toContain('font-sans-semibold');
     });
 
     it('highlights En Route step when status is in_progress', () => {
       render(<StatusTimeline currentStatus="in_progress" />);
 
       const enRouteText = screen.getByText('En Route');
-      expect(enRouteText.props.className).toContain('font-semibold');
+      expect(enRouteText.props.className).toContain('font-sans-semibold');
     });
 
     it('highlights Arrived step when status is arrived', () => {
       render(<StatusTimeline currentStatus="arrived" />);
 
       const arrivedText = screen.getByText('Arrived');
-      expect(arrivedText.props.className).toContain('font-semibold');
+      expect(arrivedText.props.className).toContain('font-sans-semibold');
     });
   });
 

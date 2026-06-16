@@ -50,26 +50,31 @@ interface StatusStyle {
   defaultLabel: string;
 }
 
+// Veteran Honor status semantics (per DESIGN.md StatusTimeline + Status Badge):
+// pending → calm warning, assigned/confirmed → navy (active/trust),
+// in_progress → sage (supportive), completed → success, cancelled → error.
+// Subtle = tinted -100 surface with ink label; solid = filled DEFAULT with white.
+// Color is never the sole signal — the label text always carries the meaning.
 const STATUS_STYLES: Record<StatusBadgeStatus, StatusStyle> = {
   pending: {
-    subtleBg: 'bg-accent-100',
-    subtleText: 'text-accent-800',
-    solidBg: 'bg-accent-600',
+    subtleBg: 'bg-warning-100',
+    subtleText: 'text-foreground',
+    solidBg: 'bg-warning',
     solidText: 'text-white',
-    dot: 'bg-accent-600',
+    dot: 'bg-warning',
     defaultLabel: 'Pending',
   },
   assigned: {
     subtleBg: 'bg-primary-100',
-    subtleText: 'text-primary-800',
-    solidBg: 'bg-primary-600',
+    subtleText: 'text-foreground',
+    solidBg: 'bg-primary',
     solidText: 'text-white',
-    dot: 'bg-primary-600',
+    dot: 'bg-primary',
     defaultLabel: 'Driver Assigned',
   },
   confirmed: {
     subtleBg: 'bg-primary-100',
-    subtleText: 'text-primary-800',
+    subtleText: 'text-foreground',
     solidBg: 'bg-primary-700',
     solidText: 'text-white',
     dot: 'bg-primary-700',
@@ -77,26 +82,26 @@ const STATUS_STYLES: Record<StatusBadgeStatus, StatusStyle> = {
   },
   in_progress: {
     subtleBg: 'bg-secondary-100',
-    subtleText: 'text-secondary-800',
-    solidBg: 'bg-secondary-600',
+    subtleText: 'text-foreground',
+    solidBg: 'bg-secondary',
     solidText: 'text-white',
-    dot: 'bg-secondary-600',
+    dot: 'bg-secondary',
     defaultLabel: 'In Progress',
   },
   completed: {
-    subtleBg: 'bg-stone-200',
-    subtleText: 'text-stone-700',
-    solidBg: 'bg-stone-600',
+    subtleBg: 'bg-success-100',
+    subtleText: 'text-foreground',
+    solidBg: 'bg-success',
     solidText: 'text-white',
-    dot: 'bg-stone-600',
+    dot: 'bg-success',
     defaultLabel: 'Completed',
   },
   cancelled: {
-    subtleBg: 'bg-stone-200',
-    subtleText: 'text-stone-600',
-    solidBg: 'bg-stone-500',
+    subtleBg: 'bg-error-100',
+    subtleText: 'text-foreground',
+    solidBg: 'bg-error',
     solidText: 'text-white',
-    dot: 'bg-stone-500',
+    dot: 'bg-error',
     defaultLabel: 'Cancelled',
   },
 };
@@ -110,12 +115,12 @@ interface SizeStyle {
 
 const SIZE_STYLES: Record<StatusBadgeSize, SizeStyle> = {
   sm: {
-    container: 'px-2 py-0.5 rounded-md',
-    text: 'text-caption',
+    container: 'px-2 py-0.5 rounded-full',
+    text: 'text-caption font-sans-medium',
   },
   md: {
     container: 'px-3 py-1 rounded-full',
-    text: 'text-footnote font-semibold',
+    text: 'text-caption font-sans-semibold',
   },
 };
 

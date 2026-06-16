@@ -120,7 +120,7 @@ export function RideCard({ ride, onPress, className = '' }: RideCardProps) {
   return (
     <Pressable
       onPress={onPress}
-      className={`rounded-2xl bg-white p-4 shadow-sm active:bg-gray-50 ${className}`}
+      className={`border-hairline rounded-lg border bg-card p-6 shadow-card active:bg-background ${className}`}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
       accessibilityHint="Opens ride details">
@@ -129,30 +129,30 @@ export function RideCard({ ride, onPress, className = '' }: RideCardProps) {
 
       {/* Date and Time */}
       <View className="mb-3 flex-row items-center">
-        <Ionicons name="calendar-outline" size={18} color="#1E40AF" />
-        <Text className="ml-2 text-lg font-semibold text-foreground">
+        <Ionicons name="calendar-outline" size={18} color="#1F3A5F" />
+        <Text className="ml-2 font-sans-semibold text-headline text-foreground">
           {displayDate} at {displayTime}
         </Text>
       </View>
 
       {/* Route visualization */}
       <View className="mb-3 flex-row">
-        {/* Route line indicator */}
+        {/* Route line indicator — sage pickup, navy dropoff, hairline connector */}
         <View className="mr-3 items-center">
           <View className="h-2.5 w-2.5 rounded-full bg-secondary" />
-          <View className="h-8 w-0.5 bg-gray-300" />
+          <View className="h-8 w-0.5 bg-border-hairline" />
           <View className="h-2.5 w-2.5 rounded-full bg-primary" />
         </View>
 
         {/* Addresses */}
         <View className="flex-1">
-          <Text className="text-sm text-gray-500">Pickup</Text>
-          <Text className="text-base font-medium text-foreground" numberOfLines={1}>
+          <Text className="font-sans text-caption text-ink-secondary">Pickup</Text>
+          <Text className="font-sans-medium text-base text-foreground" numberOfLines={1}>
             {ride.pickup_address}
           </Text>
           <View className="h-2" />
-          <Text className="text-sm text-gray-500">Destination</Text>
-          <Text className="text-base font-medium text-foreground" numberOfLines={1}>
+          <Text className="font-sans text-caption text-ink-secondary">Destination</Text>
+          <Text className="font-sans-medium text-base text-foreground" numberOfLines={1}>
             {ride.dropoff_address}
           </Text>
         </View>
@@ -160,7 +160,7 @@ export function RideCard({ ride, onPress, className = '' }: RideCardProps) {
 
       {/* Driver Info (if assigned) */}
       {hasDriver && (
-        <View className="mt-2 flex-row items-center rounded-xl bg-gray-50 p-3">
+        <View className="mt-2 flex-row items-center rounded-md bg-background p-3">
           {/* Driver Photo */}
           {ride.driver!.profilePhotoUrl ? (
             <Image
@@ -169,28 +169,28 @@ export function RideCard({ ride, onPress, className = '' }: RideCardProps) {
               accessibilityIgnoresInvertColors
             />
           ) : (
-            <View className="h-12 w-12 items-center justify-center rounded-full bg-gray-200">
-              <Ionicons name="person" size={24} color="#6B7280" />
+            <View className="h-12 w-12 items-center justify-center rounded-full bg-primary-100">
+              <Ionicons name="person" size={24} color="#1F3A5F" />
             </View>
           )}
 
           {/* Driver Details */}
           <View className="ml-3 flex-1">
-            <Text className="text-base font-semibold text-foreground">
+            <Text className="font-sans-semibold text-base text-foreground">
               {ride.driver!.firstName}
             </Text>
-            <Text className="text-sm text-gray-600">
+            <Text className="font-sans text-caption text-ink-secondary">
               {ride.driver!.vehicleColor} {ride.driver!.vehicleMake} {ride.driver!.vehicleModel}
             </Text>
             {ride.driverRideCount !== undefined && ride.driverRideCount > 0 && (
-              <Text className="text-sm font-medium text-primary">
+              <Text className="font-sans-medium text-caption text-primary">
                 Driven you {ride.driverRideCount} {ride.driverRideCount === 1 ? 'time' : 'times'}
               </Text>
             )}
           </View>
 
           {/* Chevron */}
-          <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+          <Ionicons name="chevron-forward" size={20} color="#6E685E" />
         </View>
       )}
     </Pressable>

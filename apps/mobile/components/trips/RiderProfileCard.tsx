@@ -66,7 +66,7 @@ export function RiderProfileCard({
     preferences && (preferences.specialEquipmentNotes || preferences.otherNotes);
 
   return (
-    <View testID={testID} className="rounded-xl bg-white p-4 shadow-sm">
+    <View testID={testID} className="border-hairline rounded-lg border bg-card p-6 shadow-card">
       {/* Header with photo and contact buttons */}
       <View className="mb-4 flex-row items-center">
         {rider.profilePhotoUrl ? (
@@ -76,15 +76,15 @@ export function RiderProfileCard({
             accessibilityLabel={`Photo of ${riderName}`}
           />
         ) : (
-          <View className="h-20 w-20 items-center justify-center rounded-full bg-gray-200">
-            <Text className="text-2xl font-bold text-gray-600">{initials}</Text>
+          <View className="h-20 w-20 items-center justify-center rounded-full bg-primary-100">
+            <Text className="font-sans-bold text-2xl text-primary">{initials}</Text>
           </View>
         )}
 
         <View className="ml-4 flex-1">
-          <Text className="text-xl font-bold text-foreground">{riderName}</Text>
+          <Text className="font-sans-bold text-xl text-foreground">{riderName}</Text>
           {relationshipCount > 0 && (
-            <Text className="text-sm text-gray-600">
+            <Text className="font-sans text-caption text-ink-secondary">
               You&apos;ve driven {rider.firstName} {relationshipCount} time
               {relationshipCount > 1 ? 's' : ''}
             </Text>
@@ -92,55 +92,59 @@ export function RiderProfileCard({
         </View>
       </View>
 
-      {/* Contact Buttons */}
+      {/* Contact Buttons — sage Call (supportive), navy Text */}
       <View className="mb-4 flex-row gap-3">
         <Pressable
           onPress={handleCall}
-          className="min-h-[48px] flex-1 flex-row items-center justify-center rounded-xl bg-green-500"
+          className="min-h-touch flex-1 flex-row items-center justify-center rounded-md bg-secondary"
           accessibilityLabel={`Call ${riderName}`}
           accessibilityRole="button">
           <Ionicons name="call" size={20} color="#FFFFFF" />
-          <Text className="ml-2 font-semibold text-white">Call</Text>
+          <Text className="ml-2 font-sans-semibold text-white">Call</Text>
         </Pressable>
         <Pressable
           onPress={handleSMS}
-          className="min-h-[48px] flex-1 flex-row items-center justify-center rounded-xl bg-blue-500"
+          className="min-h-touch flex-1 flex-row items-center justify-center rounded-md bg-primary"
           accessibilityLabel={`Text ${riderName}`}
           accessibilityRole="button">
           <Ionicons name="chatbubble" size={20} color="#FFFFFF" />
-          <Text className="ml-2 font-semibold text-white">Text</Text>
+          <Text className="ml-2 font-sans-semibold text-white">Text</Text>
         </Pressable>
       </View>
 
-      {/* Accessibility Preferences */}
+      {/* Accessibility Preferences — operational accommodations only */}
       {preferences && (
         <>
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-gray-700">Accessibility Needs</Text>
+            <Text className="mb-2 font-sans-semibold text-foreground">Accessibility Needs</Text>
             {hasAccessibilityNeeds ? (
               <AccessibilityBadges preferences={preferences} size="md" />
             ) : (
-              <Text className="text-sm text-gray-500">No special accessibility needs</Text>
+              <Text className="font-sans text-caption text-ink-secondary">
+                No special accessibility needs
+              </Text>
             )}
           </View>
 
           {/* Comfort Preferences */}
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-gray-700">Comfort Preferences</Text>
+            <Text className="mb-2 font-sans-semibold text-foreground">Comfort Preferences</Text>
             <ComfortBadges preferences={preferences} />
           </View>
 
           {/* Special Notes */}
           {hasSpecialNotes && (
-            <View className="rounded-lg bg-amber-50 p-3">
-              <Text className="font-semibold text-amber-800">Special Notes</Text>
+            <View className="border-hairline rounded-md border bg-warning-100 p-3">
+              <Text className="font-sans-semibold text-foreground">Special Notes</Text>
               {preferences.specialEquipmentNotes && (
-                <Text className="mt-1 text-sm text-amber-700">
+                <Text className="mt-1 font-sans text-caption text-ink-secondary">
                   {preferences.specialEquipmentNotes}
                 </Text>
               )}
               {preferences.otherNotes && (
-                <Text className="mt-1 text-sm text-amber-700">{preferences.otherNotes}</Text>
+                <Text className="mt-1 font-sans text-caption text-ink-secondary">
+                  {preferences.otherNotes}
+                </Text>
               )}
             </View>
           )}

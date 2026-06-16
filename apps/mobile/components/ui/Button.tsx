@@ -21,29 +21,36 @@ const containerClasses = (
   fullWidth: boolean,
   disabled: boolean
 ) => {
-  const base = 'flex-row items-center justify-center rounded-xl';
-  const height = size === 'lg' ? 'min-h-[56px]' : 'min-h-[48px]';
+  // rounded-md (12px) is the Veteran Honor default control radius.
+  const base = 'flex-row items-center justify-center rounded-md';
+  // Primary CTA = 56dp (h-touch-lg); supporting size = 48dp min (h-touch).
+  const height = size === 'lg' ? 'min-h-touch-lg' : 'min-h-touch';
   const padding = size === 'lg' ? 'px-6' : 'px-5';
   const width = fullWidth ? 'w-full' : 'self-start';
+  // Disabled controls drop to 45% opacity rather than recoloring.
+  const dim = disabled ? 'opacity-45' : '';
 
   if (variant === 'primary') {
-    const bg = disabled ? 'bg-primary/40' : 'bg-primary active:bg-primary-700';
-    return `${base} ${height} ${padding} ${width} ${bg}`;
+    // Filled navy with white text; press deepens to navy-700.
+    const bg = disabled ? 'bg-primary' : 'bg-primary active:bg-primary-700';
+    return `${base} ${height} ${padding} ${width} ${bg} ${dim}`;
   }
   if (variant === 'secondary') {
-    const border = disabled ? 'border-primary/40' : 'border-primary active:bg-primary-50';
-    return `${base} ${height} ${padding} ${width} border-2 ${border} bg-transparent`;
+    // Outlined navy on a transparent fill.
+    const press = disabled ? '' : 'active:bg-primary-50';
+    return `${base} ${height} ${padding} ${width} border-2 border-primary bg-transparent ${press} ${dim}`;
   }
-  return `${base} ${height} ${padding} ${width} bg-transparent`;
+  // Tertiary / ghost — text only, no border or fill.
+  return `${base} ${height} ${padding} ${width} bg-transparent ${dim}`;
 };
 
-const labelClasses = (variant: ButtonVariant, size: ButtonSize, disabled: boolean) => {
-  const fontSize = size === 'lg' ? 'text-lg' : 'text-base';
+const labelClasses = (variant: ButtonVariant, size: ButtonSize) => {
+  const fontSize = size === 'lg' ? 'text-headline' : 'text-callout';
   if (variant === 'primary') {
-    return `${fontSize} font-semibold text-white`;
+    return `${fontSize} font-sans-semibold text-white`;
   }
-  const color = disabled ? 'text-primary/50' : 'text-primary';
-  return `${fontSize} font-semibold ${color}`;
+  // Secondary + ghost label render in navy.
+  return `${fontSize} font-sans-semibold text-primary`;
 };
 
 export const Button = forwardRef<View, ButtonProps>(function Button(
@@ -69,7 +76,8 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
     onPress?.(event);
   };
 
-  const spinnerColor = variant === 'primary' ? '#FFFFFF' : '#1E40AF';
+  // Navy (#1F3A5F) for non-primary spinners; white on the filled navy primary.
+  const spinnerColor = variant === 'primary' ? '#FFFFFF' : '#1F3A5F';
 
   return (
     <Pressable
@@ -86,7 +94,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button(
       ) : (
         <>
           {leftIcon ? <View className="mr-2">{leftIcon}</View> : null}
-          <Text className={labelClasses(variant, size, Boolean(isInactive))}>{label}</Text>
+          <Text className={labelClasses(variant, size)}>{label}</Text>
           {rightIcon ? <View className="ml-2">{rightIcon}</View> : null}
         </>
       )}

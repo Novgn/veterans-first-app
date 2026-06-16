@@ -15,18 +15,23 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
 ) {
   const [focused, setFocused] = useState(false);
 
-  const borderClass = error ? 'border-error' : focused ? 'border-primary' : 'border-stone-300';
+  // border-strong is the ONLY valid control boundary; error stays in error red,
+  // focus lifts to navy. Hairline is never used as a control edge.
+  const borderClass = error ? 'border-error' : focused ? 'border-primary' : 'border-strong';
 
   return (
     <View>
-      {label ? <Text className="text-stone-700 mb-2 text-base font-medium">{label}</Text> : null}
+      {/* Label is ALWAYS visible — never placeholder-only. */}
+      {label ? (
+        <Text className="mb-2 font-sans-semibold text-footnote text-foreground">{label}</Text>
+      ) : null}
       <View
-        className={`flex-row items-center overflow-hidden rounded-xl border-[1.5px] bg-white ${borderClass} ${editable ? '' : 'opacity-60'}`}>
+        className={`min-h-touch-lg flex-row items-center overflow-hidden rounded-sm border bg-card ${borderClass} ${editable ? '' : 'opacity-45'}`}>
         {leftSlot ? <View className="pl-4">{leftSlot}</View> : null}
         <TextInput
           ref={ref}
-          className="min-h-[56px] flex-1 px-4 text-lg text-foreground"
-          placeholderTextColor="#A8A29E"
+          className="min-h-touch-lg flex-1 px-4 font-sans text-body text-foreground"
+          placeholderTextColor="#4F4A41"
           editable={editable}
           onFocus={(e) => {
             setFocused(true);
@@ -41,9 +46,9 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
         {rightSlot ? <View className="pr-4">{rightSlot}</View> : null}
       </View>
       {error ? (
-        <Text className="mt-2 text-sm text-error">{error}</Text>
+        <Text className="mt-2 font-sans text-footnote text-error">{error}</Text>
       ) : helperText ? (
-        <Text className="text-stone-500 mt-2 text-sm">{helperText}</Text>
+        <Text className="mt-2 font-sans text-footnote text-ink-secondary">{helperText}</Text>
       ) : null}
     </View>
   );

@@ -8,7 +8,7 @@
  * - Shield icon for visual trust indicator
  * - "$XX locked" prominent text
  * - "No surge. Ever." tagline
- * - Accent gold color (#D97706) for badge styling
+ * - Veteran Honor styling: stone surface, success-green accent, rounded-md
  * - Full accessibility support
  *
  * Story 2.5: 3-Tap Booking Flow - Confirmation (Tap 3)
@@ -44,16 +44,17 @@ export function PriceLockBadge({ priceCents, className = '' }: PriceLockBadgePro
 
   return (
     <View
-      className={`flex-row items-center rounded-xl bg-amber-50 px-4 py-3 ${className}`}
+      className={`flex-row items-center rounded-md bg-background px-4 py-3 ${className}`}
       accessibilityLabel={`Price locked at ${priceFormatted}. No surge pricing, ever`}
       accessibilityRole="text">
-      <Ionicons name="shield-checkmark" size={28} color="#D97706" />
+      {/* success-green checkmark — the calm "promise kept" cue */}
+      <Ionicons name="shield-checkmark" size={28} color="#356046" />
       <View className="ml-3 flex-1">
         <View className="flex-row items-baseline">
-          <Text className="text-2xl font-bold text-foreground">{priceFormatted}</Text>
-          <Text className="ml-2 text-lg font-semibold text-amber-600">locked</Text>
+          <Text className="font-sans-bold text-2xl text-foreground">{priceFormatted}</Text>
+          <Text className="ml-2 font-sans-semibold text-lg text-success">locked</Text>
         </View>
-        <Text className="text-base text-gray-600">No surge. Ever.</Text>
+        <Text className="font-sans text-base text-ink-secondary">No surge. Ever.</Text>
       </View>
     </View>
   );

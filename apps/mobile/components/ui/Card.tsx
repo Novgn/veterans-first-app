@@ -21,17 +21,19 @@ export type CardProps = {
   children: ReactNode;
 };
 
+// Veteran Honor card: white surface on the stone canvas, 16px (rounded-lg)
+// corners, soft shadow-card, and a 1px hairline boundary (dividers/decoration).
 const VARIANT_CLASS: Record<CardVariant, string> = {
-  elevated: 'bg-white rounded-2xl shadow-sm',
-  outlined: 'bg-white rounded-2xl border border-stone-200',
-  flat: 'bg-stone-100 rounded-2xl',
+  elevated: 'bg-card rounded-lg border border-hairline shadow-card',
+  outlined: 'bg-card rounded-lg border border-hairline',
+  flat: 'bg-background rounded-lg',
 };
 
 const PADDING_CLASS: Record<CardPadding, string> = {
   none: '',
-  sm: 'p-3',
+  sm: 'p-4',
   md: 'p-4',
-  lg: 'p-5',
+  lg: 'p-6',
 };
 
 export function Card({ variant = 'elevated', padding = 'md', className, children }: CardProps) {
