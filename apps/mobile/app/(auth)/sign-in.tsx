@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { AuthScaffold, BrandMark, Button, Link, PhoneField, toE164 } from '@/components/ui';
+import { AuthScaffold, BrandMark, Button, Card, Link, PhoneField, toE164 } from '@/components/ui';
 
 type ClerkErrorShape = {
   errors?: { code?: string; message?: string; longMessage?: string }[];
@@ -89,37 +89,41 @@ export default function SignIn() {
       </View>
 
       <View className="mt-10">
-        <Text className="text-center text-title-1 text-foreground">Welcome back</Text>
-        <Text className="text-stone-600 mt-2 text-center text-lg">
+        <Text className="text-center font-sans-bold text-title-1 text-foreground">
+          Welcome back
+        </Text>
+        <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
           Enter your phone number to sign in.
         </Text>
       </View>
 
-      <View className="mt-8 gap-5">
-        <PhoneField
-          label="Phone Number"
-          value={phone}
-          onChangeText={setPhone}
-          helperText="We'll text you a 6-digit code."
-          error={error || undefined}
-          editable={!isLoading}
-        />
-
-        {showSignUpSuggestion ? (
-          <Button label="Create an account instead" variant="secondary" onPress={goToSignUp} />
-        ) : (
-          <Button
-            label="Send Verification Code"
-            onPress={onSendCode}
-            loading={isLoading}
-            disabled={!isValid}
+      <Card variant="elevated" padding="lg" className="mt-8">
+        <View className="gap-5">
+          <PhoneField
+            label="Phone Number"
+            value={phone}
+            onChangeText={setPhone}
+            helperText="We'll text you a 6-digit code."
+            error={error || undefined}
+            editable={!isLoading}
           />
-        )}
 
-        <View className="mt-2 flex-row items-center justify-center gap-2">
-          <Text className="text-stone-600 text-body">Don&apos;t have an account?</Text>
-          <Link label="Sign up" onPress={goToSignUp} />
+          {showSignUpSuggestion ? (
+            <Button label="Create an account instead" variant="secondary" onPress={goToSignUp} />
+          ) : (
+            <Button
+              label="Send verification code"
+              onPress={onSendCode}
+              loading={isLoading}
+              disabled={!isValid}
+            />
+          )}
         </View>
+      </Card>
+
+      <View className="mt-6 flex-row items-center justify-center gap-2">
+        <Text className="font-sans text-body text-ink-secondary">Don&apos;t have an account?</Text>
+        <Link label="Sign up" onPress={goToSignUp} />
       </View>
     </AuthScaffold>
   );

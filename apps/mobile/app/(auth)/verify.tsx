@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { AuthScaffold, Button, Link, OTPField, ScreenHeader } from '@/components/ui';
+import { AuthScaffold, Button, Card, Link, OTPField, ScreenHeader } from '@/components/ui';
 
 const RESEND_COOLDOWN_SECONDS = 45;
 const HAS_SEEN_WELCOME_KEY = 'veteransfirst.hasSeenWelcome';
@@ -126,8 +126,10 @@ export default function Verify() {
   return (
     <AuthScaffold header={<ScreenHeader />}>
       <View>
-        <Text className="text-center text-title-1 text-foreground">Enter the code</Text>
-        <Text className="text-stone-600 mt-2 text-center text-lg">
+        <Text className="text-center font-sans-bold text-title-1 text-foreground">
+          Enter the code
+        </Text>
+        <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
           We sent a 6-digit code to {maskPhone(phone ?? '')}.
         </Text>
         <View className="mt-2 items-center">
@@ -135,7 +137,7 @@ export default function Verify() {
         </View>
       </View>
 
-      <View className="mt-10">
+      <Card variant="elevated" padding="lg" className="mt-10">
         <OTPField
           value={code}
           onChange={setCode}
@@ -143,19 +145,19 @@ export default function Verify() {
           disabled={isLoading}
           error={error || undefined}
         />
-      </View>
 
-      <View className="mt-6 items-center">
-        {resendCooldown > 0 ? (
-          <Text className="text-stone-500 text-base">
-            Resend code in 0:{resendCooldown.toString().padStart(2, '0')}
-          </Text>
-        ) : (
-          <Link label="Resend code" onPress={onResend} />
-        )}
-      </View>
+        <View className="mt-6 items-center">
+          {resendCooldown > 0 ? (
+            <Text className="font-sans text-body text-ink-secondary">
+              Resend code in 0:{resendCooldown.toString().padStart(2, '0')}
+            </Text>
+          ) : (
+            <Link label="Resend code" onPress={onResend} />
+          )}
+        </View>
+      </Card>
 
-      <View className="mt-10">
+      <View className="mt-8">
         <Button
           label="Continue"
           onPress={() => onVerify()}
@@ -165,13 +167,8 @@ export default function Verify() {
       </View>
 
       <View className="mt-6 flex-row items-center justify-center gap-2">
-        <Text className="text-stone-500 text-sm">Didn&apos;t get it?</Text>
-        <Link
-          label="Contact support"
-          tone="accent"
-          size="sm"
-          onPress={() => router.push('/support')}
-        />
+        <Text className="font-sans text-footnote text-ink-secondary">Didn&apos;t get it?</Text>
+        <Link label="Call us anytime" size="sm" onPress={() => router.push('/support')} />
       </View>
     </AuthScaffold>
   );

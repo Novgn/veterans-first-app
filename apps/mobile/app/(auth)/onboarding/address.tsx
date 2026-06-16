@@ -1,19 +1,9 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 
+import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
 import { AuthScaffold, Button, ScreenHeader, TextField } from '@/components/ui';
 import { useOnboardingStore } from '@/stores/onboarding';
-
-function ProgressBar({ percent }: { percent: number }) {
-  return (
-    <View
-      className="bg-stone-200 mx-6 mb-2 h-2 overflow-hidden rounded-full"
-      accessibilityRole="progressbar"
-      accessibilityValue={{ now: percent, min: 0, max: 100 }}>
-      <View className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
-    </View>
-  );
-}
 
 export default function OnboardingAddress() {
   const router = useRouter();
@@ -30,7 +20,7 @@ export default function OnboardingAddress() {
       header={
         <View>
           <ScreenHeader title="Step 2 of 4" />
-          <ProgressBar percent={50} />
+          <OnboardingProgress percent={50} />
         </View>
       }
       footer={
@@ -41,8 +31,8 @@ export default function OnboardingAddress() {
         />
       }>
       <View>
-        <Text className="text-title-1 text-foreground">Your home address</Text>
-        <Text className="text-stone-600 mt-2 text-body">
+        <Text className="font-sans-bold text-title-1 text-foreground">Your home address</Text>
+        <Text className="mt-2 font-sans text-body text-ink-secondary">
           We&apos;ll use this as your default pickup.
         </Text>
       </View>
