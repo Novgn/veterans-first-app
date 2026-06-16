@@ -26,12 +26,14 @@ export function ConfirmRevokeModal({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View className="flex-1 items-center justify-center bg-black/50 px-6">
-        <View className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-          <View className="mb-3 h-12 w-12 items-center justify-center rounded-full bg-red-100">
-            <Ionicons name="warning" size={24} color="#DC2626" />
+        <View className="w-full max-w-sm rounded-lg bg-card p-6 shadow-overlay">
+          <View className="mb-3 h-12 w-12 items-center justify-center rounded-full bg-error-100">
+            <Ionicons name="warning" size={24} color="#A83A35" />
           </View>
-          <Text className="mb-2 text-lg font-semibold text-foreground">Remove {memberName}?</Text>
-          <Text className="mb-5 text-sm text-gray-600">
+          <Text className="mb-2 font-sans-semibold text-headline text-foreground">
+            Remove {memberName}?
+          </Text>
+          <Text className="mb-5 font-sans text-footnote text-ink-secondary">
             They will immediately lose access to your ride information and stop receiving
             notifications. You can re-invite them any time.
           </Text>
@@ -40,23 +42,23 @@ export function ConfirmRevokeModal({
             <Pressable
               onPress={onCancel}
               disabled={isLoading}
-              className="min-h-[48px] flex-1 items-center justify-center rounded-lg border border-gray-300"
+              className="min-h-[48px] flex-1 items-center justify-center rounded-md border-2 border-primary"
               accessibilityLabel="Cancel"
               accessibilityRole="button"
               testID="confirm-revoke-cancel">
-              <Text className="font-semibold text-gray-700">Cancel</Text>
+              <Text className="font-sans-semibold text-primary">Cancel</Text>
             </Pressable>
             <Pressable
               onPress={onConfirm}
               disabled={isLoading}
-              className="min-h-[48px] flex-1 items-center justify-center rounded-lg bg-red-600"
+              className="min-h-[48px] flex-1 items-center justify-center rounded-md bg-error active:opacity-90"
               accessibilityLabel="Remove"
               accessibilityRole="button"
               testID="confirm-revoke-confirm">
               {isLoading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text className="font-semibold text-white">Remove</Text>
+                <Text className="font-sans-semibold text-white">Remove</Text>
               )}
             </Pressable>
           </View>

@@ -27,15 +27,17 @@ interface PrefRowProps {
 
 function PrefRow({ label, hint, value, onChange, testID }: PrefRowProps) {
   return (
-    <View className="flex-row items-center justify-between border-b border-gray-100 px-4 py-4">
+    <View className="border-hairline min-h-[56px] flex-row items-center justify-between border-b px-4 py-4">
       <View className="mr-4 flex-1">
-        <Text className="text-base font-medium text-foreground">{label}</Text>
-        {hint ? <Text className="mt-0.5 text-xs text-gray-500">{hint}</Text> : null}
+        <Text className="font-sans-medium text-body text-foreground">{label}</Text>
+        {hint ? (
+          <Text className="mt-0.5 font-sans text-caption text-ink-secondary">{hint}</Text>
+        ) : null}
       </View>
       <Switch
         value={value}
         onValueChange={onChange}
-        trackColor={{ true: '#1E40AF', false: '#D1D5DB' }}
+        trackColor={{ true: '#1F3A5F', false: '#DAD3C6' }}
         thumbColor="#ffffff"
         accessibilityLabel={label}
         testID={testID}
@@ -56,7 +58,7 @@ export default function NotificationPreferencesScreen() {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-background">
-        <ActivityIndicator size="large" color="#1E40AF" className="mt-12" />
+        <ActivityIndicator size="large" color="#1F3A5F" className="mt-12" />
       </SafeAreaView>
     );
   }
@@ -65,16 +67,18 @@ export default function NotificationPreferencesScreen() {
     <SafeAreaView className="flex-1 bg-background">
       <Stack.Screen options={{ title: 'Notifications' }} />
       <ScrollView className="flex-1 px-6 pt-4" testID="notification-preferences-screen">
-        <View className="mb-6 flex-row items-center rounded-xl bg-white p-4 shadow-sm">
-          <Ionicons name="notifications" size={24} color="#1E40AF" />
-          <Text className="ml-3 flex-1 text-sm text-gray-700">
+        <View className="border-hairline mb-6 flex-row items-center rounded-lg border bg-card p-4 shadow-card">
+          <Ionicons name="notifications" size={24} color="#1F3A5F" />
+          <Text className="ml-3 flex-1 font-sans text-footnote text-ink-secondary">
             Choose how and what we notify you about. Your preferences apply across all
             notifications, including those sent to linked family members.
           </Text>
         </View>
 
-        <Text className="mb-2 text-sm font-semibold uppercase text-gray-500">Channels</Text>
-        <View className="mb-6 rounded-xl bg-white shadow-sm">
+        <Text className="mb-2 font-sans-semibold text-footnote uppercase text-ink-secondary">
+          Channels
+        </Text>
+        <View className="border-hairline mb-6 overflow-hidden rounded-lg border bg-card shadow-card">
           <PrefRow
             label="Push notifications"
             hint="Alerts on your phone lock screen"
@@ -91,8 +95,10 @@ export default function NotificationPreferencesScreen() {
           />
         </View>
 
-        <Text className="mb-2 text-sm font-semibold uppercase text-gray-500">What to send</Text>
-        <View className="mb-6 rounded-xl bg-white shadow-sm">
+        <Text className="mb-2 font-sans-semibold text-footnote uppercase text-ink-secondary">
+          What to send
+        </Text>
+        <View className="border-hairline mb-6 overflow-hidden rounded-lg border bg-card shadow-card">
           <PrefRow
             label="Ride reminders"
             hint="24 hours and 1 hour before each ride"

@@ -14,8 +14,9 @@
 import { router } from 'expo-router';
 import { View, Text, SafeAreaView } from 'react-native';
 
-import { Header } from '@/components/Header';
+import { PhoneButton } from '@/components/PhoneButton';
 import { StepIndicator, TimePicker } from '@/components/booking';
+import { AppHeader } from '@/components/ui';
 import { useBookingStore } from '@/stores/bookingStore';
 
 export default function BookingStep2() {
@@ -54,21 +55,28 @@ export default function BookingStep2() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <Header showBackButton onBack={handleBack} title="Book a Ride" />
+      <AppHeader
+        mode="screen"
+        title="Book a Ride"
+        onBack={handleBack}
+        rightSlot={<PhoneButton />}
+      />
       <View className="flex-1 px-6 pt-4">
         <StepIndicator currentStep={2} totalSteps={3} />
 
-        <Text className="mt-6 text-2xl font-bold text-foreground">When do you need a ride?</Text>
-        <Text className="mt-1 text-lg text-gray-700">Select your pickup time</Text>
+        <Text className="mt-6 font-sans-bold text-title-1 text-foreground">When?</Text>
+        <Text className="mt-1 font-sans text-body text-ink-secondary">Choose your pickup time</Text>
 
         {/* Show selected destination */}
         {dropoffDestination && (
-          <View className="mt-4 rounded-xl bg-gray-100 p-4">
-            <Text className="text-sm font-medium text-gray-500">Going to:</Text>
-            <Text className="mt-1 text-lg font-semibold text-foreground">
+          <View className="mt-4 rounded-lg bg-card p-4">
+            <Text className="font-sans-medium text-footnote text-ink-secondary">Going to</Text>
+            <Text className="mt-1 font-sans-semibold text-body text-foreground">
               {dropoffDestination.name}
             </Text>
-            <Text className="text-base text-gray-600">{dropoffDestination.address}</Text>
+            <Text className="font-sans text-callout text-ink-secondary">
+              {dropoffDestination.address}
+            </Text>
           </View>
         )}
 

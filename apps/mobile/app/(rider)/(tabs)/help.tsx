@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Alert, Linking, View, Text, Pressable, SafeAreaView } from 'react-native';
+import { Alert, Linking, View, Text, Pressable, SafeAreaView, ScrollView } from 'react-native';
 
-import { Header } from '@/components/Header';
+import { AppHeader, Card, SectionHeader } from '@/components/ui';
 import { SUPPORT_PHONE } from '@/lib/constants';
 
 export default function Help() {
@@ -19,46 +19,64 @@ export default function Help() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <Header />
-      <View className="flex-1 px-6 pt-4">
-        <Text className="mb-6 text-2xl font-bold text-foreground">Help & Support</Text>
+      <AppHeader mode="brand" />
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-6 pt-4 pb-8"
+        showsVerticalScrollIndicator={false}>
+        <Text
+          accessibilityRole="header"
+          className="mb-6 font-sans-bold text-title-1 text-foreground">
+          Help
+        </Text>
 
-        <View className="mb-6 rounded-xl bg-white p-6 shadow-sm">
-          <Text className="mb-4 text-lg font-semibold text-foreground">Need Assistance?</Text>
-          <Text className="mb-6 text-gray-700">
-            Our support team is available to help you with booking rides, account questions, and any
-            other assistance you may need.
+        {/* Prominent human escalation — celebrated as a feature */}
+        <Card variant="elevated" padding="lg" className="mb-6 items-center">
+          <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-secondary-100">
+            <Ionicons name="call" size={32} color="#4A6B54" />
+          </View>
+          <Text className="font-sans-semibold text-title-3 text-foreground">
+            We're here for you
+          </Text>
+          <Text className="mb-6 mt-1 text-center font-sans text-callout text-ink-secondary">
+            A real person can help you book a ride, answer questions, or anything else you need.
+            Take your time.
           </Text>
 
+          {/* Sage "Call us anytime" — always-reachable phone button (56dp) */}
           <Pressable
             onPress={handleCallSupport}
-            className="h-[56px] flex-row items-center justify-center rounded-xl bg-primary"
-            accessibilityLabel="Call Support"
+            className="min-h-touch-lg w-full flex-row items-center justify-center rounded-md bg-secondary px-6 active:bg-secondary-700"
+            accessibilityLabel="Call us anytime"
             accessibilityRole="button"
-            accessibilityHint="Opens your phone to call our support line">
-            <Ionicons name="call" size={24} color="white" />
-            <Text className="ml-3 text-lg font-bold text-white">Call Support</Text>
+            accessibilityHint="Opens your phone to call Veterans 1st support">
+            <Ionicons name="call" size={24} color="#FFFFFF" />
+            <Text className="ml-3 font-sans-semibold text-headline text-white">
+              Call us anytime
+            </Text>
           </Pressable>
-        </View>
+        </Card>
 
-        <View className="rounded-xl bg-gray-100 p-6">
-          <Text className="mb-4 text-lg font-semibold text-foreground">Operating Hours</Text>
+        {/* Operating hours */}
+        <SectionHeader title="Operating hours" />
+        <Card variant="outlined" padding="lg" className="mb-6">
           <View className="flex-row justify-between">
-            <Text className="text-gray-700">Monday - Friday</Text>
-            <Text className="font-medium text-foreground">6:00 AM - 8:00 PM</Text>
+            <Text className="font-sans text-body text-ink-secondary">Monday – Friday</Text>
+            <Text className="font-sans-medium text-body text-foreground">6:00 AM – 8:00 PM</Text>
           </View>
-          <View className="mt-2 flex-row justify-between">
-            <Text className="text-gray-700">Saturday - Sunday</Text>
-            <Text className="font-medium text-foreground">8:00 AM - 6:00 PM</Text>
+          <View className="mt-3 flex-row justify-between">
+            <Text className="font-sans text-body text-ink-secondary">Saturday – Sunday</Text>
+            <Text className="font-sans-medium text-body text-foreground">8:00 AM – 6:00 PM</Text>
           </View>
-        </View>
+        </Card>
 
-        <View className="mt-6 rounded-xl bg-gray-100 p-6">
-          <Text className="text-center text-gray-500">
-            FAQ and additional help resources coming soon
+        {/* FAQ placeholder */}
+        <Card variant="flat" padding="lg">
+          <Text className="text-center font-sans text-callout text-ink-secondary">
+            FAQ and additional help resources coming soon.
           </Text>
-        </View>
-      </View>
+        </Card>
+      </ScrollView>
     </SafeAreaView>
   );
 }

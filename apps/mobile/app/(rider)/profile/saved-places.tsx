@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 
 import { DestinationCard } from '@/components/profile';
+import { Button } from '@/components/ui';
 import { useDeleteDestination, useDestinations, type SavedDestination } from '@/hooks';
 import { useBookingStore } from '@/stores/bookingStore';
 
@@ -61,8 +62,10 @@ export default function SavedPlaces() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#1E40AF" />
-          <Text className="mt-4 text-lg text-gray-600">Loading saved places...</Text>
+          <ActivityIndicator size="large" color="#1F3A5F" />
+          <Text className="mt-4 font-sans text-body text-ink-secondary">
+            Loading saved places...
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -72,20 +75,20 @@ export default function SavedPlaces() {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center px-6">
-          <Ionicons name="alert-circle-outline" size={48} color="#EF4444" />
-          <Text className="mt-4 text-center text-lg text-gray-800">
+          <Ionicons name="alert-circle-outline" size={48} color="#A83A35" />
+          <Text className="mt-4 text-center font-sans-semibold text-headline text-foreground">
             Unable to load saved places
           </Text>
-          <Text className="mt-2 text-center text-base text-gray-600">
+          <Text className="mt-2 text-center font-sans text-body text-ink-secondary">
             Please check your connection and try again
           </Text>
-          <Pressable
-            onPress={() => refetch()}
-            className="mt-6 h-[56px] w-full items-center justify-center rounded-xl bg-primary"
-            accessibilityLabel="Retry loading saved places"
-            accessibilityRole="button">
-            <Text className="text-lg font-semibold text-white">Try Again</Text>
-          </Pressable>
+          <View className="mt-6 w-full">
+            <Button
+              label="Try Again"
+              onPress={() => refetch()}
+              accessibilityLabel="Retry loading saved places"
+            />
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -101,9 +104,11 @@ export default function SavedPlaces() {
             {destinations.map((destination) => (
               <View key={destination.id}>
                 {deletingId === destination.id ? (
-                  <View className="mb-3 min-h-[56px] items-center justify-center rounded-xl bg-gray-100 p-4">
-                    <ActivityIndicator size="small" color="#6B7280" />
-                    <Text className="mt-2 text-sm text-gray-500">Deleting...</Text>
+                  <View className="border-hairline mb-3 min-h-[56px] items-center justify-center rounded-lg border bg-card p-4">
+                    <ActivityIndicator size="small" color="#4F4A41" />
+                    <Text className="mt-2 font-sans text-footnote text-ink-secondary">
+                      Deleting...
+                    </Text>
                   </View>
                 ) : (
                   <Link
@@ -130,13 +135,13 @@ export default function SavedPlaces() {
           </>
         ) : (
           <View className="flex-1 items-center justify-center py-16">
-            <View className="mb-6 h-24 w-24 items-center justify-center rounded-full bg-blue-100">
-              <Ionicons name="location-outline" size={48} color="#1E40AF" />
+            <View className="mb-6 h-24 w-24 items-center justify-center rounded-full bg-primary-100">
+              <Ionicons name="location-outline" size={48} color="#1F3A5F" />
             </View>
-            <Text className="mb-2 text-center text-xl font-semibold text-gray-800">
+            <Text className="mb-2 text-center font-sans-semibold text-title-2 text-foreground">
               No saved places yet
             </Text>
-            <Text className="mb-8 text-center text-base text-gray-600">
+            <Text className="mb-8 text-center font-sans text-body text-ink-secondary">
               Add your frequently used destinations for quick booking
             </Text>
           </View>
@@ -146,14 +151,12 @@ export default function SavedPlaces() {
       {/* Floating Add Button - 56dp height, primary action */}
       <View className="px-6 pb-6">
         <Link href="/profile/add-place" asChild>
-          <Pressable
-            className="h-[56px] flex-row items-center justify-center rounded-xl bg-primary"
+          <Button
+            label="Add Place"
+            leftIcon={<Ionicons name="add" size={24} color="white" />}
             accessibilityLabel="Add a new place"
-            accessibilityRole="button"
-            accessibilityHint="Opens form to add a new saved destination">
-            <Ionicons name="add" size={24} color="white" />
-            <Text className="ml-2 text-lg font-semibold text-white">Add Place</Text>
-          </Pressable>
+            accessibilityHint="Opens form to add a new saved destination"
+          />
         </Link>
       </View>
     </SafeAreaView>

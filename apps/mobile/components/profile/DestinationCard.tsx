@@ -21,29 +21,34 @@ interface DestinationCardProps {
 
 export function DestinationCard({ destination, onEdit, onDelete }: DestinationCardProps) {
   return (
-    <View className="mb-3 min-h-[56px] rounded-xl bg-white p-4 shadow-sm">
+    <View className="border-hairline mb-3 min-h-[56px] rounded-lg border bg-card p-4 shadow-card">
       <View className="flex-row items-center justify-between">
         <View className="flex-1 pr-4">
           {/* Label with icon and badges */}
           <View className="flex-row flex-wrap items-center">
-            <Ionicons name="location" size={24} color="#1E40AF" />
-            <Text className="ml-2 text-lg font-semibold text-foreground" accessibilityRole="text">
+            <Ionicons name="location" size={24} color="#1F3A5F" />
+            <Text
+              className="ml-2 font-sans-semibold text-headline text-foreground"
+              accessibilityRole="text">
               {destination.label}
             </Text>
             {destination.is_default_pickup && (
-              <View className="ml-2 rounded-full bg-blue-100 px-2 py-0.5">
-                <Text className="text-xs font-medium text-blue-800">Pickup</Text>
+              <View className="ml-2 rounded-full border border-accent bg-background px-2 py-0.5">
+                <Text className="font-sans-medium text-caption text-foreground">Pickup</Text>
               </View>
             )}
             {destination.is_default_dropoff && (
-              <View className="ml-2 rounded-full bg-green-100 px-2 py-0.5">
-                <Text className="text-xs font-medium text-green-800">Dropoff</Text>
+              <View className="ml-2 rounded-full border border-accent bg-background px-2 py-0.5">
+                <Text className="font-sans-medium text-caption text-foreground">Dropoff</Text>
               </View>
             )}
           </View>
 
           {/* Address preview */}
-          <Text className="mt-1 text-base text-gray-600" numberOfLines={1} accessibilityRole="text">
+          <Text
+            className="mt-1 font-sans text-body text-ink-secondary"
+            numberOfLines={1}
+            accessibilityRole="text">
             {destination.address}
           </Text>
         </View>
@@ -56,7 +61,7 @@ export function DestinationCard({ destination, onEdit, onDelete }: DestinationCa
             accessibilityLabel={`Edit ${destination.label}`}
             accessibilityRole="button"
             accessibilityHint="Opens editor for this saved place">
-            <Ionicons name="pencil" size={20} color="#6B7280" />
+            <Ionicons name="pencil" size={20} color="#4F4A41" />
           </Pressable>
           <Pressable
             onPress={() => onDelete(destination)}
@@ -64,7 +69,7 @@ export function DestinationCard({ destination, onEdit, onDelete }: DestinationCa
             accessibilityLabel={`Delete ${destination.label}`}
             accessibilityRole="button"
             accessibilityHint="Removes this saved place">
-            <Ionicons name="trash-outline" size={20} color="#EF4444" />
+            <Ionicons name="trash-outline" size={20} color="#A83A35" />
           </Pressable>
         </View>
       </View>

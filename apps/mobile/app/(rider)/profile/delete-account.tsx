@@ -69,9 +69,9 @@ export default function DeleteAccount() {
   return (
     <AuthScaffold header={<ScreenHeader title="Delete account" />}>
       <View>
-        <Text className="text-title-1 text-foreground">Delete your account?</Text>
+        <Text className="font-sans-bold text-title-1 text-foreground">Delete your account?</Text>
 
-        <Text className="text-stone-600 mt-4 text-body">
+        <Text className="mt-4 font-sans text-body text-ink-secondary">
           Deleting your account will permanently remove:
           {'\n'}• Your profile and veteran information
           {'\n'}• Your saved addresses and payment methods
@@ -80,9 +80,9 @@ export default function DeleteAccount() {
           {'\n'}This action cannot be undone. Active rides must be completed or cancelled first.
         </Text>
 
-        <View className="mt-6 flex-row items-start gap-3 rounded-xl bg-error/10 p-4">
-          <Ionicons name="warning" size={22} color="#DC2626" />
-          <Text className="flex-1 text-body font-bold text-error">This cannot be undone.</Text>
+        <View className="mt-6 flex-row items-start gap-3 rounded-lg bg-error-100 p-4">
+          <Ionicons name="warning" size={22} color="#A83A35" />
+          <Text className="flex-1 font-sans-bold text-body text-error">This cannot be undone.</Text>
         </View>
 
         <View className="mt-8">
@@ -100,7 +100,7 @@ export default function DeleteAccount() {
         </View>
 
         {error ? (
-          <Text className="mt-4 text-body text-error" accessibilityLiveRegion="polite">
+          <Text className="mt-4 font-sans text-body text-error" accessibilityLiveRegion="polite">
             {error}
           </Text>
         ) : null}
@@ -112,14 +112,14 @@ export default function DeleteAccount() {
             accessibilityRole="button"
             accessibilityLabel="Delete my account"
             accessibilityState={{ disabled: isButtonDisabled, busy: isDeleting }}
-            className={`min-h-[56px] w-full flex-row items-center justify-center rounded-xl px-6 ${
-              isButtonDisabled ? 'bg-error/40' : 'bg-error active:opacity-90'
+            className={`min-h-[56px] w-full flex-row items-center justify-center rounded-md px-6 ${
+              isButtonDisabled ? 'bg-error opacity-45' : 'bg-error active:opacity-90'
             }`}
             testID="delete-account-confirm-button">
             {isDeleting ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text className="text-body font-bold text-white">Delete my account</Text>
+              <Text className="font-sans-bold text-body text-white">Delete my account</Text>
             )}
           </Pressable>
         </View>
