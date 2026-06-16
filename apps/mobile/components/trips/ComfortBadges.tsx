@@ -24,37 +24,39 @@ interface ComfortBadgesProps {
 interface ComfortBadge {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
-  color: string;
 }
 
+// Veteran Honor: comfort preferences are calm, matter-of-fact tags — stone pill,
+// ink label, a single restrained ink-secondary icon tint. No rainbow sentiment
+// colors. A hairline border (not brass) distinguishes them from the brass-edged
+// accessibility/assistance badges.
+const ICON_TINT = '#4F4A41'; // ink-secondary
+
 const TEMPERATURE_CONFIG: Record<string, ComfortBadge> = {
-  cool: { icon: 'snow', label: 'Cool', color: '#0EA5E9' },
-  normal: { icon: 'thermometer', label: 'Normal', color: '#6B7280' },
-  warm: { icon: 'sunny', label: 'Warm', color: '#F97316' },
+  cool: { icon: 'snow', label: 'Cool' },
+  normal: { icon: 'thermometer', label: 'Normal' },
+  warm: { icon: 'sunny', label: 'Warm' },
 };
 
 const CONVERSATION_CONFIG: Record<string, ComfortBadge> = {
-  quiet: { icon: 'volume-mute', label: 'Quiet', color: '#6B7280' },
-  some: { icon: 'chatbubbles', label: 'Some chat', color: '#8B5CF6' },
-  chatty: { icon: 'chatbox-ellipses', label: 'Chatty', color: '#10B981' },
+  quiet: { icon: 'volume-mute', label: 'Quiet' },
+  some: { icon: 'chatbubbles', label: 'Some chat' },
+  chatty: { icon: 'chatbox-ellipses', label: 'Chatty' },
 };
 
 const MUSIC_CONFIG: Record<string, ComfortBadge> = {
-  none: { icon: 'musical-notes-outline', label: 'No music', color: '#6B7280' },
-  soft: { icon: 'musical-notes', label: 'Soft music', color: '#3B82F6' },
-  any: { icon: 'volume-high', label: 'Any music', color: '#EC4899' },
+  none: { icon: 'musical-notes-outline', label: 'No music' },
+  soft: { icon: 'musical-notes', label: 'Soft music' },
+  any: { icon: 'volume-high', label: 'Any music' },
 };
 
 function ComfortBadgeItem({ badge }: { badge: ComfortBadge }) {
   return (
     <View
-      className="flex-row items-center rounded-full px-3 py-1"
-      style={{ backgroundColor: `${badge.color}20` }}
+      className="border-hairline flex-row items-center rounded-full border bg-background px-3 py-1"
       accessibilityLabel={badge.label}>
-      <Ionicons name={badge.icon} size={14} color={badge.color} />
-      <Text className="ml-1 text-xs font-medium" style={{ color: badge.color }}>
-        {badge.label}
-      </Text>
+      <Ionicons name={badge.icon} size={14} color={ICON_TINT} />
+      <Text className="ml-1.5 font-sans-medium text-caption text-foreground">{badge.label}</Text>
     </View>
   );
 }
@@ -88,7 +90,7 @@ export function ComfortBadges({ preferences, testID }: ComfortBadgesProps) {
 
   if (badges.length === 0) {
     return (
-      <Text testID={testID} className="text-sm text-gray-500">
+      <Text testID={testID} className="font-sans text-caption text-ink-secondary">
         No comfort preferences set
       </Text>
     );

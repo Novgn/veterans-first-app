@@ -16,33 +16,31 @@ type IconName = React.ComponentProps<typeof Ionicons>['name'];
 interface StatusConfig {
   label: string;
   icon: IconName;
-  bgColor: string;
   nextStatus: RideStatus;
 }
 
+// Veteran Honor: this is the screen's single primary action at every stage of
+// the lifecycle, so it always renders as the navy primary CTA (one primary
+// action per screen). The label + icon carry the state, not the color.
 const STATUS_CONFIG: Record<Exclude<RideStatus, 'completed'>, StatusConfig> = {
   assigned: {
     label: 'Start Route',
     icon: 'navigate',
-    bgColor: 'bg-blue-600',
     nextStatus: 'en_route',
   },
   en_route: {
     label: 'Arrived at Pickup',
     icon: 'location',
-    bgColor: 'bg-green-600',
     nextStatus: 'arrived',
   },
   arrived: {
     label: 'Start Trip',
     icon: 'car',
-    bgColor: 'bg-green-600',
     nextStatus: 'in_progress',
   },
   in_progress: {
     label: 'Complete Trip',
     icon: 'checkmark-circle',
-    bgColor: 'bg-green-600',
     nextStatus: 'completed',
   },
 };
@@ -78,7 +76,7 @@ export function StatusActionButton({
     <Pressable
       onPress={handlePress}
       disabled={isDisabled}
-      className={`min-h-[56px] flex-row items-center justify-center rounded-xl ${config.bgColor} ${
+      className={`min-h-touch-lg flex-row items-center justify-center rounded-md bg-primary ${
         isDisabled ? 'opacity-50' : ''
       }`}
       accessibilityLabel={config.label}
@@ -86,11 +84,11 @@ export function StatusActionButton({
       accessibilityState={{ disabled: isDisabled, busy: isLoading }}
       testID={testID}>
       {isLoading ? (
-        <ActivityIndicator color="white" />
+        <ActivityIndicator color="#FFFFFF" />
       ) : (
         <>
-          <Ionicons name={config.icon} size={24} color="white" />
-          <Text className="ml-2 text-lg font-bold text-white">{config.label}</Text>
+          <Ionicons name={config.icon} size={24} color="#FFFFFF" />
+          <Text className="ml-2 font-sans-semibold text-headline text-white">{config.label}</Text>
         </>
       )}
     </Pressable>

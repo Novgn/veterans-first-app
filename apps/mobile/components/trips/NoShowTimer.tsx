@@ -48,11 +48,15 @@ export function NoShowTimer({
   const remainingMs = minWaitSeconds * 1000 - elapsedMs;
   const canMark = remainingMs <= 0;
 
+  // Veteran Honor: the wait window is a calm, patient count-UP on a stone card —
+  // never alarmist. The no-show action itself IS destructive, so the button uses
+  // the error fill only once it is genuinely enabled; until then it reads as a
+  // muted, disabled control.
   return (
-    <View className="rounded-xl border border-amber-300 bg-amber-50 p-4" testID={testID}>
+    <View className="border-hairline rounded-lg border bg-background p-4" testID={testID}>
       <View className="mb-2 flex-row items-center">
-        <Ionicons name="time" size={18} color="#B45309" />
-        <Text className="ml-2 text-sm font-semibold text-amber-800">
+        <Ionicons name="time" size={18} color="#4F4A41" />
+        <Text className="ml-2 font-sans-semibold text-caption text-ink-secondary">
           {canMark
             ? `Waited ${formatMs(elapsedMs)}`
             : `Wait ${formatMs(remainingMs)} before marking no-show`}
@@ -61,15 +65,24 @@ export function NoShowTimer({
       <Pressable
         onPress={onMarkNoShow}
         disabled={!canMark || isMarking}
-        className={`min-h-[48px] flex-row items-center justify-center rounded-xl ${
-          canMark && !isMarking ? 'bg-red-500' : 'bg-gray-300'
+        className={`min-h-touch flex-row items-center justify-center rounded-md ${
+          canMark && !isMarking ? 'bg-error' : 'border-hairline border bg-card opacity-60'
         }`}
         accessibilityLabel="Mark rider as no-show"
         accessibilityRole="button"
         accessibilityState={{ disabled: !canMark || isMarking }}
         testID={`${testID ?? 'no-show-timer'}-button`}>
-        <Ionicons name="close-circle" size={20} color="white" />
-        <Text className="ml-2 font-bold text-white">Mark No-Show</Text>
+        <Ionicons
+          name="close-circle"
+          size={20}
+          color={canMark && !isMarking ? '#FFFFFF' : '#4F4A41'}
+        />
+        <Text
+          className={`ml-2 font-sans-semibold ${
+            canMark && !isMarking ? 'text-white' : 'text-ink-secondary'
+          }`}>
+          Mark No-Show
+        </Text>
       </Pressable>
     </View>
   );

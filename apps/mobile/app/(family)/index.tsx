@@ -4,12 +4,18 @@
  * Shows pending invitations at the top with approve/decline buttons,
  * followed by the list of linked riders. Tapping a linked rider
  * navigates to the per-rider ride list (Story 4.3).
+ *
+ * Veteran Honor: warm-stone canvas, white cards (rounded-lg + shadow-card),
+ * navy/sage controls, brass non-text accents, Lexend type, warm read-only
+ * voice. Family is read-only — no rider-modify affordances here.
  */
 
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { ActivityIndicator, FlatList, Pressable, SafeAreaView, Text, View } from 'react-native';
 
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import {
   useFamilyLinks,
   useRespondToFamilyInvite,
@@ -31,57 +37,61 @@ export default function FamilyHome() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="px-6 pb-2 pt-6">
-        <Text className="text-3xl font-bold text-foreground">Family Dashboard</Text>
-        <Text className="mt-1 text-base text-gray-600">
+        <Text className="font-sans-bold text-title-1 text-foreground">Family</Text>
+        <Text className="mt-1 font-sans text-body text-ink-secondary">
           Stay close to the rides that matter to you.
         </Text>
       </View>
 
       {isLoading ? (
-        <ActivityIndicator size="large" color="#1E40AF" className="mt-12" />
+        <ActivityIndicator size="large" color="#1F3A5F" className="mt-12" />
       ) : (
         <FlatList
           ListHeaderComponent={
             pending.length > 0 ? (
               <View className="mb-4 px-6">
-                <Text className="mb-2 text-lg font-semibold text-foreground">
+                <Text className="mb-3 font-sans-semibold text-title-3 text-foreground">
                   Invitations ({pending.length})
                 </Text>
                 {pending.map((link) => (
-                  <View
+                  <Card
                     key={link.id}
-                    className="mb-3 rounded-xl bg-white p-4 shadow-sm"
+                    variant="elevated"
+                    padding="lg"
+                    className="mb-3"
                     testID={`family-invite-${link.id}`}>
-                    <Text className="text-base font-semibold text-foreground">
+                    <Text className="font-sans-semibold text-headline text-foreground">
                       {riderName(link)}
                     </Text>
                     {link.relationship ? (
-                      <Text className="text-sm text-gray-500">{link.relationship}</Text>
+                      <Text className="mt-0.5 font-sans text-caption text-ink-secondary">
+                        {link.relationship}
+                      </Text>
                     ) : null}
-                    <Text className="mt-1 text-sm text-gray-600">
+                    <Text className="mt-1 font-sans text-body text-ink-secondary">
                       {riderName(link)} has invited you to view their rides.
                     </Text>
-                    <View className="mt-3 flex-row gap-3">
-                      <Pressable
+                    <View className="mt-4 flex-row gap-3">
+                      <Button
+                        label="Decline"
+                        variant="secondary"
                         onPress={() => respond.mutate({ linkId: link.id, action: 'decline' })}
                         disabled={respond.isPending}
-                        className="min-h-[44px] flex-1 items-center justify-center rounded-lg border border-gray-300"
                         accessibilityLabel={`Decline invitation from ${riderName(link)}`}
-                        accessibilityRole="button"
-                        testID={`family-invite-decline-${link.id}`}>
-                        <Text className="font-semibold text-gray-700">Decline</Text>
-                      </Pressable>
-                      <Pressable
+                        className="flex-1"
+                        testID={`family-invite-decline-${link.id}`}
+                      />
+                      <Button
+                        label="Approve"
+                        variant="primary"
                         onPress={() => respond.mutate({ linkId: link.id, action: 'approve' })}
                         disabled={respond.isPending}
-                        className="min-h-[44px] flex-1 items-center justify-center rounded-lg bg-primary"
                         accessibilityLabel={`Approve invitation from ${riderName(link)}`}
-                        accessibilityRole="button"
-                        testID={`family-invite-approve-${link.id}`}>
-                        <Text className="font-semibold text-white">Approve</Text>
-                      </Pressable>
+                        className="flex-1"
+                        testID={`family-invite-approve-${link.id}`}
+                      />
                     </View>
-                  </View>
+                  </Card>
                 ))}
               </View>
             ) : null
@@ -93,10 +103,10 @@ export default function FamilyHome() {
           ListEmptyComponent={
             pending.length === 0 ? (
               <View className="mt-8 items-center px-6">
-                <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-primary-100">
-                  <Ionicons name="people" size={36} color="#1E40AF" />
+                <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-secondary-100">
+                  <Ionicons name="people" size={36} color="#4A6B54" />
                 </View>
-                <Text className="text-center text-base text-gray-600">
+                <Text className="text-center font-sans text-body text-ink-secondary">
                   You&apos;re not linked to any riders yet. Ask them to add your phone number from
                   Profile → Family Access.
                 </Text>
@@ -106,20 +116,24 @@ export default function FamilyHome() {
           renderItem={({ item }) => (
             <Link href={{ pathname: '/rider/[id]', params: { id: item.rider_id } }} asChild>
               <Pressable
-                className="flex-row items-center rounded-xl bg-white p-4 shadow-sm"
+                className="border-hairline flex-row items-center rounded-lg border bg-card p-6 shadow-card active:bg-background"
                 accessibilityLabel={`View rides for ${riderName(item)}`}
                 accessibilityRole="button"
                 testID={`family-linked-rider-${item.id}`}>
-                <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <Ionicons name="person" size={22} color="#1E40AF" />
+                <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-secondary-100">
+                  <Ionicons name="person" size={22} color="#4A6B54" />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-base font-semibold text-foreground">{riderName(item)}</Text>
+                  <Text className="font-sans-semibold text-headline text-foreground">
+                    {riderName(item)}
+                  </Text>
                   {item.relationship ? (
-                    <Text className="text-sm text-gray-500">{item.relationship}</Text>
+                    <Text className="mt-0.5 font-sans text-caption text-ink-secondary">
+                      {item.relationship}
+                    </Text>
                   ) : null}
                 </View>
-                <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+                <Ionicons name="chevron-forward" size={20} color="#6E685E" />
               </Pressable>
             </Link>
           )}

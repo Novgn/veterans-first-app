@@ -88,10 +88,10 @@ export function RideOfferModal({ testID }: RideOfferModalProps) {
         accessibilityViewIsModal
         testID={testID}>
         <View className="flex-1 justify-end bg-black/50">
-          <View className="rounded-t-3xl bg-white p-6">
+          <View className="rounded-t-3xl bg-card p-6">
             {/* Header with Timer */}
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-foreground">New Ride Offer</Text>
+              <Text className="font-sans-bold text-title-2 text-foreground">New Ride Offer</Text>
               <CountdownTimer
                 seconds={timeRemaining ?? 0}
                 onExpire={handleExpire}
@@ -100,13 +100,15 @@ export function RideOfferModal({ testID }: RideOfferModalProps) {
             </View>
 
             {/* Pickup Time */}
-            <View className="mb-4 rounded-xl bg-blue-50 p-4">
+            <View className="mb-4 rounded-lg bg-primary-100 p-4">
               <Text
-                className="text-center text-2xl font-bold text-primary"
+                className="text-center font-sans-bold text-title-1 text-primary"
                 accessibilityLabel={`Pickup time ${pickupTime}`}>
                 {pickupTime}
               </Text>
-              <Text className="text-center text-sm text-gray-600">Pickup Time</Text>
+              <Text className="text-center font-sans text-caption text-ink-secondary">
+                Pickup Time
+              </Text>
             </View>
 
             {/* Rider Info */}
@@ -118,13 +120,13 @@ export function RideOfferModal({ testID }: RideOfferModalProps) {
                   accessibilityLabel={`Photo of ${riderName}`}
                 />
               ) : (
-                <View className="h-16 w-16 items-center justify-center rounded-full bg-gray-200">
-                  <Text className="text-xl font-bold text-gray-600">{initials}</Text>
+                <View className="h-16 w-16 items-center justify-center rounded-full bg-primary-100">
+                  <Text className="font-sans-bold text-title-2 text-primary">{initials}</Text>
                 </View>
               )}
               <View className="ml-4 flex-1">
                 <Text
-                  className="text-lg font-semibold text-foreground"
+                  className="font-sans-semibold text-body text-foreground"
                   accessibilityLabel={`Rider: ${riderName}`}>
                   {riderName}
                 </Text>
@@ -137,30 +139,30 @@ export function RideOfferModal({ testID }: RideOfferModalProps) {
             {/* Addresses */}
             <View className="mb-6">
               <View className="mb-2 flex-row items-start">
-                <Ionicons name="location" size={20} color="#059669" />
+                <Ionicons name="location" size={20} color="#356046" />
                 <Text
-                  className="ml-2 flex-1 text-sm text-gray-700"
+                  className="ml-2 flex-1 font-sans text-caption text-ink-secondary"
                   accessibilityLabel={`Pickup: ${offer.ride.pickupAddress}`}>
                   {offer.ride.pickupAddress}
                 </Text>
               </View>
-              <View className="ml-2.5 h-4 border-l border-dashed border-gray-300" />
+              <View className="border-hairline ml-2.5 h-4 border-l border-dashed" />
               <View className="flex-row items-start">
-                <Ionicons name="flag" size={20} color="#DC2626" />
+                <Ionicons name="flag" size={20} color="#1F3A5F" />
                 <Text
-                  className="ml-2 flex-1 text-sm text-gray-700"
+                  className="ml-2 flex-1 font-sans text-caption text-ink-secondary"
                   accessibilityLabel={`Dropoff: ${offer.ride.dropoffAddress}`}>
                   {offer.ride.dropoffAddress}
                 </Text>
               </View>
             </View>
 
-            {/* Action Buttons */}
+            {/* Action Buttons — Decline (destructive, outlined error), Accept (navy primary) */}
             <View className="flex-row gap-4">
               <Pressable
                 onPress={handleDecline}
                 disabled={isProcessing}
-                className={`min-h-[56px] flex-1 items-center justify-center rounded-xl border-2 border-red-500 bg-white ${
+                className={`min-h-touch-lg flex-1 items-center justify-center rounded-md border border-error bg-card ${
                   isProcessing ? 'opacity-50' : ''
                 }`}
                 accessibilityLabel="Decline ride"
@@ -168,15 +170,15 @@ export function RideOfferModal({ testID }: RideOfferModalProps) {
                 accessibilityState={{ disabled: isProcessing }}
                 testID="decline-button">
                 {declineRide.isPending ? (
-                  <ActivityIndicator color="#EF4444" />
+                  <ActivityIndicator color="#A83A35" />
                 ) : (
-                  <Text className="text-lg font-bold text-red-500">Decline</Text>
+                  <Text className="font-sans-semibold text-headline text-error">Decline</Text>
                 )}
               </Pressable>
               <Pressable
                 onPress={handleAccept}
                 disabled={isProcessing}
-                className={`min-h-[56px] flex-1 items-center justify-center rounded-xl bg-green-500 ${
+                className={`min-h-touch-lg flex-1 items-center justify-center rounded-md bg-primary ${
                   isProcessing ? 'opacity-50' : ''
                 }`}
                 accessibilityLabel="Accept ride"
@@ -186,7 +188,7 @@ export function RideOfferModal({ testID }: RideOfferModalProps) {
                 {acceptRide.isPending ? (
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
-                  <Text className="text-lg font-bold text-white">Accept</Text>
+                  <Text className="font-sans-semibold text-headline text-white">Accept</Text>
                 )}
               </Pressable>
             </View>
