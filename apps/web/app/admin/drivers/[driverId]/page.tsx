@@ -11,6 +11,9 @@ import Link from 'next/link';
 
 import { classifyDriverRides, type DriverRideSummary } from '@veterans-first/shared/utils';
 
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { formatDateTime } from '@/lib/format';
 import { getServerSupabase } from '@/lib/supabase';
 import { setDriverActiveStatus } from '@/lib/admin/deactivateDriver';
@@ -123,115 +126,109 @@ export default async function DriverDetailPage(props: { params: Promise<{ driver
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <Link href="/admin/drivers" className="text-sm text-blue-600 hover:underline">
+          <Link
+            href="/admin/drivers"
+            className="text-callout font-semibold text-navy hover:underline"
+          >
             ← All drivers
           </Link>
-          <h2 className="mt-1 text-lg font-semibold">
+          <h2 className="mt-1 text-title-2 font-semibold text-ink">
             {driver.last_name}, {driver.first_name}
           </h2>
-          <p className="text-sm text-zinc-600">{driver.phone}</p>
+          <p className="text-body text-ink-secondary">{driver.phone}</p>
         </div>
-        <span
-          className={
-            isActive
-              ? 'rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800'
-              : 'rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700'
-          }
-        >
+        <Badge variant={isActive ? 'success' : 'secondary'}>
           {isActive ? 'Active' : 'Inactive'}
-        </span>
+        </Badge>
       </div>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Vehicle</h3>
-        <dl className="grid grid-cols-2 gap-2 text-sm">
-          <dt className="text-zinc-500">Make / Model</dt>
-          <dd>
+      <Card className="p-6">
+        <h3 className="mb-3 text-title-3 font-semibold text-ink">Vehicle</h3>
+        <dl className="grid grid-cols-2 gap-3 text-body">
+          <dt className="text-ink-secondary">Make / Model</dt>
+          <dd className="text-ink">
             {driver.driver_profiles?.vehicle_year ?? ''}{' '}
             {driver.driver_profiles?.vehicle_make ?? '—'}{' '}
             {driver.driver_profiles?.vehicle_model ?? ''}
           </dd>
-          <dt className="text-zinc-500">Color</dt>
-          <dd>{driver.driver_profiles?.vehicle_color ?? '—'}</dd>
-          <dt className="text-zinc-500">Plate</dt>
-          <dd>{driver.driver_profiles?.vehicle_plate ?? '—'}</dd>
-          <dt className="text-zinc-500">Years of experience</dt>
-          <dd>{driver.driver_profiles?.years_experience ?? '—'}</dd>
+          <dt className="text-ink-secondary">Color</dt>
+          <dd className="text-ink">{driver.driver_profiles?.vehicle_color ?? '—'}</dd>
+          <dt className="text-ink-secondary">Plate</dt>
+          <dd className="text-ink">{driver.driver_profiles?.vehicle_plate ?? '—'}</dd>
+          <dt className="text-ink-secondary">Years of experience</dt>
+          <dd className="text-ink">{driver.driver_profiles?.years_experience ?? '—'}</dd>
         </dl>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Status</h3>
+      <Card className="p-6">
+        <h3 className="mb-3 text-title-3 font-semibold text-ink">Status</h3>
         <form action={setDriverActiveStatus}>
           <input type="hidden" name="driverId" value={driver.id} />
           <input type="hidden" name="active" value={isActive ? 'false' : 'true'} />
           {isActive ? (
             <>
-              <p className="mb-2 text-sm text-zinc-600">
+              <p className="mb-3 text-body text-ink-secondary">
                 Deactivating removes this driver from future assignments. Safe scheduled rides will
                 be unassigned for reassignment.
               </p>
               {classification.blocking.length > 0 ? (
-                <p className="mb-2 rounded-md bg-amber-50 p-2 text-xs text-amber-800">
-                  Cannot deactivate: {classification.blocking.length} ride(s) still in progress.
-                  Complete them first.
+                <p className="mb-3 flex items-start gap-2 rounded-md border border-warning bg-warning-100 p-3 text-body text-ink">
+                  <span aria-hidden="true">⚠</span>
+                  <span>
+                    Cannot deactivate: {classification.blocking.length} ride(s) still in progress.
+                    Complete them first.
+                  </span>
                 </p>
               ) : null}
               {classification.reassignable.length > 0 ? (
-                <p className="mb-2 text-xs text-zinc-500">
+                <p className="mb-3 text-caption text-ink-secondary">
                   {classification.reassignable.length} upcoming ride(s) will be unassigned.
                 </p>
               ) : null}
-              <button
-                type="submit"
-                disabled={!classification.canDeactivate}
-                className="h-10 rounded-md bg-red-600 px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-              >
+              <Button type="submit" variant="destructive" disabled={!classification.canDeactivate}>
                 Deactivate driver
-              </button>
+              </Button>
             </>
           ) : (
             <>
-              <p className="mb-2 text-sm text-zinc-600">
+              <p className="mb-3 text-body text-ink-secondary">
                 Reactivating lets this driver receive new ride offers again.
               </p>
-              <button
-                type="submit"
-                className="h-10 rounded-md bg-green-600 px-4 text-sm font-semibold text-white"
-              >
-                Reactivate driver
-              </button>
+              <Button type="submit">Reactivate driver</Button>
             </>
           )}
         </form>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Recent rides</h3>
+      <Card className="p-6">
+        <h3 className="mb-3 text-title-3 font-semibold text-ink">Recent rides</h3>
         {history.length === 0 ? (
-          <p className="text-sm text-zinc-500">No rides yet.</p>
+          <p className="text-body text-ink-secondary">No rides yet.</p>
         ) : (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-3 text-body">
             {history.map((ride) => (
-              <li key={ride.id} className="flex justify-between border-b border-zinc-100 pb-2">
+              <li
+                key={ride.id}
+                className="flex justify-between gap-4 border-b border-border-hairline pb-3 last:border-b-0 last:pb-0"
+              >
                 <div>
-                  <div className="font-medium">
+                  <div className="font-semibold text-ink">
                     {ride.pickup_address} → {ride.dropoff_address}
                   </div>
-                  <div className="text-xs text-zinc-500">
+                  <div className="text-caption text-ink-secondary">
                     {formatDateTime(ride.scheduled_pickup_time)} · {ride.status}
                   </div>
                 </div>
-                <div className="text-xs text-zinc-500">
+                <div className="text-caption text-ink-secondary">
                   {ride.completed_at ? formatDateTime(ride.completed_at) : ''}
                 </div>
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </Card>
     </div>
   );
 }
