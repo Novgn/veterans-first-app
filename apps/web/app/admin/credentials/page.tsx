@@ -13,6 +13,8 @@ import {
   type CredentialClassification,
 } from '@veterans-first/shared/utils';
 
+import { Badge, type BadgeProps } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
 import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -83,16 +85,16 @@ function summarizeWorstClassification(
   return worst;
 }
 
-function badgeClasses(classification: CredentialClassification): string {
+function badgeVariant(classification: CredentialClassification): BadgeProps['variant'] {
   switch (classification) {
     case 'expired':
-      return 'bg-red-100 text-red-800';
+      return 'error';
     case 'expiring_30_days':
-      return 'bg-amber-100 text-amber-900';
+      return 'warning';
     case 'unknown':
-      return 'bg-zinc-100 text-zinc-700';
+      return 'secondary';
     default:
-      return 'bg-green-100 text-green-800';
+      return 'success';
   }
 }
 
@@ -105,74 +107,108 @@ function label(classification: CredentialClassification): string {
     case 'unknown':
       return 'Needs review';
     default:
-      return 'OK';
+      return 'Verified';
   }
 }
 
 export default async function CredentialsListPage() {
   const drivers = await fetchDrivers();
 
+  const rows = drivers.map((d) => ({
+    driver: d,
+    classification: summarizeWorstClassification(d.credentials),
+  }));
+  const expiredCount = rows.filter((r) => r.classification === 'expired').length;
+  const expiringCount = rows.filter((r) => r.classification === 'expiring_30_days').length;
+  const hasAlerts = expiredCount > 0 || expiringCount > 0;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Credentials</h2>
-        <p className="text-sm text-zinc-600">
+        <h2 className="text-title-2 font-semibold text-ink">Credentials</h2>
+        <p className="text-body text-ink-secondary">
           Driver license, insurance, and background check status per driver.
         </p>
       </div>
 
+      {hasAlerts ? (
+        <div
+          className={`flex items-start gap-3 rounded-md border p-4 text-body text-ink ${
+            expiredCount > 0 ? 'border-error bg-error-100' : 'border-warning bg-warning-100'
+          }`}
+          role="alert"
+          aria-live="polite"
+        >
+          <span aria-hidden="true">⚠</span>
+          <span>
+            {expiredCount > 0
+              ? `${expiredCount} driver${expiredCount === 1 ? '' : 's'} with expired credentials`
+              : null}
+            {expiredCount > 0 && expiringCount > 0 ? ' · ' : null}
+            {expiringCount > 0 ? `${expiringCount} expiring within 30 days` : null}. Review and act
+            on these below.
+          </span>
+        </div>
+      ) : null}
+
       {drivers.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
-          No drivers yet.
-        </div>
+        <Card className="border-dashed p-8 text-center text-body text-ink-secondary">
+          No credentials on file yet.
+        </Card>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-zinc-200">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-left">
-              <tr>
-                <th className="px-4 py-2">Driver</th>
-                <th className="px-4 py-2">Required</th>
-                <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {drivers.map((d) => {
-                const classification = summarizeWorstClassification(d.credentials);
-                const requiredCount = d.credentials.filter((c) =>
-                  (REQUIRED_CREDENTIAL_TYPES as readonly string[]).includes(c.credential_type),
-                ).length;
-                return (
-                  <tr key={d.id} className="border-t border-zinc-100">
-                    <td className="px-4 py-2">
-                      {d.last_name}, {d.first_name}
-                    </td>
-                    <td className="px-4 py-2">
-                      {requiredCount} / {REQUIRED_CREDENTIAL_TYPES.length}
-                    </td>
-                    <td className="px-4 py-2">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${badgeClasses(
-                          classification,
-                        )}`}
-                      >
-                        {label(classification)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 text-right">
-                      <Link
-                        href={`/admin/credentials/${d.id}`}
-                        className="text-sm font-medium text-blue-600 hover:underline"
-                      >
-                        Manage
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-body">
+              <thead>
+                <tr className="border-b border-border-hairline text-left">
+                  <th className="px-6 py-3 text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+                    Driver
+                  </th>
+                  <th className="px-6 py-3 text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+                    Required
+                  </th>
+                  <th className="px-6 py-3 text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+                    Status
+                  </th>
+                  <th className="px-6 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(({ driver: d, classification }) => {
+                  const requiredCount = d.credentials.filter((c) =>
+                    (REQUIRED_CREDENTIAL_TYPES as readonly string[]).includes(c.credential_type),
+                  ).length;
+                  return (
+                    <tr
+                      key={d.id}
+                      className="border-b border-border-hairline transition-colors last:border-b-0 hover:bg-navy-100"
+                    >
+                      <td className="px-6 py-4 font-semibold text-ink">
+                        {d.last_name}, {d.first_name}
+                      </td>
+                      <td className="px-6 py-4 text-ink">
+                        {requiredCount} / {REQUIRED_CREDENTIAL_TYPES.length}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant={badgeVariant(classification)}>
+                          {label(classification)}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <Link
+                          href={`/admin/credentials/${d.id}`}
+                          className="font-semibold text-navy hover:text-navy-700"
+                        >
+                          Manage
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
     </div>
   );

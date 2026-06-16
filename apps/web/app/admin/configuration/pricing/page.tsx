@@ -10,6 +10,9 @@ import {
   type PricingConfig,
 } from '@veterans-first/shared/utils';
 
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
 import { formatMoneyCents } from '@/lib/format';
 import { readSystemConfig } from '@/lib/admin/saveSystemConfig';
 import { savePricing } from '@/lib/admin/savePricing';
@@ -49,76 +52,96 @@ export default async function PricingPage(props: {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/admin/configuration" className="text-sm text-blue-600 hover:underline">
-          ← Configuration
+        <Link
+          href="/admin/configuration"
+          className="text-callout font-semibold text-navy hover:underline"
+        >
+          ← Settings
         </Link>
-        <h2 className="mt-1 text-lg font-semibold">Pricing</h2>
-        <p className="text-sm text-zinc-600">
-          Pricing takes effect immediately for new bookings. Existing booked rides keep the fare
-          locked at booking time.
+        <h2 className="mt-2 text-title-2 font-semibold text-ink">Pricing</h2>
+        <p className="mt-1 text-body text-ink-secondary">
+          Pricing takes effect immediately for new bookings. No surge — price stays locked for
+          existing bookings.
         </p>
       </div>
 
       {error ? (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-800" role="alert">
+        <div
+          className="rounded-md border border-error bg-error-100 p-4 text-body text-ink"
+          role="alert"
+        >
           {error}
         </div>
       ) : null}
       {ok ? (
-        <div className="rounded-md bg-green-50 p-3 text-sm text-green-800" role="status">
-          Pricing saved.
+        <div
+          className="rounded-md border border-success bg-success-100 p-4 text-body text-ink"
+          role="status"
+          aria-live="polite"
+        >
+          Changes saved.
         </div>
       ) : null}
 
-      <form action={savePricing} className="grid grid-cols-2 gap-3">
-        <Field
-          label="Base rate ($)"
-          name="baseDollars"
-          defaultValue={(current.baseCents / 100).toFixed(2)}
-        />
-        <Field
-          label="Per mile ($)"
-          name="perMileDollars"
-          defaultValue={(current.perMileCents / 100).toFixed(2)}
-        />
-        <Field
-          label="Per wait minute ($)"
-          name="perWaitMinuteDollars"
-          defaultValue={(current.perWaitMinuteCents / 100).toFixed(2)}
-        />
-        <Field
-          label="Included wait minutes"
-          name="includedWaitMinutes"
-          defaultValue={current.includedWaitMinutes.toString()}
-          step="1"
-          min="0"
-        />
-        <Field
-          label="Minimum fare ($)"
-          name="minimumFareDollars"
-          defaultValue={(current.minimumFareCents / 100).toFixed(2)}
-        />
-        <div className="col-span-2 flex justify-end">
-          <button
-            type="submit"
-            className="h-10 rounded-md bg-blue-600 px-4 text-sm font-semibold text-white"
-          >
-            Save pricing
-          </button>
-        </div>
-      </form>
+      <Card>
+        <CardHeader>
+          <CardTitle>Fare configuration</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={savePricing} className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <Field
+              label="Base fare ($)"
+              name="baseDollars"
+              defaultValue={(current.baseCents / 100).toFixed(2)}
+            />
+            <Field
+              label="Per-mile rate ($)"
+              name="perMileDollars"
+              defaultValue={(current.perMileCents / 100).toFixed(2)}
+            />
+            <Field
+              label="Per wait minute ($)"
+              name="perWaitMinuteDollars"
+              defaultValue={(current.perWaitMinuteCents / 100).toFixed(2)}
+            />
+            <Field
+              label="Included wait time (minutes)"
+              name="includedWaitMinutes"
+              defaultValue={current.includedWaitMinutes.toString()}
+              step="1"
+              min="0"
+            />
+            <Field
+              label="Minimum fare ($)"
+              name="minimumFareDollars"
+              defaultValue={(current.minimumFareCents / 100).toFixed(2)}
+            />
+            <div className="flex items-end justify-end sm:col-span-2">
+              <Button type="submit" size="lg">
+                Save changes
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
 
-      <section className="rounded-xl border border-zinc-200 p-4">
-        <h3 className="mb-2 text-sm font-semibold">Sample fares</h3>
-        <ul className="divide-y divide-zinc-100 text-sm">
-          {samples.map((s) => (
-            <li key={s.label} className="flex justify-between py-2">
-              <span>{s.label}</span>
-              <span>{formatMoneyCents(computeRideFareCents(s, current))}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>Sample fares</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="divide-y divide-border-hairline text-body">
+            {samples.map((s) => (
+              <li key={s.label} className="flex justify-between py-3">
+                <span className="text-ink-secondary">{s.label}</span>
+                <span className="font-semibold text-ink">
+                  {formatMoneyCents(computeRideFareCents(s, current))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -133,17 +156,14 @@ interface FieldProps {
 
 function Field({ label, name, defaultValue, step = '0.01', min = '0' }: FieldProps) {
   return (
-    <label className="flex flex-col text-sm">
-      <span className="mb-1 font-medium text-zinc-700">{label}</span>
-      <input
-        name={name}
-        type="number"
-        step={step}
-        min={min}
-        defaultValue={defaultValue}
-        className="h-10 rounded-md border border-zinc-300 px-3"
-        required
-      />
-    </label>
+    <Input
+      label={label}
+      name={name}
+      type="number"
+      step={step}
+      min={min}
+      defaultValue={defaultValue}
+      required
+    />
   );
 }

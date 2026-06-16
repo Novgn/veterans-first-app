@@ -6,8 +6,8 @@ export default function AdminHome() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Overview</h2>
-        <p className="text-sm text-zinc-600">
+        <h2 className="text-title-2 font-semibold text-ink">Overview</h2>
+        <p className="text-body text-ink-secondary">
           Driver roster, credentials, and system configuration.
         </p>
       </div>
