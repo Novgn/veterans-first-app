@@ -12,8 +12,7 @@ import { PhoneButton } from './PhoneButton';
 
 const NAV_LINKS = [
   { label: 'How it works', href: '#how-it-works' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'For families', href: '#for-families' },
+  { label: 'Pricing & families', href: '#pricing' },
   { label: 'Get the app', href: '#get-the-app' },
 ];
 
