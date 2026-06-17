@@ -48,7 +48,7 @@ export function MarketingFooter() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="rounded-md text-callout text-white/85 hover:text-white"
+                  className="flex min-h-[44px] items-center rounded-md text-callout text-white/85 hover:text-white"
                 >
                   {link.label}
                 </a>

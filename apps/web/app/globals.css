@@ -12,21 +12,20 @@
 @import '@veterans-first/design-tokens/tokens.css';
 
 /*
- * Marketing-site motion — CSS only, no JS animation libs.
- *
- * Two effects, both ~340ms ease-out (DESIGN.md: gentle, no bounce, no infinite
- * loops):
+ * Marketing-site motion — gentle, ~ease-out, no bounce or infinite loops
+ * (DESIGN.md). Two effects:
  *   • [data-enter]  — staggered entrance on first paint (hero). Delay via
- *                     `--enter-delay`.
- *   • [data-reveal] / [data-reveal-fade] — scroll-driven reveal using the CSS
- *                     `animation-timeline: view()` API. Each fires once as the
- *                     element scrolls into the viewport.
+ *                     `--enter-delay`. Pure CSS; plays on load in every browser.
+ *   • [data-reveal] / [data-reveal-fade] — reveal as the element scrolls into
+ *                     view, driven by an IntersectionObserver (components/
+ *                     marketing/ScrollReveal.tsx) so it animates in Safari and
+ *                     Firefox too, not just Chromium (the prior
+ *                     `animation-timeline: view()` API was Chromium-only).
  *
- * Reduced-motion + no-support fallback: elements default to the END state
- * (opacity:1, no transform). Animation is ONLY applied inside the
- * `@supports (animation-timeline: view())` + `prefers-reduced-motion:
- * no-preference` guard, so anyone who opts out — or whose browser lacks
- * scroll-driven animations — simply sees the finished layout with no movement.
+ * Reduced-motion + no-JS fallback: the hidden start state is gated behind both
+ * `prefers-reduced-motion: no-preference` and the `.reveal-on` class the
+ * observer adds at runtime — so anyone who opts out, or has JS disabled, just
+ * sees the finished layout with no movement.
  */
 @keyframes v1-enter {
   from {
@@ -39,15 +38,6 @@
   }
 }
 
-@keyframes v1-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   /* Entrance: runs on load, honoring an optional per-element stagger delay. */
   [data-enter] {
@@ -56,22 +46,27 @@
     animation-delay: var(--enter-delay, 0ms);
   }
 
-  /* Scroll reveals require scroll-driven timelines; otherwise show end state. */
-  @supports (animation-timeline: view()) {
-    [data-reveal],
-    [data-reveal-fade] {
-      opacity: 0;
-      animation-timeline: view();
-      animation-range: entry 0% entry 45%;
-      animation-fill-mode: both;
-    }
+  /*
+   * Scroll reveal — JS (ScrollReveal.tsx) adds `.reveal-on` to <html> once it
+   * starts observing, then `.is-revealed` to each element as it enters view.
+   * Scoping the start state under `.reveal-on` means the pre-hydration paint
+   * and no-JS visitors simply see the end state.
+   */
+  .reveal-on [data-reveal],
+  .reveal-on [data-reveal-fade] {
+    opacity: 0;
+    transition:
+      opacity 600ms var(--motion-ease),
+      transform 600ms var(--motion-ease);
+  }
 
-    [data-reveal] {
-      animation-name: v1-enter;
-    }
+  .reveal-on [data-reveal] {
+    transform: translateY(28px);
+  }
 
-    [data-reveal-fade] {
-      animation-name: v1-fade;
-    }
+  .reveal-on [data-reveal].is-revealed,
+  .reveal-on [data-reveal-fade].is-revealed {
+    opacity: 1;
+    transform: none;
   }
 }
