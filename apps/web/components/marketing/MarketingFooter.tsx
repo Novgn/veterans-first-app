@@ -1,11 +1,8 @@
 // MarketingFooter — navy footer with the reversed logo, blurb, store-badge
 // placeholders, link columns, and the call-us block.
 //
-// The "Staff sign in" link lives here too (Support column) so the operations
-// console stays reachable from the footer as well as the nav. In-page anchors
-// reuse the section ids; informational links are placeholders (no routes yet).
-
-import Link from 'next/link';
+// Customer-facing only — no staff/console links. In-page anchors reuse the
+// section ids; informational links are placeholders (no routes yet).
 
 import { BrandLogo } from './BrandLogo';
 import { StoreBadges } from './StoreBadges';
@@ -24,7 +21,6 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
     links: [
       { label: 'Contact us', href: 'tel:+19195550100' },
       { label: 'For families', href: '#for-families' },
-      { label: 'Staff sign in', href: '/sign-in' },
     ],
   },
 ];
@@ -48,25 +44,15 @@ export function MarketingFooter() {
               <span className="text-caption font-semibold uppercase tracking-[0.05em] text-white/50">
                 {col.heading}
               </span>
-              {col.links.map((link) =>
-                link.href.startsWith('/') ? (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className="rounded-md text-callout text-white/85 hover:text-white"
-                  >
-                    {link.label}
-                  </Link>
-                ) : (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="rounded-md text-callout text-white/85 hover:text-white"
-                  >
-                    {link.label}
-                  </a>
-                ),
-              )}
+              {col.links.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="rounded-md text-callout text-white/85 hover:text-white"
+                >
+                  {link.label}
+                </a>
+              ))}
             </nav>
           ))}
 
