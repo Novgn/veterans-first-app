@@ -3,20 +3,23 @@
 //
 // This is the ONLY public, unauthenticated POST on the site (middleware does
 // not protect /api/waitlist). Defenses: strict zod validation, a honeypot
-// field, and an idempotent insert (unique email -> on conflict do nothing) so
-// repeat submits never error or leak whether an address already exists. The
-// captured list is server-only (RLS denies anon/authenticated); we never log
-// the email itself (PII).
+// field, and idempotent handling of duplicate emails (the table's unique
+// constraint -> we treat 23505 as success) so repeat submits never error or
+// leak whether an address already exists. We never log the email (PII).
 //
-// NOTE: persist-only for now — there is no email provider wired, so the
-// "we'll email you at launch" promise is an operational commitment (export the
-// list and send when the app ships). Add Resend here to auto-confirm later.
+// Insert goes through the Supabase service-role client (HTTP / PostgREST)
+// rather than the Drizzle/postgres.js pooler connection: it's resilient on
+// serverless and bypasses RLS, so the `waitlist` table can keep RLS on with no
+// public policies. The captured list stays server-only.
+//
+// NOTE: persist-only for now — no email provider is wired, so the "we'll email
+// you at launch" promise is an operational commitment (export the list and
+// send when the app ships). Add Resend here to auto-confirm later.
 
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { getDb, waitlist } from '@veterans-first/shared/db';
-
+import { getServiceRoleSupabase } from '@/lib/supabase';
 import { log } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -42,8 +45,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
   }
 
-  const { company, source } = parsed.data;
+  const { company } = parsed.data;
   const email = parsed.data.email.toLowerCase();
+  const source = parsed.data.source ?? 'marketing-get-the-app';
 
   // Honeypot tripped — pretend success so the bot moves on, but write nothing.
   if (company && company.trim() !== '') {
@@ -51,17 +55,26 @@ export async function POST(req: Request) {
   }
 
   try {
-    const db = getDb();
-    await db
-      .insert(waitlist)
-      .values({ email, source: source ?? 'marketing-get-the-app' })
-      .onConflictDoNothing();
+    const supabase = getServiceRoleSupabase();
+    const { error } = await supabase.from('waitlist').insert({ email, source });
+
+    if (error) {
+      // 23505 = unique_violation: already on the list. Idempotent success.
+      if (error.code === '23505') {
+        return NextResponse.json({ ok: true });
+      }
+      log.error(
+        { event: 'waitlist.error', code: error.code, err: error.message },
+        'waitlist insert failed',
+      );
+      return NextResponse.json(
+        { error: 'Something went wrong. Please try again.' },
+        { status: 500 },
+      );
+    }
 
     // Deliberately do NOT log the email address (PII).
-    log.info(
-      { event: 'waitlist.signup', source: source ?? 'marketing-get-the-app' },
-      'waitlist signup',
-    );
+    log.info({ event: 'waitlist.signup', source }, 'waitlist signup');
     return NextResponse.json({ ok: true });
   } catch (err) {
     log.error(
