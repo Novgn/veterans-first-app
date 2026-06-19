@@ -34,9 +34,9 @@ export function AppDownload() {
             Be first to ride
           </h2>
           <p className="mt-4 max-w-[460px] text-[19px] leading-relaxed text-ink-secondary">
-            The Veterans 1st app is on its way &mdash; book in three taps, watch your driver arrive,
-            and keep your saved places in one calm place. Leave your email and we&rsquo;ll tell you
-            the day it&rsquo;s ready.
+            The Veterans 1st app is on its way. Book in three taps, watch your driver arrive, and
+            keep your saved places in one calm place. Leave your email and we&rsquo;ll tell you the
+            day it&rsquo;s ready.
           </p>
 
           <div className="mt-7 max-w-[480px]">
@@ -44,7 +44,7 @@ export function AppDownload() {
           </div>
 
           <p className="mt-6 max-w-[460px] text-callout leading-relaxed text-ink-secondary">
-            Don&rsquo;t want to wait? You don&rsquo;t need the app to ride &mdash; call us at{' '}
+            Don&rsquo;t want to wait? You don&rsquo;t need the app to ride. Call us at{' '}
             <a href="tel:+19195550100" className="font-semibold text-navy hover:text-navy-700">
               (919)&nbsp;555-0100
             </a>{' '}
@@ -62,7 +62,7 @@ export function AppDownload() {
               App preview
             </span>
             <div className="h-full w-full overflow-hidden rounded-[36px] bg-stone">
-              <ImageSlot label="App preview — Rider home (in design)" />
+              <ImageSlot label="App preview: Rider home (in design)" />
             </div>
           </div>
         </div>

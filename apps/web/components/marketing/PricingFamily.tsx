@@ -32,8 +32,8 @@ export function PricingFamily() {
             One fair price, locked before you ride
           </h2>
           <p className="mt-3.5 text-[18px] leading-relaxed text-ink-secondary">
-            You see the price before you confirm, and it never changes &mdash; no surge when it
-            rains, no surprises at the curb.
+            You see the price before you confirm, and it never changes. No surge when it rains, no
+            surprises at the curb.
           </p>
 
           <div className="mt-6 inline-flex w-fit items-center gap-3 rounded-md border border-success bg-stone px-4 py-3">
@@ -112,7 +112,7 @@ export function PricingFamily() {
 
           <div className="flex-1" />
           <p className="mt-6 text-caption leading-relaxed text-white/70">
-            You&rsquo;ll never see medical details &mdash; only that they got where they were going,
+            You&rsquo;ll never see medical details, only that they got where they were going,
             safely.
           </p>
         </div>

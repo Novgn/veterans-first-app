@@ -35,7 +35,7 @@ export function MarketingFooter() {
             and beyond.
           </p>
           <p className="mt-5 text-caption text-white/60">
-            Mobile app coming soon &mdash; iPhone &amp; Android.
+            Mobile app coming soon for iPhone &amp; Android.
           </p>
         </div>
 

@@ -6,7 +6,7 @@ import { MarketingHome } from '@/components/marketing/MarketingHome';
 // layout's default ("Veterans 1st Console"), which is meant for the staff
 // consoles, not the marketing site.
 export const metadata: Metadata = {
-  title: 'Veterans 1st Transportation — Reliable Rides for Veterans & People with Disabilities',
+  title: 'Veterans 1st Transportation: Reliable Rides for Veterans & People with Disabilities',
   description:
     'Relationship-centered medical transportation across the Triangle and beyond. Book a ride with caring, background-checked drivers who know you by name.',
 };
