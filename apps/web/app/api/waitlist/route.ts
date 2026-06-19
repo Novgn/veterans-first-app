@@ -1,0 +1,73 @@
+// Public marketing waitlist endpoint — "Be first to ride" email capture on
+// the marketing site, for collecting interest before the mobile app launches.
+//
+// This is the ONLY public, unauthenticated POST on the site (middleware does
+// not protect /api/waitlist). Defenses: strict zod validation, a honeypot
+// field, and an idempotent insert (unique email -> on conflict do nothing) so
+// repeat submits never error or leak whether an address already exists. The
+// captured list is server-only (RLS denies anon/authenticated); we never log
+// the email itself (PII).
+//
+// NOTE: persist-only for now — there is no email provider wired, so the
+// "we'll email you at launch" promise is an operational commitment (export the
+// list and send when the app ships). Add Resend here to auto-confirm later.
+
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { getDb, waitlist } from '@veterans-first/shared/db';
+
+import { log } from '@/lib/logger';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+const bodySchema = z.object({
+  email: z.string().trim().email().max(254),
+  // Honeypot: a real human leaves this empty; bots tend to fill every field.
+  company: z.string().max(200).optional(),
+  source: z.string().max(64).optional(),
+});
+
+export async function POST(req: Request) {
+  let json: unknown;
+  try {
+    json = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
+  }
+
+  const parsed = bodySchema.safeParse(json);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
+  }
+
+  const { company, source } = parsed.data;
+  const email = parsed.data.email.toLowerCase();
+
+  // Honeypot tripped — pretend success so the bot moves on, but write nothing.
+  if (company && company.trim() !== '') {
+    return NextResponse.json({ ok: true });
+  }
+
+  try {
+    const db = getDb();
+    await db
+      .insert(waitlist)
+      .values({ email, source: source ?? 'marketing-get-the-app' })
+      .onConflictDoNothing();
+
+    // Deliberately do NOT log the email address (PII).
+    log.info(
+      { event: 'waitlist.signup', source: source ?? 'marketing-get-the-app' },
+      'waitlist signup',
+    );
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    log.error(
+      { event: 'waitlist.error', err: err instanceof Error ? err.message : String(err) },
+      'waitlist insert failed',
+    );
+    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 });
+  }
+}

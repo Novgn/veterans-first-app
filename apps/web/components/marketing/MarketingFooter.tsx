@@ -5,7 +5,6 @@
 // section ids; informational links are placeholders (no routes yet).
 
 import { BrandLogo } from './BrandLogo';
-import { StoreBadges } from './StoreBadges';
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -35,7 +34,9 @@ export function MarketingFooter() {
             Relationship-centered medical transportation, serving communities across the Triangle
             and beyond.
           </p>
-          <StoreBadges compact className="mt-5" />
+          <p className="mt-5 text-caption text-white/60">
+            Mobile app coming soon &mdash; iPhone &amp; Android.
+          </p>
         </div>
 
         <div className="flex flex-wrap gap-x-14 gap-y-8">
