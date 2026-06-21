@@ -131,14 +131,19 @@ export async function seedSupabase(ids: Map<TestUser['key'], string>): Promise<v
     ])
   );
 
-  // Family fixture: approved link family → rider.
+  // Family fixture: approved link family → rider, WITH book_rides permission so
+  // the family book-for-rider flow can reach the booking form (the column
+  // defaults to book_rides:false, which hides the "Book a ride" button).
   must(
-    await db
-      .from('family_links')
-      .upsert(
-        { rider_id: riderId, family_member_id: familyId, status: 'approved' },
-        { onConflict: 'rider_id,family_member_id' }
-      )
+    await db.from('family_links').upsert(
+      {
+        rider_id: riderId,
+        family_member_id: familyId,
+        status: 'approved',
+        permissions: { view_rides: true, book_rides: true, receive_notifications: true },
+      },
+      { onConflict: 'rider_id,family_member_id' }
+    )
   );
 
   console.log('supabase ✓ fixtures complete');
