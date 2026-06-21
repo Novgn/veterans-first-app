@@ -1,0 +1,15 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+- tapOn:
+    text: 'Family access'
+# family-access/index.tsx:129 testID="family-access-add-button"
+- tapOn:
+    id: 'family-access-add-button'
+# family-access/add.tsx:57 testID="family-invite-phone-input"
+- assertVisible:
+    id: 'family-invite-phone-input'
+- takeScreenshot: rider-family-add

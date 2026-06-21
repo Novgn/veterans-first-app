@@ -1,0 +1,13 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+# profile.tsx:319 ListRow title="Delete my account" testID="profile-delete-account-row"
+- tapOn:
+    text: 'Delete my account'
+# delete-account.tsx:72 Text "Delete your account?"
+- assertVisible:
+    text: 'Delete your account?'
+- takeScreenshot: rider-delete-account

@@ -1,0 +1,13 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+# profile.tsx:229 ListRow title="Notifications" testID="profile-notifications-row"
+- tapOn:
+    text: 'Notifications'
+# notifications.tsx:69 ScrollView testID="notification-preferences-screen"
+- assertVisible:
+    id: 'notification-preferences-screen'
+- takeScreenshot: rider-notifications

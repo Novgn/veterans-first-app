@@ -1,0 +1,13 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+# profile.tsx:209 ListRow title="Saved places"
+- tapOn:
+    text: 'Saved places'
+# saved-places.tsx:121 accessibilityLabel="Edit Home" — seeded saved place
+- assertVisible:
+    text: 'Home'
+- takeScreenshot: rider-saved-places

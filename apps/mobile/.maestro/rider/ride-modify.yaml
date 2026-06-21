@@ -1,0 +1,19 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+# Navigate to My Rides tab
+- tapOn:
+    text: 'My Rides'
+# Tap into the seeded upcoming ride — use the section header "Scheduled" as anchor
+- tapOn:
+    text: 'Scheduled'
+    optional: true
+# rides/[id].tsx:376 testID="ride-detail-modify-button" label="Modify ride"
+- tapOn:
+    id: 'ride-detail-modify-button'
+    optional: true
+# rides/modify/[id].tsx:284 accessibilityLabel="Destination address" (TextInput)
+- assertVisible:
+    text: 'Destination'
+- takeScreenshot: rider-ride-modify
