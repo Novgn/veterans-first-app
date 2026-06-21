@@ -119,6 +119,7 @@ export function RideCard({ ride, onPress, className = '' }: RideCardProps) {
 
   return (
     <Pressable
+      testID="ride-card"
       onPress={onPress}
       className={`border-hairline rounded-lg border bg-card p-6 shadow-card active:bg-background ${className}`}
       accessibilityLabel={accessibilityLabel}

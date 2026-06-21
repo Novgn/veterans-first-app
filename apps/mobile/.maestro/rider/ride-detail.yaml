@@ -5,14 +5,14 @@ tags: [rider]
 # Navigate to My Rides tab (_layout.tsx:49 title "My Rides")
 - tapOn:
     text: 'My Rides'
-# Seeded upcoming ride has status "assigned" — appears on Upcoming segment
-# rides.tsx:112 testID="rides-segment-upcoming" is already selected by default
-# Tap the seeded upcoming ride card (RideCard renders the ride; tap anywhere on card)
-# The ride card is tappable — no stable unique text guaranteed, use optional
+# Ensure the Upcoming segment is selected (seeded ride has status "assigned")
 - tapOn:
-    text: 'Scheduled'
+    id: 'rides-segment-upcoming'
     optional: true
-# rides/[id].tsx:241 testID="ride-status-badge" — the StatusBadge on the detail screen
+# Tap the seeded ride card — RideCard root Pressable has testID="ride-card"
+- tapOn:
+    id: 'ride-card'
+# rides/[id].tsx testID="ride-status-badge" — the StatusBadge on the detail screen
 - assertVisible:
     id: 'ride-status-badge'
 - takeScreenshot: rider-ride-detail
