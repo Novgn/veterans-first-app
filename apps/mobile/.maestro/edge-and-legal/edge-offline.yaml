@@ -1,0 +1,10 @@
+appId: com.novagen.veteransfirst
+tags: [edge]
+env:
+  LINK: 'veterans-first://edge/offline'
+---
+- runFlow: ../subflows/reset-app.yaml
+- runFlow: ../subflows/deep-link.yaml
+- assertVisible:
+    text: "You're offline"
+- takeScreenshot: edge-offline

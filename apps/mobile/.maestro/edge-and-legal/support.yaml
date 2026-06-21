@@ -1,0 +1,12 @@
+appId: com.novagen.veteransfirst
+tags: [edge]
+env:
+  LINK: 'veterans-first://support'
+---
+# Renders apps/mobile/app/support.tsx
+# ScreenHeader title="Contact support" (line 24) — stable regardless of EXPO_PUBLIC_SUPPORT_PHONE env
+- runFlow: ../subflows/reset-app.yaml
+- runFlow: ../subflows/deep-link.yaml
+- assertVisible:
+    text: 'Contact support'
+- takeScreenshot: support

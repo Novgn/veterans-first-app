@@ -1,0 +1,12 @@
+appId: com.novagen.veteransfirst
+tags: [edge]
+env:
+  LINK: 'veterans-first://legal/terms'
+---
+# Renders apps/mobile/app/legal/terms.tsx
+# ScreenHeader title="Terms of Service" (line 13) — always visible regardless of env var branch
+- runFlow: ../subflows/reset-app.yaml
+- runFlow: ../subflows/deep-link.yaml
+- assertVisible:
+    text: 'Terms of Service'
+- takeScreenshot: legal-terms
