@@ -1,0 +1,4 @@
+# Maestro workspace config. Tags let you run one surface in isolation:
+#   maestro test --include-tags rider .maestro
+flows:
+  - '**/*.yaml'

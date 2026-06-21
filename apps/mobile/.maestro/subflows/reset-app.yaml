@@ -1,0 +1,4 @@
+appId: com.novagen.veteransfirst
+---
+- launchApp:
+    clearState: true
