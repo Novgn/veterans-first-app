@@ -34,6 +34,15 @@ export async function seedClerkUsers(): Promise<Map<TestUser['key'], string>> {
   return ids;
 }
 
+export async function resolveClerkUserIds(): Promise<Map<TestUser['key'], string>> {
+  const ids = new Map<TestUser['key'], string>();
+  for (const u of TEST_USERS) {
+    const user = await findByPhone(u.phone);
+    if (user) ids.set(u.key, user.id);
+  }
+  return ids;
+}
+
 export async function teardownClerkUsers(): Promise<void> {
   for (const u of TEST_USERS) {
     const user = await findByPhone(u.phone);
