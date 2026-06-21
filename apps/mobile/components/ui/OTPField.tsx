@@ -100,6 +100,7 @@ export function OTPField({
                 autoComplete="sms-otp"
                 textContentType="oneTimeCode"
                 accessibilityLabel={`Digit ${index + 1} of ${length}`}
+                testID={index === 0 ? 'otp-input' : undefined}
               />
             </View>
           );

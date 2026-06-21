@@ -127,6 +127,7 @@ export default function SignUp() {
                 autoComplete="given-name"
                 autoCapitalize="words"
                 editable={!isLoading}
+                testID="first-name-input"
               />
             </View>
             <View className="flex-1">
@@ -138,6 +139,7 @@ export default function SignUp() {
                 autoComplete="family-name"
                 autoCapitalize="words"
                 editable={!isLoading}
+                testID="last-name-input"
               />
             </View>
           </View>
@@ -149,6 +151,7 @@ export default function SignUp() {
             helperText="We'll text you a 6-digit code."
             error={error || undefined}
             editable={!isLoading}
+            testID="phone-input"
           />
 
           <Button

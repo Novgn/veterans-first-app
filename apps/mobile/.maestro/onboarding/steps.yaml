@@ -1,0 +1,56 @@
+appId: com.novagen.veteransfirst
+tags: [onboarding]
+---
+# Per-step deep-link render checks. Requires an authenticated session already present
+# (run sign-in-as-rider subflow first or use a persistent dev session).
+# Each step: open the route, assert one stable heading, screenshot.
+
+# Step 1 — veteran
+- runFlow:
+    file: ../subflows/sign-in-as-rider.yaml
+- runFlow:
+    file: ../subflows/deep-link.yaml
+    env:
+      LINK: 'veterans-first://onboarding/veteran'
+- assertVisible: { text: 'Tell us about your service' }
+- takeScreenshot: step-veteran
+
+# Step 2 — address
+- runFlow:
+    file: ../subflows/deep-link.yaml
+    env:
+      LINK: 'veterans-first://onboarding/address'
+- assertVisible: { text: 'Your home address' }
+- takeScreenshot: step-address
+
+# Step 3 — emergency-contact
+- runFlow:
+    file: ../subflows/deep-link.yaml
+    env:
+      LINK: 'veterans-first://onboarding/emergency-contact'
+- assertVisible: { text: 'Emergency contact' }
+- takeScreenshot: step-emergency-contact
+
+# Step 4 — terms
+- runFlow:
+    file: ../subflows/deep-link.yaml
+    env:
+      LINK: 'veterans-first://onboarding/terms'
+- assertVisible: { text: 'Almost done' }
+- takeScreenshot: step-terms
+
+# Step 5 — permissions-location
+- runFlow:
+    file: ../subflows/deep-link.yaml
+    env:
+      LINK: 'veterans-first://onboarding/permissions-location'
+- assertVisible: { text: 'Let us know where to pick you up' }
+- takeScreenshot: step-permissions-location
+
+# Step 6 — permissions-notifications
+- runFlow:
+    file: ../subflows/deep-link.yaml
+    env:
+      LINK: 'veterans-first://onboarding/permissions-notifications'
+- assertVisible: { text: 'Stay informed about your rides' }
+- takeScreenshot: step-permissions-notifications

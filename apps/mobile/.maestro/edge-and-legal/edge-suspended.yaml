@@ -1,0 +1,12 @@
+appId: com.novagen.veteransfirst
+tags: [edge]
+env:
+  LINK: 'veterans-first://edge/account-suspended'
+---
+# Renders apps/mobile/app/edge/account-suspended.tsx
+# Asserted text from EdgeStateScreen title prop (line 20)
+- runFlow: ../subflows/reset-app.yaml
+- runFlow: ../subflows/deep-link.yaml
+- assertVisible:
+    text: 'Your account is on hold'
+- takeScreenshot: edge-suspended

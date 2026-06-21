@@ -1,0 +1,12 @@
+appId: com.novagen.veteransfirst
+tags: [edge]
+env:
+  LINK: 'veterans-first://legal/privacy'
+---
+# Renders apps/mobile/app/legal/privacy.tsx
+# ScreenHeader title="Privacy Policy" (line 13) — always visible regardless of env var branch
+- runFlow: ../subflows/reset-app.yaml
+- runFlow: ../subflows/deep-link.yaml
+- assertVisible:
+    text: 'Privacy Policy'
+- takeScreenshot: legal-privacy

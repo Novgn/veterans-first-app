@@ -1,0 +1,7 @@
+appId: com.novagen.veteransfirst
+tags: [pre-auth]
+---
+- runFlow: ../subflows/reset-app.yaml
+- tapOn: { text: 'I already have an account', optional: true }
+- assertVisible: { id: 'phone-input' }
+- takeScreenshot: sign-in-01

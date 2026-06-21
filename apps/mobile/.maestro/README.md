@@ -2,35 +2,95 @@
 
 On-device UI flows for the Veterans 1st mobile app — the mobile counterpart to Playwright on web. They launch the real native build on a simulator and capture screenshots, so the Veteran Honor design-system restyle can be verified visually on iOS/Android.
 
+---
+
 ## Prerequisites
 
 1. **Maestro** — `curl -Ls https://get.maestro.mobile.dev | bash` (needs JDK 11+). Add `~/.maestro/bin` to `PATH`.
 2. **A native dev build on a simulator** (the app uses native modules — `react-native-maps`, `react-native-svg`, `clerk-expo` — so Expo Go won't work):
    ```bash
    cd apps/mobile
-   xcrun simctl boot "iPhone 16 Pro"     # or any installed simulator
-   npx expo run:ios                       # prebuild + pod install + build + install + launch
+   xcrun simctl boot "iPhone 16 Pro"   # or any installed simulator
+   npx expo run:ios                     # prebuild + pod install + build + install + launch
    ```
    App id: **`com.novagen.veteransfirst`** (from `app.config.ts`). The generated `ios/` is gitignored.
+3. **Test data (seed)** — authenticated flows require seeded Clerk + Supabase test users:
 
-## Run the flows
+   ```bash
+   npm run e2e:seed          # provisions users + fixtures
+   npm run e2e:seed:teardown # removes them when done
+   ```
+
+   The seed creates three test phones (all use OTP `424242`):
+   | Role | Phone |
+   |--------|------------|
+   | rider | 2015550100 |
+   | driver | 2015550101 |
+   | family | 2015550102 |
+
+   Gotcha: the Clerk webhook pre-creates the Supabase `users` row with `role = 'rider'`; the seed script reconciles it. Test phones must be allow-listed in Clerk **test mode** for the OTP `424242` to work.
+
+---
+
+## Running flows
+
+### All flows (npm script)
+
+```bash
+npm run e2e:ios
+```
+
+### By tag
+
+```bash
+npm run e2e:ios:tag rider       # rider flows only
+npm run e2e:ios:tag driver
+npm run e2e:ios:tag family
+npm run e2e:ios:tag pre-auth
+npm run e2e:ios:tag onboarding
+npm run e2e:ios:tag edge        # edge-state + legal render-checks
+```
+
+### Direct Maestro invocations
 
 ```bash
 export PATH="$PATH:$HOME/.maestro/bin"
 cd apps/mobile
 
-maestro test .maestro/smoke-welcome.yaml      # unauthenticated — always runnable
-maestro test .maestro/rider-tour.yaml         # authenticated — needs Clerk dev test mode
+maestro test .maestro                               # all flows
+maestro test --include-tags edge .maestro           # edge/legal only
+maestro test .maestro/pre-auth/welcome.yaml         # single flow
 ```
 
 Screenshots are written under `~/.maestro/tests/<timestamp>/` (Maestro prints the path). Use `maestro studio` to interactively inspect selectors.
 
-## Flows
+---
 
-| Flow                 | Auth                   | What it does                                                                                                                                                         |
-| -------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `smoke-welcome.yaml` | none                   | Launches the app, asserts the brand wordmark, screenshots welcome → sign-in. Proves the app boots + renders the restyle.                                             |
-| `rider-tour.yaml`    | Clerk dev test sign-in | **Best-effort.** Signs in via test phone + code `424242`, screenshots rider Home / Booking / My Rides. Adjust `TEST_PHONE` and selectors to your Clerk dev settings. |
+## Folder taxonomy
+
+```
+.maestro/
+  config.yaml               # global Maestro config (appId, env defaults)
+  subflows/
+    deep-link.yaml          # openLink: ${LINK}
+    reset-app.yaml          # launchApp with clearState: true
+    sign-in-as-rider.yaml   # full OTP sign-in for rider test user
+    sign-in-as-driver.yaml  # full OTP sign-in for driver test user
+    sign-in-as-family.yaml  # full OTP sign-in for family test user
+  pre-auth/                 # unauthenticated screens (welcome, sign-in, OTP)
+  onboarding/               # first-run onboarding flow
+  rider/                    # rider role: home, booking, ride detail, my rides, profile
+  driver/                   # driver role: status toggle, active ride, history
+  family/                   # family role: dashboard, linked rider tracking
+  edge-and-legal/           # render-check flows (deep-link, assert, screenshot only)
+```
+
+### Behavioral flows vs. render-checks
+
+- **Behavioral flows** (`pre-auth/`, `onboarding/`, `rider/`, `driver/`, `family/`) simulate real user interactions — taps, inputs, navigation — and verify the result.
+- **Render-check flows** (`edge-and-legal/`) deep-link directly to a screen that has no behavioral trigger (edge states, legal, support, 404), assert one stable visible element, and take a screenshot. They confirm the screen mounts and renders correctly without exercising its actions.
+
+---
 
 ## Dev-client (`expo run:ios`): load the bundle first
 
@@ -43,14 +103,22 @@ xcrun simctl openurl booted "veterans-first://expo-development-client/?url=http%
 # 2) dismiss the expo dev menu if it's showing (top-right ✕, or the "Tools" gear toggles it)
 ```
 
-For unattended/CI runs, prefer a **release or preview build** (`eas build --profile preview` or a Release scheme) — it launches straight into the app, so `maestro test .maestro/smoke-welcome.yaml` runs clean with no launcher/dev-menu dance.
+For unattended/CI runs, prefer a **release or preview build** (`eas build --profile preview` or a Release scheme) — it launches straight into the app so flows run clean with no launcher/dev-menu dance.
 
-## Verified
+---
 
-`smoke-welcome.yaml` was run on **iPhone 16 Pro (iOS 18.6)** against the `expo run:ios` dev build (2026-06-16): the Welcome screen renders the Veteran Honor restyle on-device — **vector Road Ahead logo** (navy disc / white road / brass star, via react-native-svg), "Veterans 1st" wordmark + "Welcome" in Lexend, stone canvas, navy "Get started" / outlined "I already have an account" / "Call us anytime". This is the mobile counterpart to the web Playwright checks.
+## Verified log
 
-## Notes / TODO
+| Date       | What                                                                                                                                                                                          | Status           |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| 2026-06-16 | Seed provisioning: Clerk + Supabase test users (rider/driver/family), OTP 424242, fixtures live-verified.                                                                                     | Confirmed        |
+| 2026-06-16 | Welcome screen renders Veteran Honor restyle on iPhone 16 Pro (iOS 18.6, dev build): vector Road Ahead logo, "Veterans 1st" wordmark + "Welcome" in Lexend, stone canvas, navy/outlined CTAs. | Confirmed        |
+| 2026-06-20 | Edge-and-legal YAML parse clean (8 flows). On-simulator flow runs pending.                                                                                                                    | Pending sim runs |
+
+---
+
+## Notes
 
 - Selectors use visible text (resilient) + `optional: true` where the exact label/route may vary. Add stable `testID`s to key screens for tighter assertions.
-- `rider-tour` depends on the Clerk **development** instance having test mode + an allow-listed test phone; if your dev instance differs, update the flow.
-- Android: `npx expo run:android` then the same `maestro test` commands (Maestro is cross-platform).
+- Authenticated flows depend on the Clerk **development** instance having test mode enabled. If your dev instance differs from the seed phones, update the subflow files.
+- Android: `npx expo run:android`, then the same `maestro test` commands — Maestro is cross-platform.

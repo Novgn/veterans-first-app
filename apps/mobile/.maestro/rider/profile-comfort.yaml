@@ -1,0 +1,13 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+# profile.tsx:223 ListRow title="Comfort"
+- tapOn:
+    text: 'Comfort'
+# comfort-preferences.tsx:141 testID="temperature-selector"
+- assertVisible:
+    id: 'temperature-selector'
+- takeScreenshot: rider-comfort

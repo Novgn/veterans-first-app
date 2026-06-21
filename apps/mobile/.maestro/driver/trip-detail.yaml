@@ -1,0 +1,24 @@
+appId: com.novagen.veteransfirst
+tags: [driver]
+---
+- runFlow: ../subflows/sign-in-as-driver.yaml
+# Home screen already shows the seeded assigned trip; tap it
+# (driver)/(tabs)/index.tsx:69 testID=`trip-card-${trip.id}` — Pressable via TripCard
+- tapOn:
+    id: 'trip-card-.*'
+# trips/[id].tsx:239 testID="trip-status-badge"
+- assertVisible:
+    id: 'trip-status-badge'
+# trips/[id].tsx:248 testID="rider-profile-card"
+- assertVisible:
+    id: 'rider-profile-card'
+# trips/[id].tsx:258 testID="contact-rider-button" — real Pressable
+- assertVisible:
+    id: 'contact-rider-button'
+# trips/[id].tsx:267 — "Trip Route" section heading
+- assertVisible:
+    text: 'Trip Route'
+# trips/[id].tsx:346 testID="status-action-button" — sticky action (shown for 'assigned' status)
+- assertVisible:
+    id: 'status-action-button'
+- takeScreenshot: driver-trip-detail

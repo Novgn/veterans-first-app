@@ -1,0 +1,18 @@
+appId: com.novagen.veteransfirst
+tags: [driver]
+---
+- runFlow: ../subflows/sign-in-as-driver.yaml
+# Navigate to Schedule tab — (tabs)/_layout.tsx:80 title="Schedule"
+- tapOn:
+    text: 'Schedule'
+# schedule.tsx:103 — "Weekly Availability" header text
+- assertVisible:
+    text: 'Weekly Availability'
+# schedule.tsx:134 — seeded Mon/Wed availability rows rendered as
+# testID=`availability-row-${window.id}` (regex match)
+- assertVisible:
+    id: 'availability-row-.*'
+# schedule.tsx:109 testID="add-availability-button" — real Pressable
+- assertVisible:
+    id: 'add-availability-button'
+- takeScreenshot: driver-schedule

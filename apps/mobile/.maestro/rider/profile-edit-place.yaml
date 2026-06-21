@@ -1,0 +1,16 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+- tapOn:
+    text: 'Saved places'
+# saved-places.tsx:121 accessibilityLabel="Edit Home" — tap seeded "Home" place
+- tapOn:
+    label: 'Edit Home'
+# edit-place.tsx:163 — TextInput value pre-filled with destination.label ("Home")
+# edit-place.tsx:162 Text label "Name this place" is always visible
+- assertVisible:
+    text: 'Name this place'
+- takeScreenshot: rider-edit-place

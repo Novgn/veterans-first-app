@@ -1,0 +1,13 @@
+appId: com.novagen.veteransfirst
+tags: [edge]
+env:
+  LINK: 'veterans-first://this/does/not/exist'
+---
+# Renders apps/mobile/app/+not-found.tsx
+# expo-router catches any unmatched route and shows the +not-found screen
+# Asserted text from Text element (line 13)
+- runFlow: ../subflows/reset-app.yaml
+- runFlow: ../subflows/deep-link.yaml
+- assertVisible:
+    text: 'Page Not Found'
+- takeScreenshot: not-found

@@ -1,0 +1,13 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+# profile.tsx:216 ListRow title="Accessibility"
+- tapOn:
+    text: 'Accessibility'
+# accessibility-preferences.tsx:141 testID="mobility-aid-selector"
+- assertVisible:
+    id: 'mobility-aid-selector'
+- takeScreenshot: rider-accessibility

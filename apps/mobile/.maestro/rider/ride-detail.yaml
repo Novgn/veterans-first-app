@@ -1,0 +1,18 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+# Navigate to My Rides tab (_layout.tsx:49 title "My Rides")
+- tapOn:
+    text: 'My Rides'
+# Ensure the Upcoming segment is selected (seeded ride has status "assigned")
+- tapOn:
+    id: 'rides-segment-upcoming'
+    optional: true
+# Tap the seeded ride card — RideCard root Pressable has testID="ride-card"
+- tapOn:
+    id: 'ride-card'
+# rides/[id].tsx testID="ride-status-badge" — the StatusBadge on the detail screen
+- assertVisible:
+    id: 'ride-status-badge'
+- takeScreenshot: rider-ride-detail

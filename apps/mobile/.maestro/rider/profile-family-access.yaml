@@ -1,0 +1,14 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+# profile.tsx:295 ListRow title="Family access" testID="profile-family-access-row"
+- tapOn:
+    text: 'Family access'
+# family-access/index.tsx:129 Button testID="family-access-add-button" label="Add Family Member"
+# This is stable regardless of whether list is empty or has members
+- assertVisible:
+    id: 'family-access-add-button'
+- takeScreenshot: rider-family-access

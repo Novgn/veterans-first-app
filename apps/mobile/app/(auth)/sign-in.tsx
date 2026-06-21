@@ -106,6 +106,7 @@ export default function SignIn() {
             helperText="We'll text you a 6-digit code."
             error={error || undefined}
             editable={!isLoading}
+            testID="phone-input"
           />
 
           {showSignUpSuggestion ? (

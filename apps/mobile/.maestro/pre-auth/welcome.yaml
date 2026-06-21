@@ -1,0 +1,9 @@
+appId: com.novagen.veteransfirst
+tags: [pre-auth]
+---
+- runFlow: ../subflows/reset-app.yaml
+- assertVisible: { text: 'Welcome' }
+- assertVisible: { text: 'Get started' }
+- takeScreenshot: welcome-01
+- tapOn: { text: 'Get started' }
+- takeScreenshot: welcome-02

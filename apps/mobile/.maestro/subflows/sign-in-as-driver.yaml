@@ -1,0 +1,26 @@
+appId: com.novagen.veteransfirst
+env:
+  PHONE: '2015550101'
+---
+- runFlow: reset-app.yaml
+- tapOn:
+    text: 'Get started'
+    optional: true
+- tapOn:
+    text: 'I already have an account'
+    optional: true
+- tapOn:
+    id: 'phone-input'
+    optional: true
+- inputText: ${PHONE}
+- tapOn:
+    text: 'Send verification code'
+    optional: true
+- tapOn:
+    text: 'Continue'
+    optional: true
+- inputText: '424242'
+- extendedWaitUntil:
+    visible:
+      id: 'driver-status-toggle'
+    timeout: 20000

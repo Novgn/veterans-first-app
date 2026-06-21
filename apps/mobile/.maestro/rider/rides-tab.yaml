@@ -1,0 +1,11 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+# Tab bar label is "My Rides" (_layout.tsx:49 title)
+- tapOn:
+    text: 'My Rides'
+# Segmented control "Upcoming" exists on rides.tsx:112 testID="rides-segment-upcoming"
+- assertVisible:
+    id: 'rides-segment-upcoming'
+- takeScreenshot: rider-rides-tab

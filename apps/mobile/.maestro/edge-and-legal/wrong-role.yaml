@@ -1,0 +1,21 @@
+appId: com.novagen.veteransfirst
+tags: [edge]
+---
+# WrongRoleScreen (apps/mobile/components/auth/WrongRoleScreen.tsx)
+# Reachability: the component is rendered by the (rider), (driver), and (family) route group
+# _layout.tsx files as a RoleGate fallback — it cannot be reached by deep-link alone.
+#
+# Strategy: sign in as the driver test user (role=driver), then deep-link to a real route
+# INSIDE the (rider) group (booking). Route groups like "(rider)" are transparent in
+# expo-router URLs, so the link targets the group member "booking" — its (rider)/_layout
+# RoleGate sees role != 'rider' and renders WrongRoleScreen. Asserted text:
+# "Access Restricted" (WrongRoleScreen.tsx line 29).
+#
+# NOTE: this flow requires a running authenticated session. The driver seed user (2015550101)
+# must be allow-listed in Clerk test mode with OTP code 424242. The sign-in subflow sets
+# clearState: true which guarantees a fresh session before attempting the role mismatch.
+- runFlow: ../subflows/sign-in-as-driver.yaml
+- openLink: 'veterans-first://booking'
+- assertVisible:
+    text: 'Access Restricted'
+- takeScreenshot: wrong-role

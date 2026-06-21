@@ -1,0 +1,20 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+# Navigate to My Rides tab
+- tapOn:
+    text: 'My Rides'
+- tapOn:
+    id: 'rides-segment-upcoming'
+    optional: true
+# Tap the seeded ride card (testID="ride-card"), then open its Modify screen
+- tapOn:
+    id: 'ride-card'
+# rides/[id].tsx testID="ride-detail-modify-button" label="Modify ride"
+- tapOn:
+    id: 'ride-detail-modify-button'
+# rides/modify/[id].tsx has the destination field (accessibilityLabel "Destination address")
+- assertVisible:
+    text: 'Destination'
+- takeScreenshot: rider-ride-modify

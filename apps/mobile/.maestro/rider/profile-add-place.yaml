@@ -1,0 +1,15 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+- tapOn:
+    text: 'Profile'
+- tapOn:
+    text: 'Saved places'
+# saved-places.tsx:153-159 Button label="Add Place" accessibilityLabel="Add a new place"
+- tapOn:
+    text: 'Add Place'
+# add-place.tsx:113 accessibilityLabel="Place name" (TextInput label above it: "Name this place")
+- assertVisible:
+    text: 'Name this place'
+- takeScreenshot: rider-add-place

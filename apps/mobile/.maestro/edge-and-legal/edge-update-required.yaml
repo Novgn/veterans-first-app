@@ -1,0 +1,12 @@
+appId: com.novagen.veteransfirst
+tags: [edge]
+env:
+  LINK: 'veterans-first://edge/update-required'
+---
+# Renders apps/mobile/app/edge/update-required.tsx
+# Asserted text from EdgeStateScreen title prop (line 14)
+- runFlow: ../subflows/reset-app.yaml
+- runFlow: ../subflows/deep-link.yaml
+- assertVisible:
+    text: 'Update required'
+- takeScreenshot: edge-update-required

@@ -1,0 +1,30 @@
+appId: com.novagen.veteransfirst
+tags: [family]
+---
+- runFlow: ../subflows/sign-in-as-family.yaml
+# Navigate to rider detail first
+# (family)/index.tsx:122 — real Pressable with testID=`family-linked-rider-${item.id}`
+- tapOn:
+    id: 'family-linked-rider-.*'
+# rider/[id]/index.tsx:113 testID="family-rider-dashboard"
+- assertVisible:
+    id: 'family-rider-dashboard'
+- takeScreenshot: family-rider-detail-preBook
+# rider/[id]/index.tsx:121 testID="family-book-ride-button" — rendered only when canBook=true
+# (requires permissions.book_rides on the seeded family_link row)
+- tapOn:
+    id: 'family-book-ride-button'
+    optional: true
+# rider/[id]/book.tsx:84 testID="family-book-pickup"
+- assertVisible:
+    id: 'family-book-pickup'
+    optional: true
+# rider/[id]/book.tsx:95 testID="family-book-dropoff"
+- assertVisible:
+    id: 'family-book-dropoff'
+    optional: true
+# rider/[id]/book.tsx:106 testID="family-book-time"
+- assertVisible:
+    id: 'family-book-time'
+    optional: true
+- takeScreenshot: family-book-form
