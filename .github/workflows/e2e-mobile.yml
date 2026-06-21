@@ -5,7 +5,9 @@
 #   CLERK_SECRET_KEY            Clerk secret key for the development instance
 #   SUPABASE_URL                Supabase project URL (https://<project>.supabase.co)
 #   SUPABASE_SERVICE_ROLE_KEY   Supabase service-role key (used by e2e:seed script)
-#   EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY  Clerk publishable key (passed to the native build)
+#   EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY  Clerk publishable key (inlined into the native build)
+#   EXPO_PUBLIC_SUPABASE_URL           Supabase URL (inlined into the build; app throws without it)
+#   EXPO_PUBLIC_SUPABASE_ANON_KEY      Supabase anon key (inlined into the build; app throws without it)
 #
 # This workflow is intentionally NOT triggered on pull_request or push.
 # Run it manually via the GitHub Actions UI or `gh workflow run e2e-mobile.yml`.
@@ -43,6 +45,10 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          # EXPO_PUBLIC_* vars are inlined at build time; the app throws on launch
+          # (lib/supabase.ts) without these, so every authenticated flow would fail.
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           xcrun simctl boot "iPhone 16 Pro" || true
           npx expo run:ios --configuration Release

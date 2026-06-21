@@ -150,9 +150,25 @@ export async function seedSupabase(ids: Map<TestUser['key'], string>): Promise<v
 }
 
 export async function teardownSupabase(ids: Map<TestUser['key'], string>): Promise<void> {
-  for (const u of TEST_USERS) {
-    const clerkId = ids.get(u.key);
-    if (clerkId) must(await db.from('users').delete().eq('clerk_id', clerkId)); // FK cascade clears fixtures
+  const clerkIds = Array.from(ids.values());
+  if (clerkIds.length === 0) return;
+
+  // Resolve our Supabase user ids so dependent rows can be cleared first. The
+  // fixture FKs are ON DELETE no action (not cascade), so deleting users while
+  // they still have rides/places/links/etc. throws a foreign-key violation.
+  const { data: rows } = must(await db.from('users').select('id').in('clerk_id', clerkIds));
+  const userIds = (rows ?? []).map((r) => r.id as string);
+
+  if (userIds.length) {
+    must(await db.from('rides').delete().in('rider_id', userIds));
+    must(await db.from('rides').delete().in('driver_id', userIds));
+    must(await db.from('family_links').delete().in('rider_id', userIds));
+    must(await db.from('family_links').delete().in('family_member_id', userIds));
+    must(await db.from('saved_destinations').delete().in('user_id', userIds));
+    must(await db.from('driver_profiles').delete().in('user_id', userIds));
+    must(await db.from('driver_availability').delete().in('driver_id', userIds));
   }
+
+  must(await db.from('users').delete().in('clerk_id', clerkIds));
   console.log('supabase ✗ users + fixtures removed');
 }

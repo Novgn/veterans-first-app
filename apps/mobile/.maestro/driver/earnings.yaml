@@ -8,7 +8,10 @@ tags: [driver]
 # earnings.tsx:79 — "Earnings" header text (always visible even with $0)
 - assertVisible:
     text: 'Earnings'
-# earnings.tsx:91 testID="stat-today" — today's stat card (always rendered, may be $0)
-- assertVisible:
-    id: 'stat-today'
+# earnings.tsx:91 testID="stat-today" — today's stat card (always rendered, may be $0).
+# Wait for the earnings query to resolve so a slow fetch in CI doesn't flake.
+- extendedWaitUntil:
+    visible:
+      id: 'stat-today'
+    timeout: 20000
 - takeScreenshot: driver-earnings

@@ -36,15 +36,9 @@ export const TEST_USERS: TestUser[] = [
     lastName: 'Family',
     email: 'e2e-family@example.com',
   },
-  {
-    key: 'suspended',
-    role: 'rider',
-    phone: '+12015550103',
-    firstName: 'Test',
-    lastName: 'Suspended',
-    email: 'e2e-suspended@example.com',
-    suspended: true,
-  },
+  // Note: no "suspended" user is seeded — the suspended screen is an orphan
+  // edge state covered by a deep-link render-check (edge-suspended.yaml), and no
+  // behavioral suspended-routing trigger exists in the app to exercise.
 ];
 
 export const VERIFY_CODE = '424242';

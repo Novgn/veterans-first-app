@@ -10,8 +10,10 @@ tags: [driver]
 - tapOn:
     id: 'driver-status-toggle'
 - takeScreenshot: driver-home-online
-# Tap seeded assigned trip card — index.tsx:69 testID=`trip-card-${trip.id}` (regex match)
+# Tap seeded assigned trip card — index.tsx:69 testID=`trip-card-${trip.id}` (regex match).
+# Optional: if no trip is queued the screenshot just captures the online home screen,
+# so name it accordingly. The dedicated trip-detail.yaml covers the detail screen.
 - tapOn:
     id: 'trip-card-.*'
     optional: true
-- takeScreenshot: driver-trip-detail
+- takeScreenshot: driver-home-online-after-tap
