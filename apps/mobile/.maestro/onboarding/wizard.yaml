@@ -5,9 +5,16 @@ tags: [onboarding]
 # This phone must be allow-listed in Clerk test mode before running.
 - runFlow: ../subflows/reset-app.yaml
 - tapOn: { text: 'Get started' }
-- tapOn: { id: 'phone-input', optional: true }
+# "Create account" stays disabled until first name + last name + phone are all
+# filled, so enter all three before submitting, else the OTP screen is never reached.
+- tapOn: { id: 'first-name-input' }
+- inputText: 'Test'
+- tapOn: { id: 'last-name-input' }
+- inputText: 'Wizard'
+- tapOn: { id: 'phone-input' }
 - inputText: '2015550110'
-- tapOn: { text: 'Create account', optional: true }
+- tapOn: { text: 'Create account' }
+# verify screen: OTP field auto-focuses, so inputText lands on it
 - inputText: '424242'
 # Veteran step — wait for "Tell us about your service" heading
 - extendedWaitUntil:
