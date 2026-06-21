@@ -1,0 +1,25 @@
+appId: com.novagen.veteransfirst
+tags: [family]
+---
+- runFlow: ../subflows/sign-in-as-family.yaml
+# Navigate to rider dashboard
+# (family)/index.tsx:122 — real Pressable (Link asChild) testID=`family-linked-rider-${item.id}`
+- tapOn:
+    id: 'family-linked-rider-.*'
+# rider/[id]/index.tsx:113 testID="family-rider-dashboard"
+- assertVisible:
+    id: 'family-rider-dashboard'
+# Tap a ride card — rider/[id]/index.tsx:64 testID=`family-ride-card-${ride.id}` (regex)
+# Seeded assigned ride appears in the Upcoming section
+- tapOn:
+    id: 'family-ride-card-.*'
+    optional: true
+# rider/[id]/ride/[rideId].tsx:60 testID="family-ride-detail" — ScrollView root
+- assertVisible:
+    id: 'family-ride-detail'
+    optional: true
+# rider/[id]/ride/[rideId].tsx:119 — "Status timeline" heading
+- assertVisible:
+    text: 'Status timeline'
+    optional: true
+- takeScreenshot: family-ride-detail

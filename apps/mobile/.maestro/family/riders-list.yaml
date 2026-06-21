@@ -1,0 +1,14 @@
+appId: com.novagen.veteransfirst
+tags: [family]
+---
+- runFlow: ../subflows/sign-in-as-family.yaml
+# (family)/index.tsx:41 — "Family" heading text (subflow already waits for this)
+- assertVisible:
+    text: 'Family'
+# (family)/index.tsx:122 testID=`family-linked-rider-${item.id}` — seeded approved link
+- assertVisible:
+    id: 'family-linked-rider-.*'
+# Verify the seeded rider name appears
+- assertVisible:
+    text: 'Test Rider'
+- takeScreenshot: family-riders-list
