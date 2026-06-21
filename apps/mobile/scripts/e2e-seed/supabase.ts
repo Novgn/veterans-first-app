@@ -11,24 +11,30 @@ function must<T extends { error: unknown }>(res: T): T {
   return res;
 }
 
+// The clerk-webhook (user.created) may already insert a users row for this
+// Clerk id — with role defaulted to 'rider' regardless of publicMetadata.
+// Reconcile rather than fight it: clear any stale row holding our phone under a
+// different clerk_id, then update the webhook-created row (correcting role/name)
+// or insert if absent. Avoids the users_phone_unique collision and fixes roles.
 async function upsertUser(u: TestUser, clerkId: string): Promise<string> {
-  const { data, error } = await db
-    .from('users')
-    .upsert(
-      {
-        clerk_id: clerkId,
-        phone: u.phone,
-        email: u.email,
-        first_name: u.firstName,
-        last_name: u.lastName,
-        role: u.role,
-      },
-      { onConflict: 'clerk_id' }
-    )
-    .select('id')
-    .single();
-  if (error) throw error;
-  return data.id as string;
+  const fields = {
+    clerk_id: clerkId,
+    phone: u.phone,
+    email: u.email,
+    first_name: u.firstName,
+    last_name: u.lastName,
+    role: u.role,
+  };
+
+  must(await db.from('users').delete().eq('phone', u.phone).neq('clerk_id', clerkId));
+
+  const updated = must(
+    await db.from('users').update(fields).eq('clerk_id', clerkId).select('id').maybeSingle()
+  ).data;
+  if (updated) return updated.id as string;
+
+  const inserted = must(await db.from('users').insert(fields).select('id').single()).data;
+  return inserted.id as string;
 }
 
 export async function seedSupabase(ids: Map<TestUser['key'], string>): Promise<void> {
