@@ -1,0 +1,31 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+# index.tsx:307 accessibilityLabel="Book a ride"
+- tapOn:
+    text: 'Book a ride'
+- takeScreenshot: rider-booking-where
+# booking/index.tsx: DestinationPicker testID="booking-where-to" (added in this task)
+- tapOn:
+    id: 'booking-where-to'
+    optional: true
+# SelectableDestinationCard accessibilityLabel="Select VA Clinic, {address}" — seeded saved place
+- tapOn:
+    text: 'VA Clinic'
+    optional: true
+- takeScreenshot: rider-booking-time
+# booking/time.tsx: TimePicker auto-advances on selection; tap ASAP to proceed quickly
+- tapOn:
+    text: 'ASAP'
+    optional: true
+- takeScreenshot: rider-booking-confirm
+# booking/confirm.tsx:290 label="Book This Ride"
+- tapOn:
+    text: 'Book This Ride'
+    optional: true
+- takeScreenshot: rider-booking-success
+# BookingSuccessScreen.tsx:127 text "Your ride is booked!"
+- assertVisible:
+    text: 'Your ride is booked!'
+    optional: true

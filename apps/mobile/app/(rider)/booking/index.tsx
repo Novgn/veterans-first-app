@@ -57,7 +57,11 @@ export default function BookingStep1() {
           Pick a saved place to continue
         </Text>
 
-        <DestinationPicker onSelect={handleDestinationSelect} className="mt-6 flex-1" />
+        <DestinationPicker
+          onSelect={handleDestinationSelect}
+          className="mt-6 flex-1"
+          testID="booking-where-to"
+        />
       </View>
     </SafeAreaView>
   );

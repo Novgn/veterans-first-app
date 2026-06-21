@@ -1,0 +1,14 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+# Tab bar label is "Help" (_layout.tsx:65 title)
+- tapOn:
+    text: 'Help'
+# help.tsx:29 accessibilityRole="header" text "Help"
+- assertVisible:
+    text: 'Help'
+# help.tsx:38-39 "We're here for you" card text
+- assertVisible:
+    text: "We're here for you"
+- takeScreenshot: rider-help

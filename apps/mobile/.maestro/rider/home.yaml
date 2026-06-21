@@ -1,0 +1,8 @@
+appId: com.novagen.veteransfirst
+tags: [rider]
+---
+- runFlow: ../subflows/sign-in-as-rider.yaml
+# "Book a ride" button is the primary CTA on the home screen (index.tsx:307 accessibilityLabel)
+- assertVisible:
+    text: 'Book a ride'
+- takeScreenshot: rider-home

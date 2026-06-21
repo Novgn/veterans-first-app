@@ -26,9 +26,10 @@ import { SelectableDestinationCard } from './SelectableDestinationCard';
 interface DestinationPickerProps {
   onSelect: (destination: Destination) => void;
   className?: string;
+  testID?: string;
 }
 
-export function DestinationPicker({ onSelect, className }: DestinationPickerProps) {
+export function DestinationPicker({ onSelect, className, testID }: DestinationPickerProps) {
   const { data: savedDestinations = [], isLoading, error } = useDestinations();
   const { savedDestinations: cachedDestinations } = useBookingStore();
 
@@ -79,7 +80,7 @@ export function DestinationPicker({ onSelect, className }: DestinationPickerProp
   };
 
   return (
-    <View className={className}>
+    <View className={className} testID={testID}>
       {/* Current Location Option */}
       <CurrentLocationButton onSelect={handleCurrentLocationSelect} />
 
