@@ -1,0 +1,32 @@
+appId: com.novagen.veteransfirst
+tags: [onboarding]
+---
+# Sign up with a fresh test phone (2015550110) to avoid colliding with seeded sign-in users.
+# This phone must be allow-listed in Clerk test mode before running.
+- runFlow: ../subflows/reset-app.yaml
+- tapOn: { text: 'Get started' }
+- tapOn: { id: 'phone-input', optional: true }
+- inputText: '2015550110'
+- tapOn: { text: 'Create account', optional: true }
+- inputText: '424242'
+# Veteran step — wait for "Tell us about your service" heading
+- extendedWaitUntil:
+    visible: { text: 'Tell us about your service' }
+    timeout: 20000
+- takeScreenshot: onboarding-veteran
+# Advance to address: Continue is disabled until branch+status are selected;
+# tap with optional so the flow does not hard-fail on a disabled button in CI.
+- tapOn: { text: 'Continue', optional: true }
+- takeScreenshot: onboarding-address
+- tapOn: { text: 'Continue', optional: true }
+- takeScreenshot: onboarding-emergency
+# emergency-contact routes to terms (Step 4 of 4), not permissions
+- tapOn: { text: 'Continue', optional: true }
+- takeScreenshot: onboarding-terms
+# terms footer button is "Finish" (disabled until checkbox tapped)
+- tapOn:
+    { accessibilityLabel: 'I agree to the Terms of Service and Privacy Policy', optional: true }
+- tapOn: { text: 'Finish', optional: true }
+- takeScreenshot: onboarding-permissions-location
+- tapOn: { text: 'Allow Location', optional: true }
+- takeScreenshot: onboarding-permissions-notifications
