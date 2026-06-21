@@ -1,0 +1,11 @@
+appId: com.novagen.veteransfirst
+tags: [pre-auth]
+---
+- runFlow: ../subflows/reset-app.yaml
+- tapOn: { text: 'Get started' }
+- tapOn: { id: 'phone-input', optional: true }
+- inputText: '2015550199'
+- tapOn: { text: 'Create account', optional: true }
+- tapOn: { text: 'Send verification code', optional: true }
+- assertVisible: { id: 'otp-input' }
+- takeScreenshot: verify-01
