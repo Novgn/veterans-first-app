@@ -1,0 +1,14 @@
+appId: com.novagen.veteransfirst
+tags: [driver]
+---
+- runFlow: ../subflows/sign-in-as-driver.yaml
+# Navigate to Earnings tab — (tabs)/_layout.tsx:88 title="Earnings"
+- tapOn:
+    text: 'Earnings'
+# earnings.tsx:79 — "Earnings" header text (always visible even with $0)
+- assertVisible:
+    text: 'Earnings'
+# earnings.tsx:91 testID="stat-today" — today's stat card (always rendered, may be $0)
+- assertVisible:
+    id: 'stat-today'
+- takeScreenshot: driver-earnings

@@ -1,0 +1,17 @@
+appId: com.novagen.veteransfirst
+tags: [driver]
+---
+- runFlow: ../subflows/sign-in-as-driver.yaml
+# (driver)/(tabs)/index.tsx:58 testID="driver-status-toggle"
+- assertVisible:
+    id: 'driver-status-toggle'
+- takeScreenshot: driver-home-offline
+# Toggle status to online
+- tapOn:
+    id: 'driver-status-toggle'
+- takeScreenshot: driver-home-online
+# Tap seeded assigned trip card — index.tsx:69 testID=`trip-card-${trip.id}` (regex match)
+- tapOn:
+    id: 'trip-card-.*'
+    optional: true
+- takeScreenshot: driver-trip-detail

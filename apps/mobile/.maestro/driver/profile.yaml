@@ -1,0 +1,20 @@
+appId: com.novagen.veteransfirst
+tags: [driver]
+---
+- runFlow: ../subflows/sign-in-as-driver.yaml
+# Navigate to Profile tab — (tabs)/_layout.tsx:94 title="Profile"
+- tapOn:
+    text: 'Profile'
+# profile.tsx:76 — "Profile" header text
+- assertVisible:
+    text: 'Profile'
+# profile.tsx:98 — "Vehicle" section heading (always visible when profile loads)
+- assertVisible:
+    text: 'Vehicle'
+# profile.tsx:103 — Plate label; seeded driver_profiles has vehiclePlate E2E-1234
+- assertVisible:
+    text: 'Plate'
+# profile.tsx:124 testID="edit-profile-button" — real Pressable button
+- assertVisible:
+    id: 'edit-profile-button'
+- takeScreenshot: driver-profile
