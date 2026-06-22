@@ -1,0 +1,17 @@
+# Generated / vendored files — not Prettier-managed.
+# package-lock.json is npm-generated and huge; formatting it OOM-kills Prettier.
+package-lock.json
+**/package-lock.json
+
+# Build outputs
+**/dist/
+**/.next/
+**/.expo/
+**/build/
+**/coverage/
+
+# Generated design tokens
+packages/design-tokens/tokens.js
+
+# Dependencies
+**/node_modules/

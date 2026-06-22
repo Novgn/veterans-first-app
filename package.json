@@ -21,16 +21,13 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yml,yaml}": [
+    "*.{ts,tsx,js,jsx,json,md,yml,yaml}": [
       "prettier --write"
     ]
   },
   "devDependencies": {
     "dotenv": "17.2.3",
+    "eslint-import-resolver-typescript": "3.6.3",
     "drizzle-kit": "0.31.8",
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
