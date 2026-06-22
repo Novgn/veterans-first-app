@@ -25,9 +25,19 @@ jest.mock('@/lib/supabase', () => ({
   }),
 }));
 
+// Mock useSupabaseUserId — the hook ignores its _legacyUserId param and
+// resolves the current user's Supabase UUID from this hook internally.
+const mockUseSupabaseUserId = jest.fn();
+jest.mock('../useSupabaseUserId', () => ({
+  useSupabaseUserId: () => ({ data: mockUseSupabaseUserId() }),
+}));
+
 // Setup mock chain
 beforeEach(() => {
   jest.clearAllMocks();
+
+  // Default: return a valid user id so queries/mutations are enabled.
+  mockUseSupabaseUserId.mockReturnValue('user-123');
 
   mockFrom.mockImplementation((table: string) => {
     if (table === 'rider_preferences') {
@@ -84,6 +94,7 @@ describe('usePreferredDriver', () => {
     it('returns undefined preferredDriver when userId is undefined (query disabled)', async () => {
       // When userId is undefined, enabled: !!userId evaluates to false
       // so the query doesn't run and preferredDriver remains undefined
+      mockUseSupabaseUserId.mockReturnValue(undefined);
       const { result } = renderHook(() => usePreferredDriver(undefined), {
         wrapper: createWrapper(),
       });
@@ -338,6 +349,7 @@ describe('usePreferredDriver', () => {
     });
 
     it('throws error when userId not provided for mutation', async () => {
+      mockUseSupabaseUserId.mockReturnValue(undefined);
       const { result } = renderHook(() => usePreferredDriver(undefined), {
         wrapper: createWrapper(),
       });
