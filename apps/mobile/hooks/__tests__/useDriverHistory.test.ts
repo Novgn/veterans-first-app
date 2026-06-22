@@ -106,14 +106,12 @@ describe('useDriverHistory', () => {
             id: 'driver-1',
             first_name: 'Dave',
             profile_photo_url: null,
-          },
-          driver_profile: [
-            {
+            driver_profile: {
               vehicle_make: 'Toyota',
               vehicle_model: 'Camry',
               vehicle_color: 'Silver',
             },
-          ],
+          },
         },
         {
           driver_id: 'driver-1',
@@ -122,14 +120,12 @@ describe('useDriverHistory', () => {
             id: 'driver-1',
             first_name: 'Dave',
             profile_photo_url: null,
-          },
-          driver_profile: [
-            {
+            driver_profile: {
               vehicle_make: 'Toyota',
               vehicle_model: 'Camry',
               vehicle_color: 'Silver',
             },
-          ],
+          },
         },
       ];
 
@@ -163,34 +159,58 @@ describe('useDriverHistory', () => {
         {
           driver_id: 'driver-1',
           scheduled_pickup_time: '2024-01-10T10:00:00Z',
-          driver: { id: 'driver-1', first_name: 'Dave', profile_photo_url: null },
-          driver_profile: [
-            { vehicle_make: 'Toyota', vehicle_model: 'Camry', vehicle_color: 'Silver' },
-          ],
+          driver: {
+            id: 'driver-1',
+            first_name: 'Dave',
+            profile_photo_url: null,
+            driver_profile: {
+              vehicle_make: 'Toyota',
+              vehicle_model: 'Camry',
+              vehicle_color: 'Silver',
+            },
+          },
         },
         {
           driver_id: 'driver-2',
           scheduled_pickup_time: '2024-01-09T10:00:00Z',
-          driver: { id: 'driver-2', first_name: 'Mike', profile_photo_url: null },
-          driver_profile: [
-            { vehicle_make: 'Honda', vehicle_model: 'Accord', vehicle_color: 'Blue' },
-          ],
+          driver: {
+            id: 'driver-2',
+            first_name: 'Mike',
+            profile_photo_url: null,
+            driver_profile: {
+              vehicle_make: 'Honda',
+              vehicle_model: 'Accord',
+              vehicle_color: 'Blue',
+            },
+          },
         },
         {
           driver_id: 'driver-2',
           scheduled_pickup_time: '2024-01-08T10:00:00Z',
-          driver: { id: 'driver-2', first_name: 'Mike', profile_photo_url: null },
-          driver_profile: [
-            { vehicle_make: 'Honda', vehicle_model: 'Accord', vehicle_color: 'Blue' },
-          ],
+          driver: {
+            id: 'driver-2',
+            first_name: 'Mike',
+            profile_photo_url: null,
+            driver_profile: {
+              vehicle_make: 'Honda',
+              vehicle_model: 'Accord',
+              vehicle_color: 'Blue',
+            },
+          },
         },
         {
           driver_id: 'driver-2',
           scheduled_pickup_time: '2024-01-07T10:00:00Z',
-          driver: { id: 'driver-2', first_name: 'Mike', profile_photo_url: null },
-          driver_profile: [
-            { vehicle_make: 'Honda', vehicle_model: 'Accord', vehicle_color: 'Blue' },
-          ],
+          driver: {
+            id: 'driver-2',
+            first_name: 'Mike',
+            profile_photo_url: null,
+            driver_profile: {
+              vehicle_make: 'Honda',
+              vehicle_model: 'Accord',
+              vehicle_color: 'Blue',
+            },
+          },
         },
       ];
 
@@ -233,24 +253,31 @@ describe('useDriverHistory', () => {
         {
           driver_id: 'driver-1',
           scheduled_pickup_time: '2024-01-10T10:00:00Z',
-          driver: { id: 'driver-1', first_name: 'Dave', profile_photo_url: null },
-          driver_profile: [
-            { vehicle_make: 'Toyota', vehicle_model: 'Camry', vehicle_color: 'Silver' },
-          ],
+          driver: {
+            id: 'driver-1',
+            first_name: 'Dave',
+            profile_photo_url: null,
+            driver_profile: {
+              vehicle_make: 'Toyota',
+              vehicle_model: 'Camry',
+              vehicle_color: 'Silver',
+            },
+          },
         },
         {
           driver_id: 'driver-2',
           scheduled_pickup_time: '2024-01-09T10:00:00Z',
-          driver: null, // Missing driver data
-          driver_profile: [
-            { vehicle_make: 'Honda', vehicle_model: 'Accord', vehicle_color: 'Blue' },
-          ],
+          driver: null, // Missing driver data — hook skips when driverData is null
         },
         {
           driver_id: 'driver-3',
           scheduled_pickup_time: '2024-01-08T10:00:00Z',
-          driver: { id: 'driver-3', first_name: 'Bob', profile_photo_url: null },
-          driver_profile: [], // Empty driver profile
+          driver: {
+            id: 'driver-3',
+            first_name: 'Bob',
+            profile_photo_url: null,
+            driver_profile: null, // Null profile — hook skips when driver_profile is falsy
+          },
         },
       ];
 

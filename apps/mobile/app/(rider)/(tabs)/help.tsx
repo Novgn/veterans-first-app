@@ -36,7 +36,7 @@ export default function Help() {
             <Ionicons name="call" size={32} color="#4A6B54" />
           </View>
           <Text className="font-sans-semibold text-title-3 text-foreground">
-            We're here for you
+            We&apos;re here for you
           </Text>
           <Text className="mb-6 mt-1 text-center font-sans text-callout text-ink-secondary">
             A real person can help you book a ride, answer questions, or anything else you need.

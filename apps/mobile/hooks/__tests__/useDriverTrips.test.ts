@@ -30,9 +30,19 @@ jest.mock('@clerk/clerk-expo', () => ({
   }),
 }));
 
+// Mock useSupabaseUserId — the hook uses the Supabase UUID for the realtime
+// channel filter. Return the same test-clerk-id so channel assertions match.
+const mockUseSupabaseUserId = jest.fn();
+jest.mock('../useSupabaseUserId', () => ({
+  useSupabaseUserId: () => ({ data: mockUseSupabaseUserId() }),
+}));
+
 describe('useDriverTrips', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Default: return the same id used by Clerk so channel assertions match.
+    mockUseSupabaseUserId.mockReturnValue(mockUserId);
 
     // Setup default channel mock
     mockChannel.mockReturnValue({

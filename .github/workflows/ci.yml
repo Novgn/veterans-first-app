@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, stage, dev]
   push:
-    branches: [main]
+    branches: [main, stage, dev]
 
 env:
   # Supabase secrets for database tests
@@ -30,6 +30,25 @@ jobs:
 
       - name: Run lint
         run: npm run lint
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
 
   typecheck:
     name: Type Check
@@ -66,7 +85,9 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Pin to a known-good version; "latest" can change the generated local
+          # keys and break the DB tests that authenticate with them.
+          version: 2.40.7
 
       - name: Install dependencies
         run: npm ci
@@ -75,7 +96,17 @@ jobs:
         run: supabase start
 
       - name: Run tests
-        run: npm run test
+        run: |
+          # The DB integration tests read SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
+          # and otherwise fall back to a hardcoded demo key that can mismatch the
+          # running instance's keys (→ "permission denied for table users").
+          # Export the actual keys from the running local instance.
+          set -a
+          eval "$(supabase status -o env)"
+          set +a
+          export SUPABASE_URL="$API_URL"
+          export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
+          npm run test
 
       - name: Run database tests
         run: supabase test db
@@ -91,6 +122,11 @@ jobs:
       # Supabase env vars for Next.js builds (use placeholder for CI if not set)
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+      # @veterans-first/shared/db eagerly constructs a postgres client at module
+      # load and throws if DATABASE_URL is unset; importing it in an API route
+      # (e.g. /api/notifications/reminders) breaks `next build`'s page-data
+      # collection. postgres-js is lazy, so a placeholder URL is never connected.
+      DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://placeholder:placeholder@localhost:5432/placeholder' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -6,7 +6,13 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      // Resolve the shared workspace package from source for type-checking,
+      // matching next.config's transpilePackages (which bundles it from source).
+      // This avoids depending on the built dist/*.d.ts, whose resolution was
+      // flaky in CI ("Could not find a declaration file for .../shared/utils").
+      "@veterans-first/shared": ["../../packages/shared/src/index.ts"],
+      "@veterans-first/shared/*": ["../../packages/shared/src/*"]
     },
     "incremental": true
   },

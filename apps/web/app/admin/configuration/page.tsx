@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 
 const SECTIONS = [
   {
