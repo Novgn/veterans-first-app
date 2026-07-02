@@ -4,6 +4,8 @@
 // Customer-facing only — no staff/console links. In-page anchors reuse the
 // section ids; informational links are placeholders (no routes yet).
 
+import { SUPPORT_PHONE, SUPPORT_PHONE_TEL } from '@/lib/site-config';
+
 import { BrandLogo } from './BrandLogo';
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
@@ -18,7 +20,7 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
   {
     heading: 'Support',
     links: [
-      { label: 'Contact us', href: 'tel:+19195550100' },
+      { label: 'Contact us', href: SUPPORT_PHONE_TEL },
       { label: 'For families', href: '#for-families' },
     ],
   },
@@ -62,10 +64,10 @@ export function MarketingFooter() {
               Call us
             </span>
             <a
-              href="tel:+19195550100"
+              href={SUPPORT_PHONE_TEL}
               className="rounded-md text-[22px] font-bold text-white hover:text-white/90"
             >
-              (919) 555-0100
+              {SUPPORT_PHONE}
             </a>
             <span className="text-caption text-white/[0.72]">
               Mon&ndash;Sat · we answer in person
