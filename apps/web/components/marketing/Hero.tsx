@@ -58,8 +58,8 @@ export function Hero() {
             style={enterDelay(180)}
             className="mt-6 max-w-[480px] text-[21px] leading-relaxed text-ink-secondary"
           >
-            Safe, dignified rides to the doctor, the pharmacy, and the grocery store &mdash; for
-            seniors, veterans, and anyone who needs a hand getting there.
+            Safe, dignified rides to the doctor, the pharmacy, and the grocery store, for seniors,
+            veterans, and anyone who needs a hand getting there.
           </p>
 
           <div

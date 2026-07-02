@@ -16,11 +16,13 @@ import { HowItWorks } from './HowItWorks';
 import { MarketingFooter } from './MarketingFooter';
 import { MarketingNav } from './MarketingNav';
 import { PricingFamily } from './PricingFamily';
+import { ScrollReveal } from './ScrollReveal';
 import { TrustStrip } from './TrustStrip';
 
 export function MarketingHome() {
   return (
     <div className="min-h-screen bg-stone">
+      <ScrollReveal />
       <MarketingNav />
       <main>
         <Hero />

@@ -1,34 +1,20 @@
-import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 
 import { MarketingHome } from '@/components/marketing/MarketingHome';
-import { getCurrentUserWithRole } from '@/lib/auth/current-user';
 
-// Auth-dependent: must run at request time, not build time.
-export const dynamic = 'force-dynamic';
+// Customer-facing metadata for the public landing page. Overrides the root
+// layout's default ("Veterans 1st Console"), which is meant for the staff
+// consoles, not the marketing site.
+export const metadata: Metadata = {
+  title: 'Veterans 1st Transportation: Reliable Rides for Veterans & People with Disabilities',
+  description:
+    'Relationship-centered medical transportation across the Triangle and beyond. Book a ride with caring, background-checked drivers who know you by name.',
+};
 
-const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-const hasValidClerkKey = clerkKey && clerkKey.length > 20 && !clerkKey.includes('placeholder');
-
-export default async function Home() {
-  if (hasValidClerkKey) {
-    const user = await getCurrentUserWithRole();
-    if (user) {
-      switch (user.role) {
-        case 'dispatcher':
-          redirect('/dispatch');
-        case 'admin':
-          // Admins own /admin and /business; land on /admin and let
-          // section nav move to /business when needed.
-          redirect('/admin');
-        default:
-        // Riders, drivers, and family stay here — the mobile app is
-        // their tool. Page body explains.
-      }
-    }
-  }
-
-  // Non-logged-in (and non-dispatcher/admin) visitors land on the public
-  // marketing site. The "Staff sign in" link in the marketing nav/footer keeps
-  // the operations console reachable.
+// The public marketing site — customer-facing only. No auth and no staff
+// routing live here, so the landing page renders statically. Staff reach the
+// operations console by signing in (Clerk routes them by role via /console),
+// never from a link on this page.
+export default function Home() {
   return <MarketingHome />;
 }

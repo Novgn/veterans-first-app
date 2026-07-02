@@ -1,0 +1,8 @@
+# Vercel only builds the web app (apps/web). Keep the upload small and the
+# install lean by excluding the mobile app and non-code planning artifacts.
+# The packages/* workspaces stay — apps/web depends on them.
+apps/mobile
+_bmad-output
+_bmad
+.claude
+.husky
