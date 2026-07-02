@@ -12,13 +12,16 @@
 // serverless and bypasses RLS, so the `waitlist` table can keep RLS on with no
 // public policies. The captured list stays server-only.
 //
-// NOTE: persist-only for now — no email provider is wired, so the "we'll email
-// you at launch" promise is an operational commitment (export the list and
-// send when the app ships). Add Resend here to auto-confirm later.
+// NOTE: Resend is now wired for the confirmation email (see
+// lib/email/resend.ts), but it no-ops until RESEND_API_KEY and
+// WAITLIST_FROM_EMAIL are set — until then this remains persist-only and
+// the "we'll email you at launch" promise stays an operational commitment
+// (export the list and send when the app ships).
 
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+import { sendWaitlistConfirmation } from '@/lib/email/resend';
 import { getServiceRoleSupabase } from '@/lib/supabase';
 import { log } from '@/lib/logger';
 
@@ -75,6 +78,7 @@ export async function POST(req: Request) {
 
     // Deliberately do NOT log the email address (PII).
     log.info({ event: 'waitlist.signup', source }, 'waitlist signup');
+    await sendWaitlistConfirmation(email);
     return NextResponse.json({ ok: true });
   } catch (err) {
     log.error(

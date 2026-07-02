@@ -7,6 +7,8 @@
 
 import type { CSSProperties } from 'react';
 
+import { SUPPORT_PHONE } from '@/lib/site-config';
+
 import { CtaLink } from './CtaLink';
 import { ImageSlot } from './ImageSlot';
 import { PhoneButton } from './PhoneButton';
@@ -70,7 +72,7 @@ export function Hero() {
             <CtaLink href="#get-the-app" size="lg">
               Book a Ride
             </CtaLink>
-            <PhoneButton label="Or call (919) 555-0100" phone="(919) 555-0100" />
+            <PhoneButton label={`Or call ${SUPPORT_PHONE}`} phone={SUPPORT_PHONE} />
           </div>
 
           <p

@@ -11,6 +11,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { SUPPORT_PHONE } from '@/lib/site-config';
+
 import { BrandLogo } from './BrandLogo';
 import { CtaLink } from './CtaLink';
 import { PhoneButton } from './PhoneButton';
@@ -64,7 +66,7 @@ export function MarketingNav() {
 
         {/* Desktop actions */}
         <div className="hidden items-center gap-3 lg:flex">
-          <PhoneButton label="Call us" phone="(919) 555-0100" />
+          <PhoneButton label="Call us" phone={SUPPORT_PHONE} />
           <CtaLink href="#get-the-app" size="md">
             Book a Ride
           </CtaLink>
@@ -127,7 +129,7 @@ export function MarketingNav() {
             ))}
           </ul>
           <div className="mt-2 flex flex-col gap-3 border-t border-border-hairline pt-5">
-            <PhoneButton label="Call (919) 555-0100" phone="(919) 555-0100" className="w-full" />
+            <PhoneButton label={`Call ${SUPPORT_PHONE}`} phone={SUPPORT_PHONE} className="w-full" />
             <CtaLink
               href="#get-the-app"
               size="md"

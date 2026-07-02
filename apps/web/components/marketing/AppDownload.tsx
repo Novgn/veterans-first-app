@@ -7,10 +7,12 @@
 // fake QR code. Keeps the #get-the-app anchor + #app-heading id so the five
 // CTAs that scroll here still resolve.
 //
-// NOTE: (919) 555-0100 is the same placeholder number used site-wide — swap it
-// for the real dispatch line before launch.
+// NOTE: the support phone number now comes from site-config (SUPPORT_PHONE),
+// which reads NEXT_PUBLIC_SUPPORT_PHONE and falls back to a placeholder —
+// swap the env var for the real dispatch line before launch.
 
 import { cn } from '@/lib/cn';
+import { SUPPORT_PHONE, SUPPORT_PHONE_TEL } from '@/lib/site-config';
 
 import { ImageSlot } from './ImageSlot';
 import { WaitlistForm } from './WaitlistForm';
@@ -45,8 +47,11 @@ export function AppDownload() {
 
           <p className="mt-6 max-w-[460px] text-callout leading-relaxed text-ink-secondary">
             Don&rsquo;t want to wait? You don&rsquo;t need the app to ride. Call us at{' '}
-            <a href="tel:+19195550100" className="font-semibold text-navy hover:text-navy-700">
-              (919)&nbsp;555-0100
+            <a
+              href={SUPPORT_PHONE_TEL}
+              className="whitespace-nowrap font-semibold text-navy hover:text-navy-700"
+            >
+              {SUPPORT_PHONE}
             </a>{' '}
             and a real person will arrange everything.
           </p>
