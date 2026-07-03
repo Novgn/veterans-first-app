@@ -1,30 +1,35 @@
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { getCurrentUserWithRole } from '@/lib/auth/current-user';
+import { ADMIN_HOST, MARKETING_HOST } from '@/lib/site-config';
 
-// Post-sign-in router for staff. Clerk sends signed-in users here (see
-// fallbackRedirectUrl on the <SignIn /> page); we forward each role to its
-// console. This routing used to live on the public root ("/"); moving it here
-// keeps the marketing landing page customer-facing and statically cacheable.
 export const dynamic = 'force-dynamic';
 
-export default async function ConsoleRouter() {
+// Role dispatcher for the admin-host root (spec: docs/superpowers/specs/
+// 2026-07-03-admin-subdomain-design.md §3). Middleware sends
+// admin.vf1st.com/ here; staff fan out to their section, everyone else
+// exits to marketing. This page is also the loop-breaker: the section
+// layouts redirect('/') on wrong-role, and on the admin host '/' lands
+// back here — which never sends a non-staff user into a console section.
+export default async function ConsolePage() {
   const user = await getCurrentUserWithRole();
 
   if (!user) {
     redirect('/sign-in');
   }
 
-  switch (user.role) {
-    case 'admin':
-      // Admins own /admin and /business; land on /admin and use the section
-      // nav to reach /business.
-      redirect('/admin');
-    case 'dispatcher':
-      redirect('/dispatch');
-    default:
-      // Riders, drivers, and family have no web console — the mobile app is
-      // their tool. Send them back to the public site.
-      redirect('/');
+  if (user.role === 'admin') {
+    redirect('/admin'); // admins also own /business today
   }
+  if (user.role === 'dispatcher') {
+    redirect('/dispatch');
+  }
+
+  // Non-staff (rider/driver/family): exit to marketing. On the admin
+  // host a relative '/' would bounce straight back here via the
+  // middleware root redirect — use the absolute marketing origin.
+  const hdrs = await headers();
+  const host = hdrs.get('host')?.toLowerCase().split(':')[0] ?? '';
+  redirect(host === ADMIN_HOST ? `https://${MARKETING_HOST}/` : '/');
 }

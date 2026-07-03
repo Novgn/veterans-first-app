@@ -67,7 +67,7 @@ The existing behavior is preserved on every fall-through: `auth.protect()` on pr
 
 ### 3. Role dispatcher — `apps/web/app/console/page.tsx` (create, ~25 lines)
 
-Middleware cannot resolve roles (role lives in the DB, not the Clerk JWT), so the admin-host root lands on a tiny server component:
+The role check belongs in the existing `getCurrentUserWithRole()` server helper (Clerk session claims with a `currentUser()` fallback — not guaranteed to be resolvable synchronously in middleware), so the admin-host root lands on a tiny server component:
 
 - Not signed in → `redirect('/sign-in')`.
 - `role === 'admin'` → `redirect('/admin')` (admins also own `/business` today; the business layout is admin-only until a dedicated role exists).
