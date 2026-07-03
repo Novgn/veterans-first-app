@@ -65,11 +65,11 @@ Inside the existing `clerkMiddleware` callback, **before** `auth.protect()`:
 
 The existing behavior is preserved on every fall-through: `auth.protect()` on protected routes and the `x-next-pathname` header forwarding. The existing `config.matcher` already covers all non-static paths — no matcher change.
 
-### 3. Role dispatcher — `apps/web/app/console/page.tsx` (create, ~25 lines)
+### 3. Role dispatcher — `apps/web/app/console/page.tsx` (rewrite of the existing post-sign-in router)
 
 The role check belongs in the existing `getCurrentUserWithRole()` server helper (Clerk session claims with a `currentUser()` fallback — not guaranteed to be resolvable synchronously in middleware), so the admin-host root lands on a tiny server component:
 
-- Not signed in → `redirect('/sign-in')`.
+- No Clerk session → `redirect('/sign-in')`. A signed-in user with no resolvable role takes the marketing exit with the other non-staff cases — sending them to /sign-in would loop, since Clerk's sign-in page auto-returns authenticated visitors via `fallbackRedirectUrl="/console"`.
 - `role === 'admin'` → `redirect('/admin')` (admins also own `/business` today; the business layout is admin-only until a dedicated role exists).
 - `role === 'dispatcher'` → `redirect('/dispatch')`.
 - Any other role (`rider`, `driver`, `family`) or no row → send to the marketing site. **Host-aware:** read the request host via `headers()`; on `ADMIN_HOST` redirect to the absolute `https://www.vf1st.com/` (a relative `/` would bounce back into `/console` — infinite loop); on any other host redirect to relative `/`.
