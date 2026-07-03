@@ -2,8 +2,9 @@
 //
 // Left (white card): one fair, locked price with a stone PriceLock badge and a
 // short fare list — no surge, ever. Right (navy card): the family safe-arrival
-// promise with a sample notification chip. Carries the #pricing and
-// #for-families anchors used by the nav.
+// promise with a sample notification chip. The section carries the #pricing
+// anchor (the nav's merged "Pricing & families" tab); the family card keeps
+// #for-families for the footer link.
 
 const FARE_LINES = [
   '$25 base + $2.50 per mile',
@@ -13,13 +14,16 @@ const FARE_LINES = [
 
 export function PricingFamily() {
   return (
-    <section className="bg-stone" aria-label="Pricing and family peace of mind">
+    <section
+      id="pricing"
+      className="scroll-mt-24 bg-stone"
+      aria-label="Pricing and family peace of mind"
+    >
       <div className="mx-auto grid max-w-6xl gap-6 px-6 py-18 md:px-8 md:py-20 lg:grid-cols-2">
         {/* Pricing */}
         <div
-          id="pricing"
           data-reveal
-          className="flex scroll-mt-24 flex-col rounded-lg border border-border-hairline bg-white p-10 shadow-card"
+          className="flex flex-col rounded-lg border border-border-hairline bg-white p-10 shadow-card"
         >
           <p className="text-caption font-semibold uppercase tracking-[0.06em] text-sage">
             Honest pricing
@@ -28,8 +32,8 @@ export function PricingFamily() {
             One fair price, locked before you ride
           </h2>
           <p className="mt-3.5 text-[18px] leading-relaxed text-ink-secondary">
-            You see the price before you confirm, and it never changes &mdash; no surge when it
-            rains, no surprises at the curb.
+            You see the price before you confirm, and it never changes. No surge when it rains, no
+            surprises at the curb.
           </p>
 
           <div className="mt-6 inline-flex w-fit items-center gap-3 rounded-md border border-success bg-stone px-4 py-3">
@@ -108,7 +112,7 @@ export function PricingFamily() {
 
           <div className="flex-1" />
           <p className="mt-6 text-caption leading-relaxed text-white/70">
-            You&rsquo;ll never see medical details &mdash; only that they got where they were going,
+            You&rsquo;ll never see medical details, only that they got where they were going,
             safely.
           </p>
         </div>

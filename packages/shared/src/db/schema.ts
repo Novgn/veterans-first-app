@@ -637,3 +637,22 @@ export const systemConfig = pgTable("system_config", {
 
 export type SystemConfig = InferSelectModel<typeof systemConfig>;
 export type NewSystemConfig = InferInsertModel<typeof systemConfig>;
+
+/**
+ * Marketing Waitlist — public "Be first to ride" email capture on the
+ * marketing site (apps/web), collected before the mobile app launches.
+ * These are anonymous pre-launch leads, intentionally NOT tied to a
+ * `users` row. Email is stored lowercased and is unique so repeat submits
+ * are idempotent (insert ... on conflict do nothing). Access is server-only
+ * (service role / direct connection); RLS is enabled with no anon or
+ * authenticated policies so the captured list stays private.
+ */
+export const waitlist = pgTable("waitlist", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").unique().notNull(),
+  source: text("source").notNull().default("marketing-get-the-app"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type Waitlist = InferSelectModel<typeof waitlist>;
+export type NewWaitlist = InferInsertModel<typeof waitlist>;

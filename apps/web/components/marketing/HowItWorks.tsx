@@ -9,12 +9,12 @@ const STEPS = [
   {
     n: '1',
     title: 'Tell us where',
-    body: 'Pick from your saved places — home, your clinic, the grocery store — or tell us a new one.',
+    body: 'Pick from your saved places: home, your clinic, the grocery store. Or tell us a new one.',
   },
   {
     n: '2',
     title: 'We send your driver',
-    body: 'Someone you know by name — not a stranger from a lottery. We match the right vehicle to your needs.',
+    body: 'Someone you know by name, not a stranger from a lottery. We match the right vehicle to your needs.',
   },
   {
     n: '3',

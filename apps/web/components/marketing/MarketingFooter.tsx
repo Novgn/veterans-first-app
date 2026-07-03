@@ -1,14 +1,12 @@
 // MarketingFooter — navy footer with the reversed logo, blurb, store-badge
 // placeholders, link columns, and the call-us block.
 //
-// The "Staff sign in" link lives here too (Support column) so the operations
-// console stays reachable from the footer as well as the nav. In-page anchors
-// reuse the section ids; informational links are placeholders (no routes yet).
+// Customer-facing only — no staff/console links. In-page anchors reuse the
+// section ids; informational links are placeholders (no routes yet).
 
-import Link from 'next/link';
+import { SUPPORT_PHONE, SUPPORT_PHONE_TEL } from '@/lib/site-config';
 
 import { BrandLogo } from './BrandLogo';
-import { StoreBadges } from './StoreBadges';
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -22,9 +20,8 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
   {
     heading: 'Support',
     links: [
-      { label: 'Contact us', href: 'tel:+19195550100' },
+      { label: 'Contact us', href: SUPPORT_PHONE_TEL },
       { label: 'For families', href: '#for-families' },
-      { label: 'Staff sign in', href: '/sign-in' },
     ],
   },
 ];
@@ -39,7 +36,9 @@ export function MarketingFooter() {
             Relationship-centered medical transportation, serving communities across the Triangle
             and beyond.
           </p>
-          <StoreBadges compact className="mt-5" />
+          <p className="mt-5 text-caption text-white/60">
+            Mobile app coming soon for iPhone &amp; Android.
+          </p>
         </div>
 
         <div className="flex flex-wrap gap-x-14 gap-y-8">
@@ -48,25 +47,15 @@ export function MarketingFooter() {
               <span className="text-caption font-semibold uppercase tracking-[0.05em] text-white/50">
                 {col.heading}
               </span>
-              {col.links.map((link) =>
-                link.href.startsWith('/') ? (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className="rounded-md text-callout text-white/85 hover:text-white"
-                  >
-                    {link.label}
-                  </Link>
-                ) : (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="rounded-md text-callout text-white/85 hover:text-white"
-                  >
-                    {link.label}
-                  </a>
-                ),
-              )}
+              {col.links.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="flex min-h-[44px] items-center rounded-md text-callout text-white/85 hover:text-white"
+                >
+                  {link.label}
+                </a>
+              ))}
             </nav>
           ))}
 
@@ -75,10 +64,10 @@ export function MarketingFooter() {
               Call us
             </span>
             <a
-              href="tel:+19195550100"
+              href={SUPPORT_PHONE_TEL}
               className="rounded-md text-[22px] font-bold text-white hover:text-white/90"
             >
-              (919) 555-0100
+              {SUPPORT_PHONE}
             </a>
             <span className="text-caption text-white/[0.72]">
               Mon&ndash;Sat · we answer in person

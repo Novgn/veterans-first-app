@@ -7,6 +7,8 @@
 
 import type { CSSProperties } from 'react';
 
+import { SUPPORT_PHONE } from '@/lib/site-config';
+
 import { CtaLink } from './CtaLink';
 import { ImageSlot } from './ImageSlot';
 import { PhoneButton } from './PhoneButton';
@@ -58,8 +60,8 @@ export function Hero() {
             style={enterDelay(180)}
             className="mt-6 max-w-[480px] text-[21px] leading-relaxed text-ink-secondary"
           >
-            Safe, dignified rides to the doctor, the pharmacy, and the grocery store &mdash; for
-            seniors, veterans, and anyone who needs a hand getting there.
+            Safe, dignified rides to the doctor, the pharmacy, and the grocery store, for seniors,
+            veterans, and anyone who needs a hand getting there.
           </p>
 
           <div
@@ -70,7 +72,7 @@ export function Hero() {
             <CtaLink href="#get-the-app" size="lg">
               Book a Ride
             </CtaLink>
-            <PhoneButton label="Or call (919) 555-0100" phone="(919) 555-0100" />
+            <PhoneButton label={`Or call ${SUPPORT_PHONE}`} phone={SUPPORT_PHONE} />
           </div>
 
           <p
