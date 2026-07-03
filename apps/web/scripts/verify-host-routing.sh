@@ -11,16 +11,28 @@ set -u
 MODE="${1:-http://localhost:3100}"
 FAIL=0
 
-# check <label> <expected-status> <expected-location-substring|-> <curl args...>
-# curl's %{redirect_url} resolves relative Location headers against the
-# request URL, so same-host rows contains-match the path fragment while
-# cross-host rows still assert the full https://... redirect URL.
+# check <label> <expected-status> <expected-location|-> <curl args...>
+# Location matching is exact: an absolute https expectation compares the
+# whole redirect_url; a path expectation compares the redirect_url's
+# path+query (curl resolves relative Location headers to absolute URLs,
+# so bare-path expectations can never prefix-match the raw value).
 check() {
   local label="$1" want_status="$2" want_loc="$3"; shift 3
-  local out status loc
-  out=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$@")
+  local out status loc ok
+  out=$(curl -s -o /dev/null -m 15 -w '%{http_code} %{redirect_url}' "$@")
   status="${out%% *}"; loc="${out#* }"
-  if [[ "$status" != "$want_status" ]] || { [[ "$want_loc" != "-" ]] && [[ "$loc" != *"$want_loc"* ]]; }; then
+  ok=1
+  [[ "$status" == "$want_status" ]] || ok=0
+  if [[ "$want_loc" != "-" ]]; then
+    if [[ "$want_loc" == http* ]]; then
+      [[ "$loc" == "$want_loc" ]] || ok=0
+    else
+      local loc_pq="${loc#*://}"
+      loc_pq="/${loc_pq#*/}"
+      [[ "$loc_pq" == "$want_loc" ]] || ok=0
+    fi
+  fi
+  if [[ "$ok" -eq 0 ]]; then
     echo "FAIL  $label -> got: $out  want: $want_status ${want_loc}"
     FAIL=1
   else
