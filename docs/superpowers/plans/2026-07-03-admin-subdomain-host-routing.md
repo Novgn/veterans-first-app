@@ -307,7 +307,7 @@ check() {
   local out status loc
   out=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$@")
   status="${out%% *}"; loc="${out#* }"
-  if [[ "$status" != "$want_status" ]] || { [[ "$want_loc" != "-" ]] && [[ "$loc" != "$want_loc"* ]]; }; then
+  if [[ "$status" != "$want_status" ]] || { [[ "$want_loc" != "-" ]] && [[ "$loc" != *"$want_loc"* ]]; }; then
     echo "FAIL  $label -> got: $out  want: $want_status ${want_loc}"
     FAIL=1
   else
@@ -359,7 +359,7 @@ fi
 exit $FAIL
 ```
 
-Note: `/console`'s redirect and `/sign-in`'s Location are host-relative in Next's output; asserting the path prefix (`/console`, `/sign-in`) tolerates absolute vs relative Location forms. `chmod +x apps/web/scripts/verify-host-routing.sh`.
+Note: curl's `%{redirect_url}` resolves relative `Location` headers against the request URL (e.g. `http://localhost:3100/sign-in`), so expectations use a contains-match: full `https://` URLs for cross-host rows (still effectively exact — the resolved URL is the expectation), path fragments (`/console`, `/sign-in`) for same-host rows. `chmod +x apps/web/scripts/verify-host-routing.sh`.
 
 - [ ] **Step 2: Run it against the local build.**
 
