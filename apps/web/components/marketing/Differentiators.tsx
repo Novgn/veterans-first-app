@@ -29,7 +29,7 @@ export function Differentiators() {
             The same friendly faces
           </p>
           <h2 id="drivers-heading" className="mt-3.5 text-[36px] font-bold leading-[1.22] text-ink">
-            Your driver Dave &mdash; who&rsquo;s driven you 23 times
+            Your driver Dave, who&rsquo;s driven you 23 times
           </h2>
           <p className="mt-4.5 max-w-[480px] text-[19px] leading-relaxed text-ink-secondary">
             We don&rsquo;t assign random drivers. You build a relationship with people who learn

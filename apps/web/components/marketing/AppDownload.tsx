@@ -1,11 +1,21 @@
-// AppDownload — the "Get the app" band ("Take Veterans 1st with you").
+// AppDownload — the "Be first to ride" band (#get-the-app).
 //
-// Left: copy + store-badge placeholders + a QR placeholder. Right: a phone
-// device mock framing an app-screenshot image slot. Carries the #get-the-app
-// anchor. Store badges and QR are placeholders (no real listings yet).
+// The mobile app isn't in any app store yet, so this is an HONEST pre-launch
+// section rather than a fake download band: an email launch-waitlist
+// (WaitlistForm) on the left, an "app preview" device mock on the right, and
+// non-interactive "Coming soon" store pills — no clickable store badges, no
+// fake QR code. Keeps the #get-the-app anchor + #app-heading id so the five
+// CTAs that scroll here still resolve.
+//
+// NOTE: the support phone number now comes from site-config (SUPPORT_PHONE),
+// which reads NEXT_PUBLIC_SUPPORT_PHONE and falls back to a placeholder —
+// swap the env var for the real dispatch line before launch.
+
+import { cn } from '@/lib/cn';
+import { SUPPORT_PHONE, SUPPORT_PHONE_TEL } from '@/lib/site-config';
 
 import { ImageSlot } from './ImageSlot';
-import { StoreBadges } from './StoreBadges';
+import { WaitlistForm } from './WaitlistForm';
 
 export function AppDownload() {
   return (
@@ -17,37 +27,47 @@ export function AppDownload() {
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-18 md:px-8 md:py-20 lg:grid-cols-[1.05fr_0.95fr]">
         <div data-reveal>
           <p className="text-caption font-semibold uppercase tracking-[0.06em] text-sage">
-            The app
+            Coming soon
           </p>
           <h2
             id="app-heading"
             className="mt-3.5 text-pretty text-[38px] font-bold leading-[1.2] text-ink"
           >
-            Take Veterans 1st with you
+            Be first to ride
           </h2>
           <p className="mt-4 max-w-[460px] text-[19px] leading-relaxed text-ink-secondary">
-            Book in three taps, watch your driver arrive, and keep your saved places and preferences
-            in one calm, easy place. Free to download &mdash; and a real person is still one tap
-            away.
+            The Veterans 1st app is on its way. Book in three taps, watch your driver arrive, and
+            keep your saved places in one calm place. Leave your email and we&rsquo;ll tell you the
+            day it&rsquo;s ready.
           </p>
 
-          <StoreBadges className="mt-8" />
-
-          <div className="mt-7 flex items-center gap-4.5">
-            <div className="flex h-27 w-27 shrink-0 items-center justify-center rounded-[14px] border border-border-hairline bg-white shadow-card">
-              <QrPlaceholder />
-            </div>
-            <p className="max-w-[200px] text-callout leading-relaxed text-ink-secondary">
-              Point your phone&rsquo;s camera here to download.
-            </p>
+          <div className="mt-7 max-w-[480px]">
+            <WaitlistForm />
           </div>
+
+          <p className="mt-6 max-w-[460px] text-callout leading-relaxed text-ink-secondary">
+            Don&rsquo;t want to wait? You don&rsquo;t need the app to ride. Call us at{' '}
+            <a
+              href={SUPPORT_PHONE_TEL}
+              className="whitespace-nowrap font-semibold text-navy hover:text-navy-700"
+            >
+              {SUPPORT_PHONE}
+            </a>{' '}
+            and a real person will arrange everything.
+          </p>
+
+          <ComingSoonBadges className="mt-7" />
         </div>
 
         <div data-reveal className="flex justify-center">
           <div className="relative h-[556px] w-[272px] rounded-[44px] bg-[#0E0D0B] p-2.5 shadow-[0_30px_56px_-20px_rgba(26,24,19,0.5)]">
             <div className="absolute left-1/2 top-4 z-10 h-6 w-23 -translate-x-1/2 rounded-2xl bg-[#0E0D0B]" />
+            {/* "App preview" tag — brass earns its keep as a border accent only; text stays ink. */}
+            <span className="absolute right-4 top-6 z-20 rounded-full border border-brass bg-white px-3 py-1 text-caption font-semibold text-ink shadow-card">
+              App preview
+            </span>
             <div className="h-full w-full overflow-hidden rounded-[36px] bg-stone">
-              <ImageSlot label="App screenshot — Rider home" />
+              <ImageSlot label="App preview: Rider home (in design)" />
             </div>
           </div>
         </div>
@@ -56,52 +76,60 @@ export function AppDownload() {
   );
 }
 
-// Decorative QR placeholder (not a scannable code yet).
-function QrPlaceholder() {
+// Honest, non-interactive "Coming soon" pills — deliberately NOT styled like
+// clickable store buttons (stone fill + hairline border, ink glyph, no hover
+// lift, role="img") so they can't be mistaken for live App Store / Play links.
+function ComingSoonBadges({ className }: { className?: string }) {
   return (
-    <svg
-      width="78"
-      height="78"
-      viewBox="0 0 78 78"
-      shapeRendering="crispEdges"
-      role="img"
-      aria-label="QR code placeholder"
-    >
-      <rect width="78" height="78" fill="#fff" />
-      <g fill="var(--color-ink)">
-        <rect x="6" y="6" width="18" height="18" />
-        <rect x="10" y="10" width="10" height="10" fill="#fff" />
-        <rect x="13" y="13" width="4" height="4" />
-        <rect x="54" y="6" width="18" height="18" />
-        <rect x="58" y="10" width="10" height="10" fill="#fff" />
-        <rect x="61" y="13" width="4" height="4" />
-        <rect x="6" y="54" width="18" height="18" />
-        <rect x="10" y="58" width="10" height="10" fill="#fff" />
-        <rect x="13" y="61" width="4" height="4" />
-        <rect x="30" y="6" width="4" height="4" />
-        <rect x="38" y="6" width="4" height="8" />
-        <rect x="30" y="14" width="8" height="4" />
-        <rect x="44" y="6" width="4" height="4" />
-        <rect x="30" y="24" width="4" height="4" />
-        <rect x="40" y="22" width="6" height="6" />
-        <rect x="6" y="30" width="8" height="4" />
-        <rect x="20" y="30" width="6" height="4" />
-        <rect x="30" y="32" width="6" height="6" />
-        <rect x="44" y="30" width="4" height="6" />
-        <rect x="54" y="30" width="6" height="4" />
-        <rect x="66" y="30" width="6" height="6" />
-        <rect x="54" y="40" width="6" height="6" />
-        <rect x="64" y="42" width="6" height="4" />
-        <rect x="30" y="44" width="4" height="6" />
-        <rect x="40" y="44" width="8" height="4" />
-        <rect x="30" y="54" width="6" height="4" />
-        <rect x="42" y="52" width="6" height="6" />
-        <rect x="54" y="54" width="4" height="8" />
-        <rect x="64" y="54" width="8" height="4" />
-        <rect x="38" y="62" width="6" height="6" />
-        <rect x="54" y="66" width="6" height="6" />
-        <rect x="66" y="64" width="6" height="8" />
-      </g>
+    <div className={cn('flex flex-wrap items-center gap-3', className)}>
+      <span
+        role="img"
+        aria-label="Coming soon to the Apple App Store"
+        className="inline-flex min-h-[52px] items-center gap-3 rounded-xl border border-border-hairline bg-stone px-4 py-2.5"
+      >
+        <AppleGlyph />
+        <span className="text-left leading-[1.1]">
+          <span className="block text-[11px] uppercase tracking-[0.04em] text-ink-secondary">
+            Coming soon to the
+          </span>
+          <span className="block text-[17px] font-semibold text-ink">App Store</span>
+        </span>
+      </span>
+      <span
+        role="img"
+        aria-label="Coming soon to Google Play"
+        className="inline-flex min-h-[52px] items-center gap-3 rounded-xl border border-border-hairline bg-stone px-4 py-2.5"
+      >
+        <PlayGlyph />
+        <span className="text-left leading-[1.1]">
+          <span className="block text-[11px] uppercase tracking-[0.04em] text-ink-secondary">
+            Coming soon to
+          </span>
+          <span className="block text-[17px] font-semibold text-ink">Google Play</span>
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function AppleGlyph() {
+  return (
+    <svg width={24} height={24} viewBox="0 0 24 24" fill="var(--color-ink)" aria-hidden="true">
+      <path d="M17.05 12.04c-.03-2.6 2.13-3.85 2.22-3.91-1.21-1.77-3.09-2.02-3.76-2.05-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.9-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.88 2.65 3.22 2.6 1.29-.05 1.78-.83 3.34-.83 1.56 0 2 .83 3.37.81 1.39-.03 2.27-1.27 3.12-2.53.98-1.45 1.39-2.85 1.41-2.92-.03-.01-2.71-1.04-2.74-4.13zM14.69 4.93c.71-.86 1.19-2.06 1.06-3.25-1.02.04-2.26.68-2.99 1.54-.66.76-1.23 1.98-1.08 3.15 1.14.09 2.3-.58 3.01-1.44z" />
+    </svg>
+  );
+}
+
+function PlayGlyph() {
+  return (
+    <svg width={22} height={22} viewBox="0 0 24 24" fill="var(--color-ink)" aria-hidden="true">
+      <path
+        d="M3.6 2.3c-.26.27-.4.7-.4 1.25v16.9c0 .55.14.98.4 1.25l.06.05L13.1 12.3v-.2L3.66 2.25l-.06.05z"
+        opacity="0.85"
+      />
+      <path d="M16.3 15.5l-3.2-3.2v-.2l3.2-3.2.07.04 3.8 2.16c1.08.61 1.08 1.62 0 2.24l-3.8 2.16-.07.04z" />
+      <path d="M16.37 15.46 13.1 12.1l-9.5 9.6c.36.38.94.42 1.6.05l11.17-6.29z" opacity="0.7" />
+      <path d="M16.37 8.74 5.2 2.45c-.66-.37-1.24-.33-1.6.05l9.5 9.5 3.27-3.26z" opacity="0.5" />
     </svg>
   );
 }
