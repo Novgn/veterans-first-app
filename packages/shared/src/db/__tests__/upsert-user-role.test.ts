@@ -62,3 +62,46 @@ describe("upsertUser role semantics", () => {
     expect(updated.firstName).toBe("Renamed");
   });
 });
+
+describe("upsertUser phone-less staff users", () => {
+  const sql = postgres(DATABASE_URL, { prepare: false, max: 1 });
+  const db = drizzle(sql, { schema });
+
+  const STAFF_A = "user_test_staff_no_phone_a";
+  const STAFF_B = "user_test_staff_no_phone_b";
+
+  const cleanup = async () => {
+    await db.delete(users).where(eq(users.clerkId, STAFF_A));
+    await db.delete(users).where(eq(users.clerkId, STAFF_B));
+  };
+
+  beforeAll(cleanup);
+  afterAll(async () => {
+    await cleanup();
+    await sql.end();
+  });
+
+  it("allows multiple users without phones (users_phone_unique regression)", async () => {
+    // Staff sign in via Google/email — no phone. A '' sentinel used to
+    // collide on the UNIQUE phone index for the second such user.
+    const a = await upsertUser(db, {
+      clerkId: STAFF_A,
+      phone: null,
+      email: "staff-a@example.com",
+      firstName: "Staff",
+      lastName: "A",
+      role: "admin",
+    });
+    const b = await upsertUser(db, {
+      clerkId: STAFF_B,
+      phone: null,
+      email: "staff-b@example.com",
+      firstName: "Staff",
+      lastName: "B",
+      role: "dispatcher",
+    });
+    expect(a.phone).toBeNull();
+    expect(b.phone).toBeNull();
+    expect(b.role).toBe("dispatcher");
+  });
+});
