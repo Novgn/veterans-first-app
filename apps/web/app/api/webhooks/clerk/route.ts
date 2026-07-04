@@ -85,7 +85,9 @@ export async function POST(req: Request) {
         const role = resolveWebhookRole(public_metadata);
         await upsertUser(db, {
           clerkId: id,
-          phone: phone_numbers?.[0]?.phone_number ?? '',
+          // null, not '' — users.phone is UNIQUE, and staff (Google/email
+          // auth) have no phone; a '' sentinel collides on the second one.
+          phone: phone_numbers?.[0]?.phone_number ?? null,
           email: email_addresses?.[0]?.email_address ?? null,
           firstName: first_name ?? '',
           lastName: last_name ?? '',
