@@ -11,7 +11,7 @@ const BUSINESS_NAV: SectionNavItem[] = [
   { href: '/business/drivers', label: 'Drivers' },
   { href: '/business/compliance', label: 'Compliance' },
   { href: '/business/reports', label: 'Reports' },
-  { href: '/business/settings', label: 'Settings' },
+  { href: '/admin/configuration', label: 'Configuration' },
 ];
 
 export default async function BusinessLayout({ children }: { children: ReactNode }) {
