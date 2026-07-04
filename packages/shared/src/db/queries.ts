@@ -74,12 +74,20 @@ export async function setUserRole(
  * Upsert a user row keyed by Clerk ID. Used by the user account webhook
  * (apps/web/app/api/webhooks/clerk/route.ts) to keep the canonical users
  * table in sync with Clerk's identity store. Idempotent — safe to retry.
+ *
+ * `role` is intentionally optional: roles are assigned out-of-band
+ * (invitations, the admin console, the mobile seed), so a payload
+ * without one must never overwrite the stored role — an omitted role
+ * defaults to 'rider' on first insert and is left untouched on update.
  */
-export async function upsertUser(db: DbClient, payload: NewUser): Promise<User> {
+export type UpsertUserInput = Omit<NewUser, "role"> & { role?: NewUser["role"] };
+
+export async function upsertUser(db: DbClient, payload: UpsertUserInput): Promise<User> {
   const now = new Date();
+  const { role, ...identity } = payload;
   const rows = await db
     .insert(users)
-    .values({ ...payload, updatedAt: now })
+    .values({ ...identity, role: role ?? "rider", updatedAt: now })
     .onConflictDoUpdate({
       target: users.clerkId,
       set: {
@@ -87,7 +95,7 @@ export async function upsertUser(db: DbClient, payload: NewUser): Promise<User> 
         email: payload.email,
         firstName: payload.firstName,
         lastName: payload.lastName,
-        role: payload.role,
+        ...(role !== undefined ? { role } : {}),
         updatedAt: now,
       },
     })
