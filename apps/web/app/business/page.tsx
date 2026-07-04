@@ -59,11 +59,18 @@ export default async function BusinessHome() {
         <DashboardCard title="Pickup timing" value={pickupDelay.value} hint={pickupDelay.hint} />
         {/* Same definition + formatter as the operations report this links
             to (shared summarizeOperationalRides / formatRatePercent), so the
-            tile and the report always show the same number. */}
+            tile and the report show the same number whenever rides exist.
+            The null (no-rides) case gets explicit copy instead of the
+            report's "—" — dashboard tiles never render dead dashes (same
+            treatment as the Pickup-timing tile). */}
         <DashboardCard
           title="No-show rate"
-          value={formatRatePercent(data.noShowRate)}
-          hint="No-shows ÷ total rides · last 30 days"
+          value={data.noShowRate === null ? 'No rides' : formatRatePercent(data.noShowRate)}
+          hint={
+            data.noShowRate === null
+              ? 'No rides in the last 30 days'
+              : 'No-shows ÷ total rides · last 30 days'
+          }
           href="/business/reports/operations?window=30d"
         />
       </div>
