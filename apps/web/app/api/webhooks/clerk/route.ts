@@ -17,6 +17,7 @@ import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 
 import { getDb, softDeleteUser, upsertUser } from '@veterans-first/shared/db';
+import { resolveWebhookRole } from '@veterans-first/shared/utils';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -27,6 +28,7 @@ interface ClerkUser {
   email_addresses: Array<{ email_address: string; id: string }>;
   first_name: string | null;
   last_name: string | null;
+  public_metadata?: Record<string, unknown>;
   created_at: number;
   updated_at: number;
   image_url?: string;
@@ -73,20 +75,21 @@ export async function POST(req: Request) {
     switch (event.type) {
       case 'user.created':
       case 'user.updated': {
-        const { id, phone_numbers, email_addresses, first_name, last_name } = event.data;
+        const { id, phone_numbers, email_addresses, first_name, last_name, public_metadata } =
+          event.data;
+        // Mirror Clerk's public_metadata.role (set by invitations and the
+        // admin console) into the canonical users table. When the payload
+        // has no valid role, pass none: upsertUser then defaults new rows
+        // to 'rider' and leaves existing rows' role untouched — a plain
+        // profile update must never stomp a role assigned elsewhere.
+        const role = resolveWebhookRole(public_metadata);
         await upsertUser(db, {
           clerkId: id,
           phone: phone_numbers?.[0]?.phone_number ?? '',
           email: email_addresses?.[0]?.email_address ?? null,
           firstName: first_name ?? '',
           lastName: last_name ?? '',
-          // Default role for new users; updates preserve any existing role
-          // because upsertUser's onConflict.set explicitly assigns role to
-          // the incoming value — the webhook never sends a role override
-          // unless we extend the payload, so this stays 'rider' for created
-          // events and is a no-op-equivalent for update events that preserve
-          // the existing role server-side.
-          role: 'rider',
+          ...(role ? { role } : {}),
         });
         return NextResponse.json({ success: true, event_type: event.type });
       }
