@@ -1,3 +1,5 @@
+import { formatRatePercent } from '@veterans-first/shared/utils';
+
 import { DashboardCard } from '@/components/business/DashboardCard';
 import { formatMoneyCents } from '@/lib/format';
 import { loadBusinessDashboard } from '@/lib/dashboard/loadBusinessDashboard';
@@ -55,10 +57,13 @@ export default async function BusinessHome() {
           href="/business/reports/operations?window=30d"
         />
         <DashboardCard title="Pickup timing" value={pickupDelay.value} hint={pickupDelay.hint} />
+        {/* Same definition + formatter as the operations report this links
+            to (shared summarizeOperationalRides / formatRatePercent), so the
+            tile and the report always show the same number. */}
         <DashboardCard
           title="No-show rate"
-          value={`${data.noShowRatePercent.toFixed(1)}%`}
-          hint="No-shows ÷ (completed + no-show) · last 30 days"
+          value={formatRatePercent(data.noShowRate)}
+          hint="No-shows ÷ total rides · last 30 days"
           href="/business/reports/operations?window=30d"
         />
       </div>
@@ -108,11 +113,14 @@ export default async function BusinessHome() {
           value={formatMoneyCents(data.avgFareCents)}
           hint="Completed rides · last 30 days"
         />
+        {/* Unfiltered billing list — the KPI sums pending + overdue, and the
+            billing page's status filter is exact-match, so a filtered link
+            would hide half the total. */}
         <DashboardCard
           title="Outstanding invoices"
           value={formatMoneyCents(data.outstandingInvoiceCents)}
           hint="Pending + overdue"
-          href="/business/billing?status=pending"
+          href="/business/billing"
         />
       </div>
     </div>

@@ -7,7 +7,19 @@ import 'server-only';
  * hardcoded placeholders. Follows the same getServerSupabase() + RLS
  * pattern as the sibling report pages (business/reports/financial,
  * business/reports/operations, business/billing/riders).
+ *
+ * The 30-day ride metrics (rides/day, completed, no-show rate, avg fare,
+ * pickup delay) all derive from ONE fetch over windowToRange('30d') fed
+ * through the shared summarizeOperationalRides — the exact same range and
+ * math as /business/reports/operations?window=30d, so a KPI tile and the
+ * report it links to can never disagree.
  */
+
+import {
+  summarizeOperationalRides,
+  windowToRange,
+  type RideForOperationalMetrics,
+} from '@veterans-first/shared/utils';
 
 import { getServerSupabase } from '@/lib/supabase';
 import { loadFinancialSummary } from '@/lib/reports/fetchFinancial';
@@ -25,8 +37,10 @@ export interface BusinessDashboardData {
   outstandingInvoiceCents: number;
   ridesPerDay: number;
   completedRides30d: number;
-  noShowRides30d: number;
-  noShowRatePercent: number;
+  /** Shared operational-metrics definition (no_show ÷ total rides in the
+   *  30d window); null when the window has no rides — the exact same
+   *  zero-state as the operations report. */
+  noShowRate: number | null;
   /** Avg (arrived-event time − scheduled_pickup_time) in minutes over the
    *  last 30 days of completed rides; null when no ride has a logged
    *  'arrived' event yet (there is no invented on-time threshold in the
@@ -37,14 +51,13 @@ export interface BusinessDashboardData {
   avgFareCents: number;
 }
 
-interface RideEventRow {
-  event_type: string;
-  created_at: string | null;
-}
-
-interface RideWithEventsRow {
-  scheduled_pickup_time: string;
-  ride_events: RideEventRow[] | null;
+interface RideRow {
+  id: string;
+  status: string;
+  scheduled_pickup_time: string | null;
+  completed_at: string | null;
+  fare_cents: number | null;
+  ride_events: Array<{ event_type: string; created_at: string | null }> | null;
 }
 
 export async function loadBusinessDashboard(): Promise<BusinessDashboardData> {
@@ -52,75 +65,60 @@ export async function loadBusinessDashboard(): Promise<BusinessDashboardData> {
   const now = new Date();
 
   const mtdRange = resolveFinancialRange('mtd', now);
-
-  const thirtyDaysAgo = new Date(now);
-  thirtyDaysAgo.setUTCDate(thirtyDaysAgo.getUTCDate() - 30);
-  const thirtyDaysAgoIso = thirtyDaysAgo.toISOString();
+  // Same window the operations report resolves for ?window=30d.
+  const ridesRange = windowToRange('30d', now);
 
   const sixMonthsAgoStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1));
   const sixMonthsAgoIso = sixMonthsAgoStart.toISOString();
 
-  const [
-    financialSummary,
-    outstandingRes,
-    completedCountRes,
-    noShowCountRes,
-    activeRidersRes,
-    fareRes,
-    monthlyInvoicesRes,
-    completedWithEventsRes,
-  ] = await Promise.all([
-    loadFinancialSummary({
-      startIso: mtdRange.startIso,
-      endExclusiveIso: mtdRange.endExclusiveIso,
-    }),
-    supabase.from('invoices').select('total_cents').in('status', ['pending', 'overdue']),
-    supabase
-      .from('rides')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'completed')
-      .gte('scheduled_pickup_time', thirtyDaysAgoIso),
-    supabase
-      .from('rides')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'no_show')
-      .gte('scheduled_pickup_time', thirtyDaysAgoIso),
-    supabase
-      .from('users')
-      .select('id', { count: 'exact', head: true })
-      .eq('role', 'rider')
-      .is('deleted_at', null),
-    supabase
-      .from('rides')
-      .select('fare_cents')
-      .eq('status', 'completed')
-      .not('fare_cents', 'is', null)
-      .gte('scheduled_pickup_time', thirtyDaysAgoIso),
-    supabase
-      .from('invoices')
-      .select('total_cents, created_at')
-      .eq('status', 'paid')
-      .gte('created_at', sixMonthsAgoIso),
-    supabase
-      .from('rides')
-      .select('scheduled_pickup_time, ride_events(event_type, created_at)')
-      .eq('status', 'completed')
-      .gte('scheduled_pickup_time', thirtyDaysAgoIso),
-  ]);
+  const [financialSummary, outstandingRes, activeRidersRes, monthlyInvoicesRes, ridesRes] =
+    await Promise.all([
+      loadFinancialSummary({
+        startIso: mtdRange.startIso,
+        endExclusiveIso: mtdRange.endExclusiveIso,
+      }),
+      supabase.from('invoices').select('total_cents').in('status', ['pending', 'overdue']),
+      supabase
+        .from('users')
+        .select('id', { count: 'exact', head: true })
+        .eq('role', 'rider')
+        .is('deleted_at', null),
+      supabase
+        .from('invoices')
+        .select('total_cents, created_at')
+        .eq('status', 'paid')
+        .gte('created_at', sixMonthsAgoIso),
+      supabase
+        .from('rides')
+        .select(
+          'id, status, scheduled_pickup_time, completed_at, fare_cents, ride_events(event_type, created_at)',
+        )
+        .gte('scheduled_pickup_time', ridesRange.startIso)
+        .lt('scheduled_pickup_time', ridesRange.endExclusiveIso),
+    ]);
 
   const outstandingInvoiceCents = (
     (outstandingRes.data as Array<{ total_cents: number }> | null) ?? []
   ).reduce((sum, row) => sum + row.total_cents, 0);
 
-  const completedRides30d = completedCountRes.count ?? 0;
-  const noShowRides30d = noShowCountRes.count ?? 0;
-  const concluded = completedRides30d + noShowRides30d;
-  const noShowRatePercent = concluded > 0 ? (noShowRides30d / concluded) * 100 : 0;
+  const rideRows = (ridesRes.data as unknown as RideRow[] | null) ?? [];
+  const operational = summarizeOperationalRides(
+    rideRows.map(
+      (r): RideForOperationalMetrics => ({
+        id: r.id,
+        status: r.status,
+        scheduledPickupTime: r.scheduled_pickup_time,
+        completedAt: r.completed_at,
+      }),
+    ),
+  );
+
+  const completedRides30d = operational.completedRides;
   const ridesPerDay = completedRides30d / 30;
   const activeRiders = activeRidersRes.count ?? 0;
 
-  const fareRows = (fareRes.data as Array<{ fare_cents: number | null }> | null) ?? [];
-  const fareCentsList = fareRows
+  const completedRows = rideRows.filter((r) => r.status === 'completed');
+  const fareCentsList = completedRows
     .map((r) => r.fare_cents)
     .filter((c): c is number => typeof c === 'number');
   const avgFareCents =
@@ -159,10 +157,10 @@ export async function loadBusinessDashboard(): Promise<BusinessDashboardData> {
   });
 
   // Avg pickup delay — first 'arrived' ride_event vs scheduled_pickup_time,
-  // for completed rides in the last 30 days.
-  const eventRows = (completedWithEventsRes.data as RideWithEventsRow[] | null) ?? [];
+  // for completed rides in the window.
   const deltas: number[] = [];
-  for (const ride of eventRows) {
+  for (const ride of completedRows) {
+    if (!ride.scheduled_pickup_time) continue;
     const arrivedTimes = (ride.ride_events ?? [])
       .filter((e) => e.event_type === 'arrived' && e.created_at)
       .map((e) => new Date(e.created_at as string).getTime())
@@ -179,8 +177,7 @@ export async function loadBusinessDashboard(): Promise<BusinessDashboardData> {
     outstandingInvoiceCents,
     ridesPerDay,
     completedRides30d,
-    noShowRides30d,
-    noShowRatePercent,
+    noShowRate: operational.noShowRate,
     avgPickupDelayMinutes,
     monthlyRevenue,
     activeRiders,

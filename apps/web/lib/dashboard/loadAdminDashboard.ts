@@ -55,6 +55,7 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
     supabase
       .from('rides')
       .select('id', { count: 'exact', head: true })
+      .neq('status', 'cancelled')
       .gte('scheduled_pickup_time', todayStart.toISOString())
       .lt('scheduled_pickup_time', todayEnd.toISOString()),
     supabase
@@ -81,6 +82,9 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
     const isActive = profile?.is_active ?? true;
     if (isActive) activeDrivers += 1;
 
+    // Intentionally tracks only expired / expiring_30_days — the same pair
+    // admin/credentials' hasAlerts banner counts; 'unknown' and
+    // missing-required-credential states are not alerts there either.
     let worst: 'ok' | 'expiring_30_days' | 'expired' = 'ok';
     for (const c of row.driver_credentials ?? []) {
       const classification = classifyCredential({
