@@ -69,10 +69,11 @@ The existing behavior is preserved on every fall-through: `auth.protect()` on pr
 
 The role check belongs in the existing `getCurrentUserWithRole()` server helper (Clerk session claims with a `currentUser()` fallback — not guaranteed to be resolvable synchronously in middleware), so the admin-host root lands on a tiny server component:
 
-- No Clerk session → `redirect('/sign-in')`. A signed-in user with no resolvable role takes the marketing exit with the other non-staff cases — sending them to /sign-in would loop, since Clerk's sign-in page auto-returns authenticated visitors via `fallbackRedirectUrl="/console"`.
+- No Clerk session → `redirect('/sign-in')`. (Sending a _signed-in_ user there would loop — Clerk's sign-in page auto-returns authenticated visitors via `fallbackRedirectUrl="/console"`.)
 - `role === 'admin'` → `redirect('/admin')` (admins also own `/business` today; the business layout is admin-only until a dedicated role exists).
 - `role === 'dispatcher'` → `redirect('/dispatch')`.
-- Any other role (`rider`, `driver`, `family`) or no row → send to the marketing site. **Host-aware:** read the request host via `headers()`; on `ADMIN_HOST` redirect to the absolute `https://www.vf1st.com/` (a relative `/` would bounce back into `/console` — infinite loop); on any other host redirect to relative `/`.
+- Known non-staff role (`rider`, `driver`, `family`) → send to the marketing site (the mobile app is their tool). **Host-aware:** read the request host via `headers()`; on `ADMIN_HOST` redirect to the absolute `https://www.vf1st.com/` (a relative `/` would bounce back into `/console` — infinite loop); on any other host redirect to relative `/`.
+- Signed in with **no role assigned** → render a "No console access yet" notice in place (who they're signed in as, sign-out button, plain link to the marketing site). No auto-redirect: silently exiting to marketing made "role not assigned" indistinguishable from "login broken" (owner directive 2026-07-04 — once on the admin portal, never bounce off it automatically).
 
 This page also breaks the pre-existing loop hazard: the section layouts do `redirect('/')` on wrong-role. On the admin host, `/` → `/console` → off-host for non-staff — never back into a console section.
 
