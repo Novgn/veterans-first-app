@@ -5,7 +5,7 @@
 // themselves" — we do NOT claim "veteran-owned". Sage check chips (sage-100
 // fill, sage glyph).
 
-import { ImageSlot } from './ImageSlot';
+import Image from 'next/image';
 
 const POINTS = [
   'Background-checked, credentialed, and insured',
@@ -19,9 +19,15 @@ export function Differentiators() {
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-18 md:px-8 md:py-20 lg:grid-cols-2">
         <div
           data-reveal
-          className="order-2 h-[340px] overflow-hidden rounded-[20px] border border-border-hairline shadow-card sm:h-[420px] lg:order-1"
+          className="relative order-2 h-[340px] overflow-hidden rounded-[20px] border border-border-hairline shadow-card sm:h-[420px] lg:order-1"
         >
-          <ImageSlot label="Photo: a real driver smiling beside their vehicle" surface="navy-100" />
+          <Image
+            src="/marketing/driver-vehicle.png"
+            alt="A friendly Veterans 1st driver standing beside their clean vehicle"
+            fill
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover"
+          />
         </div>
 
         <div data-reveal className="order-1 lg:order-2">

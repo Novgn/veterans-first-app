@@ -7,10 +7,11 @@
 
 import type { CSSProperties } from 'react';
 
+import Image from 'next/image';
+
 import { SUPPORT_PHONE } from '@/lib/site-config';
 
 import { CtaLink } from './CtaLink';
-import { ImageSlot } from './ImageSlot';
 import { PhoneButton } from './PhoneButton';
 
 function enterDelay(ms: number): CSSProperties {
@@ -102,9 +103,16 @@ export function Hero() {
         <div
           data-enter
           style={enterDelay(160)}
-          className="h-[360px] overflow-hidden rounded-[20px] border border-border-hairline shadow-raised sm:h-[460px]"
+          className="relative h-[360px] overflow-hidden rounded-[20px] border border-border-hairline shadow-raised sm:h-[460px]"
         >
-          <ImageSlot label="Hero photo: a driver helping a senior rider into the car" />
+          <Image
+            src="/marketing/hero-driver-rider.png"
+            alt="A Veterans 1st driver holds the car door for a senior veteran rider at golden hour"
+            fill
+            priority
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover"
+          />
         </div>
       </div>
     </section>

@@ -14,9 +14,18 @@
 import { cn } from '@/lib/cn';
 import { SUPPORT_PHONE, SUPPORT_PHONE_TEL } from '@/lib/site-config';
 
-import { ImageSlot } from './ImageSlot';
 import { WaitlistForm } from './WaitlistForm';
 
+// NOTE: an earlier draft mocked this section up with a phone-frame "app
+// preview" image slot. The only rider-app screens available at the time were
+// low-resolution, multi-panel design-comp exports (each already baked its own
+// phone bezel + neighboring screens into a single flat image), so there was
+// no clean single-screen crop to drop into a second device frame without
+// producing a blurry "phone inside a phone" result. Rather than ship that, we
+// dropped the mock device and let the waitlist copy own the section — matches
+// the honest, no-fake-affordances approach the rest of this component takes
+// (see the file banner above). Swap back in a real device mock once actual
+// app screenshots exist.
 export function AppDownload() {
   return (
     <section
@@ -24,53 +33,41 @@ export function AppDownload() {
       className="scroll-mt-24 border-t border-border-hairline bg-white"
       aria-labelledby="app-heading"
     >
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-18 md:px-8 md:py-20 lg:grid-cols-[1.05fr_0.95fr]">
-        <div data-reveal>
-          <p className="text-caption font-semibold uppercase tracking-[0.06em] text-sage">
-            Coming soon
-          </p>
-          <h2
-            id="app-heading"
-            className="mt-3.5 text-pretty text-[38px] font-bold leading-[1.2] text-ink"
+      <div
+        data-reveal
+        className="mx-auto flex max-w-2xl flex-col items-center px-6 py-18 text-center md:px-8 md:py-20"
+      >
+        <p className="text-caption font-semibold uppercase tracking-[0.06em] text-sage">
+          Coming soon
+        </p>
+        <h2
+          id="app-heading"
+          className="mt-3.5 text-pretty text-[38px] font-bold leading-[1.2] text-ink"
+        >
+          Be first to ride
+        </h2>
+        <p className="mt-4 max-w-[460px] text-[19px] leading-relaxed text-ink-secondary">
+          The Veterans 1st app is on its way. Book in three taps, watch your driver arrive, and keep
+          your saved places in one calm place. Leave your email and we&rsquo;ll tell you the day
+          it&rsquo;s ready.
+        </p>
+
+        <div className="mt-7 w-full max-w-[420px] text-left">
+          <WaitlistForm />
+        </div>
+
+        <p className="mt-6 max-w-[460px] text-callout leading-relaxed text-ink-secondary">
+          Don&rsquo;t want to wait? You don&rsquo;t need the app to ride. Call us at{' '}
+          <a
+            href={SUPPORT_PHONE_TEL}
+            className="whitespace-nowrap font-semibold text-navy hover:text-navy-700"
           >
-            Be first to ride
-          </h2>
-          <p className="mt-4 max-w-[460px] text-[19px] leading-relaxed text-ink-secondary">
-            The Veterans 1st app is on its way. Book in three taps, watch your driver arrive, and
-            keep your saved places in one calm place. Leave your email and we&rsquo;ll tell you the
-            day it&rsquo;s ready.
-          </p>
+            {SUPPORT_PHONE}
+          </a>{' '}
+          and a real person will arrange everything.
+        </p>
 
-          <div className="mt-7 max-w-[480px]">
-            <WaitlistForm />
-          </div>
-
-          <p className="mt-6 max-w-[460px] text-callout leading-relaxed text-ink-secondary">
-            Don&rsquo;t want to wait? You don&rsquo;t need the app to ride. Call us at{' '}
-            <a
-              href={SUPPORT_PHONE_TEL}
-              className="whitespace-nowrap font-semibold text-navy hover:text-navy-700"
-            >
-              {SUPPORT_PHONE}
-            </a>{' '}
-            and a real person will arrange everything.
-          </p>
-
-          <ComingSoonBadges className="mt-7" />
-        </div>
-
-        <div data-reveal className="flex justify-center">
-          <div className="relative h-[556px] w-[272px] rounded-[44px] bg-[#0E0D0B] p-2.5 shadow-[0_30px_56px_-20px_rgba(26,24,19,0.5)]">
-            <div className="absolute left-1/2 top-4 z-10 h-6 w-23 -translate-x-1/2 rounded-2xl bg-[#0E0D0B]" />
-            {/* "App preview" tag — brass earns its keep as a border accent only; text stays ink. */}
-            <span className="absolute right-4 top-6 z-20 rounded-full border border-brass bg-white px-3 py-1 text-caption font-semibold text-ink shadow-card">
-              App preview
-            </span>
-            <div className="h-full w-full overflow-hidden rounded-[36px] bg-stone">
-              <ImageSlot label="App preview: Rider home (in design)" />
-            </div>
-          </div>
-        </div>
+        <ComingSoonBadges className="mt-7 justify-center" />
       </div>
     </section>
   );
