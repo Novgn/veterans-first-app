@@ -4,9 +4,5 @@ import { SignUp } from '@clerk/nextjs';
 // verification, password strength, and OAuth social providers out of the
 // box. Customize appearance via the `appearance` prop or a theme.
 export default function SignUpPage() {
-  return (
-    <main>
-      <SignUp fallbackRedirectUrl="/console" />
-    </main>
-  );
+  return <SignUp fallbackRedirectUrl="/console" />;
 }
