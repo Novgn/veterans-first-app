@@ -34,7 +34,9 @@ export const users = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     clerkId: text("clerk_id").unique().notNull(),
-    phone: text("phone").unique().notNull(),
+    // Nullable: staff authenticate via Google/email and have no phone;
+    // phone-auth riders/drivers always provide one. UNIQUE ignores NULLs.
+    phone: text("phone").unique(),
     email: text("email"),
     firstName: text("first_name").notNull(),
     lastName: text("last_name").notNull(),
