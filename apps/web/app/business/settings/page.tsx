@@ -1,11 +1,7 @@
-import { ComingSoon } from '@/components/business/ComingSoon';
+import { redirect } from 'next/navigation';
 
+// Business settings now live under admin configuration (service area,
+// pricing, operating hours) — this route just forwards there.
 export default function BusinessSettingsPage() {
-  return (
-    <ComingSoon
-      title="Business Settings"
-      story="Story 5.14"
-      description="Pricing, service area, and operating hours are configured here once settings land."
-    />
-  );
+  redirect('/admin/configuration');
 }
