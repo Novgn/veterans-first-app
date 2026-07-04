@@ -242,9 +242,11 @@ const CREDENTIAL_PLANS = [
 
 function buildHistoryRides() {
   // Index 0 = current month .. 5 = five months ago. Front-loaded so the
-  // current month is heaviest (feeds the 6-bar monthly revenue chart and
-  // the 30d/7d operational windows).
-  const MONTH_COUNTS = [10, 7, 6, 6, 6, 6]; // sum = 41
+  // current month is heaviest (feeds the 30d/7d operational windows).
+  // Sized so each month's completed fares sum to ~$450-$650 — that sum
+  // becomes the month's consolidated PAID invoice, which is what the
+  // business dashboard's 6-bar monthly revenue chart plots.
+  const MONTH_COUNTS = [24, 18, 17, 18, 17, 18]; // sum = 112
   const rides = [];
   let globalIndex = 0;
 
@@ -281,6 +283,7 @@ function buildHistoryRides() {
 
       rides.push({
         tag: "history",
+        monthIndex: m,
         riderIdx,
         driverIdx: isCancelled ? null : driverIdx,
         status: isCancelled ? "cancelled" : "completed",
@@ -344,21 +347,10 @@ function buildEarningsAnchorRides() {
 }
 
 function buildBillingAnchorRides() {
-  // One completed ride per invoice (paid / pending / overdue), ridden by
-  // riders 0, 1, 2 respectively.
+  // One completed ride per current-period per-ride invoice (pending /
+  // overdue), ridden by riders 1 and 2. Paid revenue comes from the six
+  // monthly consolidated invoices built from history rides instead.
   return [
-    {
-      tag: "billing-paid",
-      riderIdx: 0,
-      driverIdx: 0,
-      status: "completed",
-      pickupAddress: RIDER_HOME_ADDRESSES[0],
-      dropoffAddress: VA_DROPOFF_ADDRESSES[0],
-      scheduledPickupTime: plusDays(NOW, -12),
-      fareCents: 3200,
-      completedAt: plusMinutes(plusDays(NOW, -12), 35),
-      arrivedOffsetMinutes: 1,
-    },
     {
       tag: "billing-pending",
       riderIdx: 1,
@@ -842,47 +834,120 @@ async function main() {
     `;
     counts.driver_earnings = earningsRows.length;
 
-    // --- Invoices (paid / pending / overdue) ------------------------------
+    // --- Invoices ----------------------------------------------------------
+    // 8 total: 6 monthly consolidated PAID invoices — one per month of the
+    // business dashboard's 6-bar revenue chart window, amount = that
+    // month's completed history-ride fares (one line item per ride, one
+    // succeeded payment dated in-month) — plus the current-period per-ride
+    // PENDING and OVERDUE invoices.
+    const lineItemRows = [];
+    const paymentRows = [];
+
+    // Group completed history rides by month index (0 = current .. 5).
+    const historyByMonth = new Map();
+    for (const ride of allRideDescriptors) {
+      if (ride.tag !== "history" || ride.status !== "completed") continue;
+      const list = historyByMonth.get(ride.monthIndex) ?? [];
+      list.push(ride);
+      historyByMonth.set(ride.monthIndex, list);
+    }
+
+    let invoiceCount = 0;
+    for (let m = 5; m >= 0; m--) {
+      const monthRides = historyByMonth.get(m) ?? [];
+      if (monthRides.length === 0) continue; // can't happen with MONTH_COUNTS, but be safe
+
+      const monthStart = atUtc(NOW.getUTCFullYear(), NOW.getUTCMonth() - m, 1);
+      const monthEnd = atUtc(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 0); // last day of month
+      const monthKey = `${monthStart.getUTCFullYear()}-${String(monthStart.getUTCMonth() + 1).padStart(2, "0")}`;
+      const monthLabel = monthStart.toLocaleString("en-US", { month: "long", timeZone: "UTC" });
+
+      const amount = monthRides.reduce((sum, r) => sum + r.fareCents, 0);
+      const tax = Math.round(amount * 0.07);
+      const total = amount + tax;
+
+      // created_at must land inside the month it bills (the revenue chart
+      // buckets paid invoices by created_at). Past months: the 27th at
+      // noon UTC. Current month: just before now, clamped so a run in the
+      // first minutes of the 1st can't spill into the previous month.
+      let createdAt;
+      if (m === 0) {
+        const candidate = plusMinutes(NOW, -45);
+        createdAt = candidate > monthStart ? candidate : plusMinutes(monthStart, 30);
+      } else {
+        createdAt = atUtc(monthStart.getUTCFullYear(), monthStart.getUTCMonth(), 27, 12, 0);
+      }
+      const paidAt = plusMinutes(createdAt, 15);
+
+      // Distinct rider per month (m = 0..5 → riders 0..5): satisfies the
+      // invoices_rider_period_unique partial index by construction.
+      const invoiceRiderIdx = m;
+
+      const [{ id: invoiceId }] = await db`
+        INSERT INTO invoices (
+          invoice_number, rider_id, ride_id, amount_cents, tax_cents, total_cents,
+          status, billing_period, period_start, period_end, due_date, paid_at, created_at
+        ) VALUES (
+          ${`DEMO-INV-${monthKey}`}, ${riderId(invoiceRiderIdx)}, ${null},
+          ${amount}, ${tax}, ${total}, 'paid', 'monthly',
+          ${isoDate(monthStart)}, ${isoDate(monthEnd)},
+          ${isoDate(plusDays(createdAt, 14))}, ${paidAt.toISOString()}, ${createdAt.toISOString()}
+        )
+        RETURNING id
+      `;
+      invoiceCount++;
+
+      for (const r of monthRides) {
+        lineItemRows.push({
+          invoice_id: invoiceId,
+          ride_id: r.dbId,
+          description: `Ride on ${isoDate(r.scheduledPickupTime)}: ${r.pickupAddress} → ${r.dropoffAddress}`,
+          amount_cents: r.fareCents,
+          created_at: createdAt.toISOString(),
+        });
+      }
+
+      paymentRows.push({
+        invoice_id: invoiceId,
+        rider_id: riderId(invoiceRiderIdx),
+        amount_cents: total,
+        stripe_payment_intent_id: `pi_demo_month_${monthKey}`,
+        stripe_customer_id: `cus_demo_rider_${String(invoiceRiderIdx + 1).padStart(2, "0")}`,
+        status: "succeeded",
+        payment_method_type: "card",
+        failure_reason: null,
+        created_at: paidAt.toISOString(),
+      });
+    }
+
+    // Current-period per-ride pending + overdue invoices.
     const billingRides = {
-      paid: allRideDescriptors.find((r) => r.tag === "billing-paid"),
       pending: allRideDescriptors.find((r) => r.tag === "billing-pending"),
       overdue: allRideDescriptors.find((r) => r.tag === "billing-overdue"),
     };
 
-    const invoiceDefs = [
-      {
-        key: "paid",
-        number: "DEMO-INV-0001",
-        status: "paid",
-        ride: billingRides.paid,
-        createdAt: plusHours(billingRides.paid.completedAt, 1),
-        dueDateOffsetDays: 14,
-      },
+    const perRideDefs = [
       {
         key: "pending",
-        number: "DEMO-INV-0002",
+        number: "DEMO-INV-PEND-01",
         status: "pending",
         ride: billingRides.pending,
         createdAt: plusHours(billingRides.pending.completedAt, 1),
-        dueDateOffsetDays: 14,
       },
       {
         key: "overdue",
-        number: "DEMO-INV-0003",
+        number: "DEMO-INV-OVER-01",
         status: "overdue",
         ride: billingRides.overdue,
         createdAt: plusHours(billingRides.overdue.completedAt, 1),
-        dueDateOffsetDays: 14,
       },
     ];
 
-    const invoiceIds = {};
-    for (const def of invoiceDefs) {
+    const perRideInvoiceIds = {};
+    for (const def of perRideDefs) {
       const amount = def.ride.fareCents;
       const tax = Math.round(amount * 0.07);
       const total = amount + tax;
-      const dueDate = isoDate(plusDays(def.createdAt, def.dueDateOffsetDays));
-      const paidAt = def.status === "paid" ? plusDays(def.createdAt, 3).toISOString() : null;
 
       const [{ id }] = await db`
         INSERT INTO invoices (
@@ -891,22 +956,51 @@ async function main() {
         ) VALUES (
           ${def.number}, ${riderId(def.ride.riderIdx)}, ${def.ride.dbId},
           ${amount}, ${tax}, ${total}, ${def.status}, 'per_ride',
-          ${dueDate}, ${paidAt}, ${def.createdAt.toISOString()}
+          ${isoDate(plusDays(def.createdAt, 14))}, ${null}, ${def.createdAt.toISOString()}
         )
         RETURNING id
       `;
-      invoiceIds[def.key] = id;
-    }
-    counts.invoices = invoiceDefs.length;
+      perRideInvoiceIds[def.key] = id;
+      invoiceCount++;
 
-    // --- invoice_line_items (one per invoice, tied to its completed ride) --
-    const lineItemRows = invoiceDefs.map((def) => ({
-      invoice_id: invoiceIds[def.key],
-      ride_id: def.ride.dbId,
-      description: `Ride on ${isoDate(def.ride.scheduledPickupTime)}: ${def.ride.pickupAddress} → ${def.ride.dropoffAddress}`,
-      amount_cents: def.ride.fareCents,
-      created_at: def.createdAt.toISOString(),
-    }));
+      lineItemRows.push({
+        invoice_id: id,
+        ride_id: def.ride.dbId,
+        description: `Ride on ${isoDate(def.ride.scheduledPickupTime)}: ${def.ride.pickupAddress} → ${def.ride.dropoffAddress}`,
+        amount_cents: def.ride.fareCents,
+        created_at: def.createdAt.toISOString(),
+      });
+    }
+    counts.invoices = invoiceCount;
+
+    const pendingDef = perRideDefs.find((d) => d.key === "pending");
+    const overdueDef = perRideDefs.find((d) => d.key === "overdue");
+    paymentRows.push(
+      {
+        invoice_id: perRideInvoiceIds.pending,
+        rider_id: riderId(pendingDef.ride.riderIdx),
+        amount_cents: pendingDef.ride.fareCents + Math.round(pendingDef.ride.fareCents * 0.07),
+        stripe_payment_intent_id: "pi_demo_pending_0002",
+        stripe_customer_id: "cus_demo_rider_02",
+        status: "pending",
+        payment_method_type: "card",
+        failure_reason: null,
+        created_at: plusHours(pendingDef.createdAt, 1).toISOString(),
+      },
+      {
+        invoice_id: perRideInvoiceIds.overdue,
+        rider_id: riderId(overdueDef.ride.riderIdx),
+        amount_cents: overdueDef.ride.fareCents + Math.round(overdueDef.ride.fareCents * 0.07),
+        stripe_payment_intent_id: "pi_demo_overdue_0003",
+        stripe_customer_id: "cus_demo_rider_03",
+        status: "failed",
+        payment_method_type: "card",
+        failure_reason: "card_declined",
+        created_at: plusDays(overdueDef.createdAt, 20).toISOString(),
+      }
+    );
+
+    // --- invoice_line_items ------------------------------------------------
     await db`
       INSERT INTO invoice_line_items ${db(
         lineItemRows,
@@ -920,44 +1014,6 @@ async function main() {
     counts.invoice_line_items = lineItemRows.length;
 
     // --- payments ----------------------------------------------------------
-    const paidDef = invoiceDefs.find((d) => d.key === "paid");
-    const pendingDef = invoiceDefs.find((d) => d.key === "pending");
-    const overdueDef = invoiceDefs.find((d) => d.key === "overdue");
-    const paymentRows = [
-      {
-        invoice_id: invoiceIds.paid,
-        rider_id: riderId(paidDef.ride.riderIdx),
-        amount_cents: paidDef.ride.fareCents + Math.round(paidDef.ride.fareCents * 0.07),
-        stripe_payment_intent_id: "pi_demo_paid_0001",
-        stripe_customer_id: "cus_demo_rider_01",
-        status: "succeeded",
-        payment_method_type: "card",
-        failure_reason: null,
-        created_at: plusDays(paidDef.createdAt, 3).toISOString(),
-      },
-      {
-        invoice_id: invoiceIds.pending,
-        rider_id: riderId(pendingDef.ride.riderIdx),
-        amount_cents: pendingDef.ride.fareCents + Math.round(pendingDef.ride.fareCents * 0.07),
-        stripe_payment_intent_id: "pi_demo_pending_0002",
-        stripe_customer_id: "cus_demo_rider_02",
-        status: "pending",
-        payment_method_type: "card",
-        failure_reason: null,
-        created_at: plusHours(pendingDef.createdAt, 1).toISOString(),
-      },
-      {
-        invoice_id: invoiceIds.overdue,
-        rider_id: riderId(overdueDef.ride.riderIdx),
-        amount_cents: overdueDef.ride.fareCents + Math.round(overdueDef.ride.fareCents * 0.07),
-        stripe_payment_intent_id: "pi_demo_overdue_0003",
-        stripe_customer_id: "cus_demo_rider_03",
-        status: "failed",
-        payment_method_type: "card",
-        failure_reason: "card_declined",
-        created_at: plusDays(overdueDef.createdAt, 20).toISOString(),
-      },
-    ];
     await db`
       INSERT INTO payments ${db(
         paymentRows,
@@ -974,10 +1030,10 @@ async function main() {
     `;
     counts.payments = paymentRows.length;
 
-    // --- rider_payment_accounts (for the 3 billing riders) ----------------
+    // --- rider_payment_accounts (autopay rider + the 2 billing riders) ----
     const paymentAccountRows = [
       {
-        rider_id: riderId(paidDef.ride.riderIdx),
+        rider_id: riderId(0),
         stripe_customer_id: "cus_demo_rider_01",
         default_payment_method_id: "pm_demo_rider_01",
         autopay_enabled: true,

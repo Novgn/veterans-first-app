@@ -23,8 +23,10 @@ earnings).
   within 30 days**, **one driver's license is already expired** — this
   lights up the `/admin/credentials` alert banner and the admin dashboard
   badge.
-- **~67 rides** spanning the last 6 months (front-loaded so the current
-  month is heaviest), plus near-term/today rides:
+- **~137 rides** spanning the last 6 months (front-loaded so the current
+  month is heaviest; each month's completed fares sum to ~$450–$650 so
+  the monthly revenue chart gets 6 realistic bars), plus near-term/today
+  rides:
   - Majority `completed`, fare $18–$45, each with an `arrived` `ride_events`
     row a few minutes off the scheduled pickup time (feeds pickup-timing
     metrics). A minority `cancelled`.
@@ -36,11 +38,17 @@ earnings).
   - 12 dedicated completed rides (2 per active driver × 2 pay periods) that
     anchor `driver_earnings` for the current and previous weekly pay
     period.
-- **Billing** — 3 invoices (`per_ride`): one `paid` (+ a `succeeded`
-  `payments` row), one `pending` (+ a `pending` payment attempt), one
-  `overdue` (+ a `failed` payment attempt). Each has one
-  `invoice_line_items` row tied to its completed ride.
-  `rider_payment_accounts` rows for the 3 billing riders.
+- **Billing** — 8 invoices:
+  - 6 monthly consolidated `paid` invoices (`billing_period = 'monthly'`),
+    one per month of the business dashboard's 6-bar revenue chart window.
+    Each month's amount is the sum of that month's completed demo ride
+    fares (~$450–$650), with one `invoice_line_items` row per ride and a
+    `succeeded` `payments` row dated inside that month — so
+    `SUM(paid)` per month is non-zero for each of the last 6 months.
+  - 2 current-period `per_ride` invoices: one `pending` (+ a `pending`
+    payment attempt) and one `overdue` (+ a `failed` payment attempt),
+    each with a line item tied to its completed ride.
+  - `rider_payment_accounts` rows for 3 riders (one with autopay on).
 - **`driver_earnings`** — current + previous pay-period rows for the 3
   active drivers (previous period paid out, current period pending).
 
