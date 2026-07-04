@@ -21,6 +21,7 @@ export * from "./serviceArea";
 export * from "./pricing";
 export * from "./operatingHours";
 export * from "./userManagement";
+export * from "./clerkWebhookRole";
 
 /**
  * Format a phone number to (XXX) XXX-XXXX format

@@ -5,9 +5,5 @@ import { SignIn } from '@clerk/nextjs';
 // same URL segment. The double-bracketed [[...sign-in]] segment is the
 // Next.js convention for optional catch-alls.
 export default function SignInPage() {
-  return (
-    <main>
-      <SignIn fallbackRedirectUrl="/console" />
-    </main>
-  );
+  return <SignIn fallbackRedirectUrl="/console" />;
 }
