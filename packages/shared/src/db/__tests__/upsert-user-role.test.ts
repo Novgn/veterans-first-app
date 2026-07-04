@@ -16,6 +16,7 @@ import { eq } from "drizzle-orm";
 import postgres from "postgres";
 
 import { upsertUser } from "../queries";
+import * as schema from "../schema";
 import { users } from "../schema";
 
 const DATABASE_URL =
@@ -33,7 +34,8 @@ const identity = {
 
 describe("upsertUser role semantics", () => {
   const sql = postgres(DATABASE_URL, { prepare: false, max: 1 });
-  const db = drizzle(sql);
+  // Same shape as getDb() — DbClient is PostgresJsDatabase<typeof schema>.
+  const db = drizzle(sql, { schema });
 
   beforeAll(async () => {
     await db.delete(users).where(eq(users.clerkId, CLERK_ID));
