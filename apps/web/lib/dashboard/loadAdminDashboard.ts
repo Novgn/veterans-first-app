@@ -11,6 +11,7 @@ import 'server-only';
 
 import { classifyCredential } from '@veterans-first/shared/utils';
 
+import { log } from '@/lib/logger';
 import { getServerSupabase } from '@/lib/supabase';
 
 export interface AdminDashboardData {
@@ -48,8 +49,14 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
   const [driversRes, ridesTodayRes, pendingRes, staffRes] = await Promise.all([
     supabase
       .from('users')
+      // `driver_credentials` has two FKs to `users` (driver_id, verified_by),
+      // so the embed is ambiguous to PostgREST unless disambiguated with
+      // `!driver_id` — same hint style as dispatch/fleet/page.tsx's
+      // `users!driver_id` on `rides`. Left unresolved, this query returns
+      // a PGRST201 error and `driversRes.data` is null, which is why the
+      // "Active drivers" and "Credential alerts" tiles used to read 0.
       .select(
-        'id, driver_profiles(is_active), driver_credentials(credential_type, verification_status, expiration_date)',
+        'id, driver_profiles(is_active), driver_credentials!driver_id(credential_type, verification_status, expiration_date)',
       )
       .eq('role', 'driver'),
     supabase
@@ -68,6 +75,12 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
       .in('role', ['admin', 'dispatcher']),
   ]);
 
+  if (driversRes.error) {
+    log.error(
+      { event: 'admin.dashboard.driverQuery.fail', code: driversRes.error.code },
+      driversRes.error.message,
+    );
+  }
   const driverRows = (driversRes.data as unknown as DriverRow[] | null) ?? [];
   const today = new Date();
 
