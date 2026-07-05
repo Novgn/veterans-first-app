@@ -83,7 +83,7 @@ export default async function DriverEarningsDetailPage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
         <div>
           <Link
             href="/business/drivers"
@@ -98,8 +98,13 @@ export default async function DriverEarningsDetailPage(props: {
             {earnings.period.startIso} → {earnings.period.endIso}
           </p>
         </div>
-        <Link href={`/api/business/earnings.csv?driverId=${driverId}&period=${frequency}`}>
-          <Button variant="outline">Export CSV</Button>
+        <Link
+          href={`/api/business/earnings.csv?driverId=${driverId}&period=${frequency}`}
+          className="w-full sm:w-auto"
+        >
+          <Button variant="outline" className="w-full sm:w-auto">
+            Export CSV
+          </Button>
         </Link>
       </div>
 

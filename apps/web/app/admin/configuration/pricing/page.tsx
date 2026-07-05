@@ -117,7 +117,7 @@ export default async function PricingPage(props: {
               defaultValue={(current.minimumFareCents / 100).toFixed(2)}
             />
             <div className="flex items-end justify-end sm:col-span-2">
-              <Button type="submit" size="lg">
+              <Button type="submit" size="lg" className="w-full sm:w-auto">
                 Save changes
               </Button>
             </div>

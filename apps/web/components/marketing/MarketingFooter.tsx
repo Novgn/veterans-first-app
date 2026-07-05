@@ -6,7 +6,7 @@
 
 import { SUPPORT_PHONE, SUPPORT_PHONE_TEL } from '@/lib/site-config';
 
-import { BrandLogo } from './BrandLogo';
+import { BrandLogo } from '@/components/shared/BrandLogo';
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {

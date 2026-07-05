@@ -11,7 +11,15 @@ import 'server-only';
 
 import { classifyCredential } from '@veterans-first/shared/utils';
 
+import { log } from '@/lib/logger';
 import { getServerSupabase } from '@/lib/supabase';
+
+export interface RecentRide {
+  id: string;
+  riderName: string;
+  scheduledPickupTime: string | null;
+  status: string;
+}
 
 export interface AdminDashboardData {
   activeDrivers: number;
@@ -20,6 +28,8 @@ export interface AdminDashboardData {
   ridesToday: number;
   pendingAssignments: number;
   staffCount: number;
+  /** 5 most recent rides by created_at, for the Overview "Recent rides" card. */
+  recentRides: RecentRide[];
 }
 
 interface DriverProfileRow {
@@ -38,6 +48,18 @@ interface DriverRow {
   driver_credentials: DriverCredentialRow[] | null;
 }
 
+interface RiderNameRow {
+  first_name: string;
+  last_name: string;
+}
+
+interface RecentRideRow {
+  id: string;
+  status: string;
+  scheduled_pickup_time: string | null;
+  rider: RiderNameRow | RiderNameRow[] | null;
+}
+
 export async function loadAdminDashboard(): Promise<AdminDashboardData> {
   const supabase = await getServerSupabase();
   const now = new Date();
@@ -45,11 +67,17 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
   const todayEnd = new Date(todayStart);
   todayEnd.setUTCDate(todayEnd.getUTCDate() + 1);
 
-  const [driversRes, ridesTodayRes, pendingRes, staffRes] = await Promise.all([
+  const [driversRes, ridesTodayRes, pendingRes, staffRes, recentRidesRes] = await Promise.all([
     supabase
       .from('users')
+      // `driver_credentials` has two FKs to `users` (driver_id, verified_by),
+      // so the embed is ambiguous to PostgREST unless disambiguated with
+      // `!driver_id` — same hint style as dispatch/fleet/page.tsx's
+      // `users!driver_id` on `rides`. Left unresolved, this query returns
+      // a PGRST201 error and `driversRes.data` is null, which is why the
+      // "Active drivers" and "Credential alerts" tiles used to read 0.
       .select(
-        'id, driver_profiles(is_active), driver_credentials(credential_type, verification_status, expiration_date)',
+        'id, driver_profiles(is_active), driver_credentials!driver_id(credential_type, verification_status, expiration_date)',
       )
       .eq('role', 'driver'),
     supabase
@@ -66,8 +94,24 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
       .from('users')
       .select('id', { count: 'exact', head: true })
       .in('role', ['admin', 'dispatcher']),
+    supabase
+      .from('rides')
+      // `rides` has four FKs to `users` (rider_id, driver_id,
+      // preferred_driver_id, booked_by_id), so `users(...)` alone is
+      // ambiguous — disambiguated with `!rider_id`, same hint style the
+      // dispatch pages (fleet/trip-logs/assignments) already use for this
+      // exact relationship.
+      .select('id, status, scheduled_pickup_time, rider:users!rider_id(first_name, last_name)')
+      .order('created_at', { ascending: false })
+      .limit(5),
   ]);
 
+  if (driversRes.error) {
+    log.error(
+      { event: 'admin.dashboard.driverQuery.fail', code: driversRes.error.code },
+      driversRes.error.message,
+    );
+  }
   const driverRows = (driversRes.data as unknown as DriverRow[] | null) ?? [];
   const today = new Date();
 
@@ -100,6 +144,23 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
     else if (worst === 'expiring_30_days') expiringCredentialDrivers += 1;
   }
 
+  if (recentRidesRes.error) {
+    log.error(
+      { event: 'admin.dashboard.recentRidesQuery.fail', code: recentRidesRes.error.code },
+      recentRidesRes.error.message,
+    );
+  }
+  const recentRideRows = (recentRidesRes.data as unknown as RecentRideRow[] | null) ?? [];
+  const recentRides: RecentRide[] = recentRideRows.map((row) => {
+    const rider = Array.isArray(row.rider) ? (row.rider[0] ?? null) : row.rider;
+    return {
+      id: row.id,
+      riderName: rider ? `${rider.first_name} ${rider.last_name}` : 'Unknown rider',
+      scheduledPickupTime: row.scheduled_pickup_time,
+      status: row.status,
+    };
+  });
+
   return {
     activeDrivers,
     expiredCredentialDrivers,
@@ -107,5 +168,6 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
     ridesToday: ridesTodayRes.count ?? 0,
     pendingAssignments: pendingRes.count ?? 0,
     staffCount: staffRes.count ?? 0,
+    recentRides,
   };
 }

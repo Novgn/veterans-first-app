@@ -1,10 +1,32 @@
+import Link from 'next/link';
+
 import { formatRatePercent } from '@veterans-first/shared/utils';
 
 import { DashboardCard } from '@/components/business/DashboardCard';
-import { formatMoneyCents } from '@/lib/format';
+import { Badge, type BadgeProps } from '@/components/ui/Badge';
+import { formatMoneyCents, humanStatus } from '@/lib/format';
 import { loadBusinessDashboard } from '@/lib/dashboard/loadBusinessDashboard';
 
 export const dynamic = 'force-dynamic';
+
+// Invoice / Stripe payment status → semantic Badge variant — same mapping
+// business/billing/page.tsx's invoiceStatusVariant uses, so the Dashboard's
+// "Recent invoices" chips read identically to the full Billing list.
+function invoiceStatusVariant(status: string): BadgeProps['variant'] {
+  switch (status) {
+    case 'paid':
+    case 'succeeded':
+      return 'success';
+    case 'pending':
+    case 'processing':
+    case 'overdue':
+      return 'warning';
+    case 'failed':
+      return 'error';
+    default:
+      return 'secondary';
+  }
+}
 
 // There is no "on-time" definition anywhere in this codebase (no threshold
 // constant, no prior UI). Rather than invent a pass/fail % and label it
@@ -80,30 +102,35 @@ export default async function BusinessHome() {
           <h3 className="text-title-3 font-semibold text-ink">Revenue by month</h3>
           <span className="text-caption text-ink-secondary">Last 6 months · paid invoices</span>
         </div>
-        <div className="mt-6 flex items-end gap-4" style={{ height: '180px' }}>
-          {data.monthlyRevenue.map((month) => {
-            const barPx = Math.round((month.cents / maxMonthlyCents) * 160);
-            return (
-              <div key={month.key} className="flex flex-1 flex-col items-center justify-end gap-2">
-                <span className="text-caption text-ink-secondary">
-                  {formatMoneyCents(month.cents)}
-                </span>
+        <div className="mt-6 overflow-x-auto overflow-y-hidden">
+          <div className="flex items-end gap-4" style={{ height: '204px', minWidth: '440px' }}>
+            {data.monthlyRevenue.map((month) => {
+              const barPx = Math.round((month.cents / maxMonthlyCents) * 160);
+              return (
                 <div
-                  className={`w-full max-w-[56px] rounded-t-lg ${
-                    month.isCurrent ? 'bg-sage' : 'bg-navy'
-                  }`}
-                  style={{ height: `${barPx}px` }}
-                />
-                <span
-                  className={`text-caption ${
-                    month.isCurrent ? 'font-semibold text-ink' : 'text-ink-secondary'
-                  }`}
+                  key={month.key}
+                  className="flex min-w-[56px] flex-1 flex-col items-center justify-end gap-2"
                 >
-                  {month.label}
-                </span>
-              </div>
-            );
-          })}
+                  <span className="whitespace-nowrap text-caption text-ink-secondary">
+                    {formatMoneyCents(month.cents)}
+                  </span>
+                  <div
+                    className={`w-full max-w-[56px] rounded-t-lg ${
+                      month.isCurrent ? 'bg-sage' : 'bg-navy'
+                    }`}
+                    style={{ height: `${barPx}px` }}
+                  />
+                  <span
+                    className={`whitespace-nowrap text-caption ${
+                      month.isCurrent ? 'font-semibold text-ink' : 'text-ink-secondary'
+                    }`}
+                  >
+                    {month.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -129,6 +156,53 @@ export default async function BusinessHome() {
           hint="Pending + overdue"
           href="/business/billing"
         />
+      </div>
+
+      <div className="rounded-lg border border-border-hairline bg-card shadow-card">
+        <div className="flex items-center justify-between gap-2 p-6 pb-4">
+          <h3 className="text-title-3 font-semibold text-ink">Recent invoices</h3>
+          <Link
+            href="/business/billing"
+            className="text-caption font-semibold text-navy hover:underline"
+          >
+            View all →
+          </Link>
+        </div>
+        {data.recentInvoices.length === 0 ? (
+          <div className="mx-6 mb-6 rounded-lg border border-dashed border-border-hairline p-6 text-center text-body text-ink-secondary">
+            No recent invoices yet.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-body">
+              <thead className="border-y border-border-hairline text-left">
+                <tr className="text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+                  <th className="px-6 py-3">Payer</th>
+                  <th className="px-6 py-3">Amount</th>
+                  <th className="px-6 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.recentInvoices.map((invoice) => (
+                  <tr
+                    key={invoice.id}
+                    className="border-b border-border-hairline text-ink last:border-0"
+                  >
+                    <td className="px-6 py-3">{invoice.payerName}</td>
+                    <td className="px-6 py-3 text-ink-secondary">
+                      {formatMoneyCents(invoice.amountCents)}
+                    </td>
+                    <td className="px-6 py-3">
+                      <Badge variant={invoiceStatusVariant(invoice.status)}>
+                        {humanStatus(invoice.status)}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

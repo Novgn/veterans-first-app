@@ -41,15 +41,19 @@ export default async function FinancialReportPage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap sm:justify-between">
         <div>
           <h2 className="text-title-2 font-semibold text-ink">Financial summary</h2>
           <p className="mt-1 text-body text-ink-secondary">
             Revenue, outstanding, refunds, and driver payouts.
           </p>
         </div>
-        <div className="flex flex-wrap items-end gap-2">
-          <form action="/business/reports/financial" method="get" className="flex items-end gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-end">
+          <form
+            action="/business/reports/financial"
+            method="get"
+            className="flex flex-col gap-2 sm:flex-row sm:items-end"
+          >
             <select
               name="window"
               defaultValue={windowValue}
@@ -61,10 +65,17 @@ export default async function FinancialReportPage(props: {
                 </option>
               ))}
             </select>
-            <Button type="submit">Apply</Button>
+            <Button type="submit" className="w-full sm:w-auto">
+              Apply
+            </Button>
           </form>
-          <Link href={`/api/business/financial.csv?window=${windowValue}`}>
-            <Button variant="outline">Export CSV</Button>
+          <Link
+            href={`/api/business/financial.csv?window=${windowValue}`}
+            className="w-full sm:w-auto"
+          >
+            <Button variant="outline" className="w-full sm:w-auto">
+              Export CSV
+            </Button>
           </Link>
         </div>
       </div>
