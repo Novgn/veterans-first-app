@@ -32,6 +32,13 @@ export interface MonthlyRevenuePoint {
   isCurrent: boolean;
 }
 
+export interface RecentInvoice {
+  id: string;
+  payerName: string;
+  amountCents: number;
+  status: string;
+}
+
 export interface BusinessDashboardData {
   revenueMtdCents: number;
   outstandingInvoiceCents: number;
@@ -49,6 +56,8 @@ export interface BusinessDashboardData {
   monthlyRevenue: MonthlyRevenuePoint[];
   activeRiders: number;
   avgFareCents: number;
+  /** 5 latest invoices by created_at, for the Dashboard "Recent invoices" card. */
+  recentInvoices: RecentInvoice[];
 }
 
 interface RideRow {
@@ -58,6 +67,18 @@ interface RideRow {
   completed_at: string | null;
   fare_cents: number | null;
   ride_events: Array<{ event_type: string; created_at: string | null }> | null;
+}
+
+interface PayerNameRow {
+  first_name: string;
+  last_name: string;
+}
+
+interface RecentInvoiceRow {
+  id: string;
+  total_cents: number;
+  status: string;
+  users: PayerNameRow | PayerNameRow[] | null;
 }
 
 export async function loadBusinessDashboard(): Promise<BusinessDashboardData> {
@@ -71,31 +92,45 @@ export async function loadBusinessDashboard(): Promise<BusinessDashboardData> {
   const sixMonthsAgoStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1));
   const sixMonthsAgoIso = sixMonthsAgoStart.toISOString();
 
-  const [financialSummary, outstandingRes, activeRidersRes, monthlyInvoicesRes, ridesRes] =
-    await Promise.all([
-      loadFinancialSummary({
-        startIso: mtdRange.startIso,
-        endExclusiveIso: mtdRange.endExclusiveIso,
-      }),
-      supabase.from('invoices').select('total_cents').in('status', ['pending', 'overdue']),
-      supabase
-        .from('users')
-        .select('id', { count: 'exact', head: true })
-        .eq('role', 'rider')
-        .is('deleted_at', null),
-      supabase
-        .from('invoices')
-        .select('total_cents, created_at')
-        .eq('status', 'paid')
-        .gte('created_at', sixMonthsAgoIso),
-      supabase
-        .from('rides')
-        .select(
-          'id, status, scheduled_pickup_time, completed_at, fare_cents, ride_events(event_type, created_at)',
-        )
-        .gte('scheduled_pickup_time', ridesRange.startIso)
-        .lt('scheduled_pickup_time', ridesRange.endExclusiveIso),
-    ]);
+  const [
+    financialSummary,
+    outstandingRes,
+    activeRidersRes,
+    monthlyInvoicesRes,
+    ridesRes,
+    recentInvoicesRes,
+  ] = await Promise.all([
+    loadFinancialSummary({
+      startIso: mtdRange.startIso,
+      endExclusiveIso: mtdRange.endExclusiveIso,
+    }),
+    supabase.from('invoices').select('total_cents').in('status', ['pending', 'overdue']),
+    supabase
+      .from('users')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'rider')
+      .is('deleted_at', null),
+    supabase
+      .from('invoices')
+      .select('total_cents, created_at')
+      .eq('status', 'paid')
+      .gte('created_at', sixMonthsAgoIso),
+    supabase
+      .from('rides')
+      .select(
+        'id, status, scheduled_pickup_time, completed_at, fare_cents, ride_events(event_type, created_at)',
+      )
+      .gte('scheduled_pickup_time', ridesRange.startIso)
+      .lt('scheduled_pickup_time', ridesRange.endExclusiveIso),
+    // `invoices.rider_id` is the only FK to `users` on this table, so the
+    // `users:rider_id(...)` embed hint style (no `!` disambiguation needed)
+    // matches the working query business/billing/page.tsx already uses.
+    supabase
+      .from('invoices')
+      .select('id, total_cents, status, created_at, users:rider_id(first_name, last_name)')
+      .order('created_at', { ascending: false })
+      .limit(5),
+  ]);
 
   const outstandingInvoiceCents = (
     (outstandingRes.data as Array<{ total_cents: number }> | null) ?? []
@@ -172,6 +207,17 @@ export async function loadBusinessDashboard(): Promise<BusinessDashboardData> {
   const avgPickupDelayMinutes =
     deltas.length > 0 ? deltas.reduce((sum, d) => sum + d, 0) / deltas.length : null;
 
+  const recentInvoiceRows = (recentInvoicesRes.data as unknown as RecentInvoiceRow[] | null) ?? [];
+  const recentInvoices: RecentInvoice[] = recentInvoiceRows.map((row) => {
+    const payer = Array.isArray(row.users) ? (row.users[0] ?? null) : row.users;
+    return {
+      id: row.id,
+      payerName: payer ? `${payer.first_name} ${payer.last_name}` : 'Unknown payer',
+      amountCents: row.total_cents,
+      status: row.status,
+    };
+  });
+
   return {
     revenueMtdCents: financialSummary.revenueCents,
     outstandingInvoiceCents,
@@ -182,5 +228,6 @@ export async function loadBusinessDashboard(): Promise<BusinessDashboardData> {
     monthlyRevenue,
     activeRiders,
     avgFareCents,
+    recentInvoices,
   };
 }

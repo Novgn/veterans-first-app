@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 
 import { SUPPORT_PHONE } from '@/lib/site-config';
 
-import { BrandLogo } from './BrandLogo';
+import { BrandLogo } from '@/components/shared/BrandLogo';
 import { CtaLink } from './CtaLink';
 import { PhoneButton } from './PhoneButton';
 
