@@ -2,7 +2,14 @@
 
 import Link from 'next/link';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { useCallback, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type MouseEvent,
+  type ReactNode,
+} from 'react';
 
 import { BrandLogo } from '@/components/shared/BrandLogo';
 import { cn } from '@/lib/cn';
@@ -10,7 +17,7 @@ import { isItemActive } from '@/components/shared/console-nav';
 
 /**
  * ConsoleSidebar — the collapsible chrome inside ConsoleShell's `sm`+ navy
- * sidebar (brand mark, section label, grouped nav, collapse toggle).
+ * sidebar (brand mark, section label + collapse toggle, grouped nav).
  *
  * Owns the collapsed/expanded client state so ConsoleShell itself can stay a
  * server component. `initialCollapsed` comes from the `console-sidebar`
@@ -19,6 +26,23 @@ import { isItemActive } from '@/components/shared/console-nav';
  * that same cookie back so the choice survives both client-side navigation
  * (this component doesn't unmount across sibling /admin/* routes — the
  * layout persists) and full reloads.
+ *
+ * Three ways to toggle:
+ *   • the PanelLeftClose/Open button in the header row (the conventional
+ *     top-of-sidebar position users look for), beside the section label;
+ *   • ⌘B (mac) / Ctrl+B anywhere on the page, unless focus is in an
+ *     input/textarea/select/contentEditable;
+ *   • when collapsed, clicking any empty (non-link, non-button) area of the
+ *     rail expands it — the rail gets `cursor-pointer` in that state only.
+ *
+ * Collapsed-rail alignment: every row centers on the rail's vertical axis.
+ * Nav links deliberately avoid flex `gap` between icon and label — a gap
+ * still occupies its 12px next to the label even once the label animates to
+ * `max-width: 0`, which shifted every icon ~6px left of the rail's center.
+ * The label carries `ml-3` instead (the margin collapses along with the
+ * max-width — same pattern BrandLogo uses for its wordmark). Group breaks
+ * show a white/10 hairline while collapsed instead of the vanished headers'
+ * ghost whitespace.
  *
  * Animation is CSS-only: the aside's width transitions over ~220ms
  * ease-in-out; labels/group headers/wordmark use a shorter 150ms
@@ -39,6 +63,27 @@ function persistCollapsed(collapsed: boolean) {
   // where a Secure cookie would be silently dropped.
   const secure = window.location.protocol === 'https:' ? '; secure' : '';
   document.cookie = `${COOKIE_NAME}=${collapsed ? 'collapsed' : 'expanded'}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax${secure}`;
+}
+
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  const tag = target.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+}
+
+// SSR-safe mac detection for the toggle tooltip's shortcut hint: the server
+// snapshot says "not mac" (Ctrl+B) and the client snapshot corrects it right
+// after hydration — useSyncExternalStore is the sanctioned way to read a
+// browser-only value without a setState-in-effect cascade or hydration
+// mismatch warnings.
+const emptySubscribe = () => () => {};
+function useIsMacPlatform(): boolean {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent),
+    () => false,
+  );
 }
 
 /**
@@ -76,6 +121,7 @@ export function ConsoleSidebar({
   initialCollapsed,
 }: ConsoleSidebarProps) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const shortcutHint = useIsMacPlatform() ? '⌘B' : 'Ctrl+B';
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed((prev) => {
@@ -85,17 +131,40 @@ export function ConsoleSidebar({
     });
   }, []);
 
+  // ⌘B / Ctrl+B toggles the sidebar from anywhere except editable controls.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== 'b') return;
+      if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey) return;
+      if (isEditableTarget(event.target)) return;
+      event.preventDefault();
+      toggleCollapsed();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [toggleCollapsed]);
+
+  // Collapsed rail: a click on any empty (non-interactive) area expands it.
+  // Link/button clicks pass through untouched via the closest() guard.
+  const expandFromRail = (event: MouseEvent<HTMLElement>) => {
+    if (!collapsed) return;
+    if (event.target instanceof Element && event.target.closest('a, button')) return;
+    setCollapsed(false);
+    persistCollapsed(false);
+  };
+
   return (
     <aside
       aria-label="Console sidebar"
+      onClick={expandFromRail}
       className={cn(
         'hidden shrink-0 flex-col bg-navy transition-[width] duration-[220ms] ease-in-out sm:sticky sm:top-0 sm:flex sm:h-screen',
-        collapsed ? 'sm:w-16' : 'sm:w-60',
+        collapsed ? 'cursor-pointer sm:w-16' : 'sm:w-60',
       )}
     >
       <div
         className={cn(
-          'flex items-center pb-4 pt-6 transition-[padding] duration-[220ms] ease-in-out',
+          'flex items-center pb-2 pt-6 transition-[padding] duration-[220ms] ease-in-out',
           collapsed ? 'justify-center px-2' : 'px-5',
         )}
       >
@@ -106,23 +175,53 @@ export function ConsoleSidebar({
             and keeps the expanded lockup exactly as before. */}
         <BrandLogo variant="reversed" size={32} collapsible markOnly={collapsed} />
       </div>
+      {/* Section label + collapse toggle share the header's second row: the
+          label collapses away exactly like the nav labels, leaving the toggle
+          centered on the rail's icon axis. */}
       <div
         className={cn(
-          'overflow-hidden px-5 transition-all duration-150 ease-in-out',
-          collapsed ? 'max-h-0 pb-0 opacity-0' : 'max-h-6 pb-4 opacity-100',
+          'flex items-center pb-3 transition-[padding] duration-[220ms] ease-in-out',
+          collapsed ? 'justify-center px-2' : 'justify-between pl-5 pr-3',
         )}
       >
-        <span className="whitespace-nowrap text-caption font-semibold uppercase tracking-widest text-white/50">
+        <span
+          className={cn(
+            'overflow-hidden whitespace-nowrap text-caption font-semibold uppercase tracking-widest text-white/50 transition-all duration-150 ease-in-out',
+            collapsed
+              ? 'max-w-0 -translate-x-2 opacity-0'
+              : 'max-w-[140px] translate-x-0 opacity-100',
+          )}
+        >
           {sectionLabel}
         </span>
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          aria-expanded={!collapsed}
+          aria-controls={NAV_ID}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={`${collapsed ? 'Expand' : 'Collapse'} sidebar (${shortcutHint})`}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/5 hover:text-white"
+        >
+          {collapsed ? (
+            <PanelLeftOpen className="h-5 w-5 shrink-0" aria-hidden="true" />
+          ) : (
+            <PanelLeftClose className="h-5 w-5 shrink-0" aria-hidden="true" />
+          )}
+        </button>
       </div>
-      <nav
-        id={NAV_ID}
-        aria-label="Console navigation"
-        className="flex-1 space-y-6 overflow-y-auto px-3 pb-6"
-      >
+      <nav id={NAV_ID} aria-label="Console navigation" className="flex-1 overflow-y-auto px-3 pb-6">
         {navGroups.map((group, groupIndex) => (
-          <div key={group.label ?? `group-${groupIndex}`}>
+          <div
+            key={group.label ?? `group-${groupIndex}`}
+            className={cn(
+              // Collapsed group breaks read as a subtle hairline rather than
+              // the ghost whitespace the vanished headers used to leave.
+              groupIndex > 0 && 'border-t transition-all duration-[220ms] ease-in-out',
+              groupIndex > 0 &&
+                (collapsed ? 'mt-3 border-white/10 pt-3' : 'mt-6 border-transparent'),
+            )}
+          >
             {group.label ? (
               <div
                 className={cn(
@@ -143,7 +242,12 @@ export function ConsoleSidebar({
                       aria-current={isActive ? 'page' : undefined}
                       title={collapsed ? item.label : undefined}
                       className={cn(
-                        'flex min-h-11 items-center gap-3 rounded-md text-body transition-[padding] duration-[220ms] ease-in-out',
+                        // No flex gap between icon and label: the gap keeps
+                        // its 12px beside the label even at max-w-0, pushing
+                        // the icon ~6px off the rail's center. The label's
+                        // ml-3 collapses with it instead. Collapsed, the link
+                        // reads as a centered 40x44 rounded tile.
+                        'flex min-h-11 items-center rounded-md text-body transition-[padding] duration-[220ms] ease-in-out',
                         collapsed ? 'justify-center px-2' : 'px-3',
                         isActive
                           ? 'bg-white/10 font-semibold text-white'
@@ -156,7 +260,7 @@ export function ConsoleSidebar({
                           'overflow-hidden whitespace-nowrap transition-all duration-150 ease-in-out',
                           collapsed
                             ? 'max-w-0 -translate-x-2 opacity-0'
-                            : 'max-w-[160px] translate-x-0 opacity-100',
+                            : 'ml-3 max-w-[160px] translate-x-0 opacity-100',
                         )}
                       >
                         {item.label}
@@ -169,36 +273,6 @@ export function ConsoleSidebar({
           </div>
         ))}
       </nav>
-      <div className="border-t border-white/10 px-3 py-3">
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          aria-expanded={!collapsed}
-          aria-controls={NAV_ID}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className={cn(
-            'flex min-h-11 w-full items-center gap-3 rounded-md text-body text-white/70 transition-[padding] duration-[220ms] ease-in-out hover:bg-white/5 hover:text-white',
-            collapsed ? 'justify-center px-2' : 'px-3',
-          )}
-        >
-          {collapsed ? (
-            <PanelLeftOpen className="h-5 w-5 shrink-0" aria-hidden="true" />
-          ) : (
-            <PanelLeftClose className="h-5 w-5 shrink-0" aria-hidden="true" />
-          )}
-          <span
-            className={cn(
-              'overflow-hidden whitespace-nowrap transition-all duration-150 ease-in-out',
-              collapsed
-                ? 'max-w-0 -translate-x-2 opacity-0'
-                : 'max-w-[160px] translate-x-0 opacity-100',
-            )}
-          >
-            Collapse
-          </span>
-        </button>
-      </div>
     </aside>
   );
 }
