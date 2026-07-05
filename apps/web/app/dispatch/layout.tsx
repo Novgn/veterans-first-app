@@ -35,12 +35,12 @@ export default async function DispatchLayout({ children }: { children: ReactNode
   return (
     <section className="min-h-screen bg-stone">
       <header className="border-b border-border-hairline bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-5">
+        <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6 sm:py-5">
           <h1 className="text-title-1 font-bold text-ink">Dispatch</h1>
           <p className="text-body text-ink-secondary">Live fleet, bookings, and assignments.</p>
         </div>
       </header>
-      <div className="mx-auto flex max-w-7xl gap-8 px-6 py-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:flex-row sm:gap-8 sm:px-6 sm:py-8">
         <SectionNav items={DISPATCH_NAV} activePath={activePath} testId="dispatch-nav" />
         <div className="min-w-0 flex-1">{children}</div>
       </div>

@@ -54,7 +54,11 @@ export default async function RidersPage(props: { searchParams: Promise<{ q?: st
         </p>
       </div>
 
-      <form action="/dispatch/riders" method="get" className="flex items-end gap-3">
+      <form
+        action="/dispatch/riders"
+        method="get"
+        className="flex flex-col gap-3 sm:flex-row sm:items-end"
+      >
         <div className="flex-1">
           <Input
             name="q"
@@ -64,7 +68,7 @@ export default async function RidersPage(props: { searchParams: Promise<{ q?: st
             aria-label="Search riders"
           />
         </div>
-        <Button type="submit" size="lg">
+        <Button type="submit" size="lg" className="w-full sm:w-auto">
           Search
         </Button>
       </form>

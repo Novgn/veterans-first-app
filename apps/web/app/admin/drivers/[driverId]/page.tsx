@@ -126,7 +126,7 @@ export default async function DriverDetailPage(props: { params: Promise<{ driver
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
         <div>
           <Link
             href="/admin/drivers"
