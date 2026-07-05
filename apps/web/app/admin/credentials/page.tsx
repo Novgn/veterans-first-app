@@ -15,6 +15,7 @@ import {
 
 import { Badge, type BadgeProps } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
+import { log } from '@/lib/logger';
 import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -31,16 +32,34 @@ interface DriverRow {
   }>;
 }
 
-async function fetchDrivers(): Promise<DriverRow[]> {
+interface FetchDriversResult {
+  drivers: DriverRow[];
+  /** True when the Supabase query itself failed — distinct from a
+   *  genuinely empty roster — so the page can render a real error state
+   *  instead of silently claiming "no credentials on file". */
+  hasError: boolean;
+}
+
+async function fetchDrivers(): Promise<FetchDriversResult> {
   try {
     const supabase = await getServerSupabase();
-    const { data } = await supabase
+    // `driver_credentials` has two FKs to `users` (driver_id, verified_by),
+    // so the embed is ambiguous to PostgREST unless disambiguated — hence
+    // `!driver_id`, matching the `users!driver_id` hint style already used
+    // by dispatch/fleet/page.tsx for the `rides` table's multiple FKs.
+    const { data, error } = await supabase
       .from('users')
       .select(
-        'id, first_name, last_name, driver_credentials(id, credential_type, verification_status, expiration_date)',
+        'id, first_name, last_name, driver_credentials!driver_id(id, credential_type, verification_status, expiration_date)',
       )
       .eq('role', 'driver')
       .order('last_name');
+
+    if (error) {
+      log.error({ event: 'admin.credentials.list.fail', code: error.code }, error.message);
+      return { drivers: [], hasError: true };
+    }
+
     const rows =
       (data as unknown as Array<{
         id: string;
@@ -53,14 +72,18 @@ async function fetchDrivers(): Promise<DriverRow[]> {
           expiration_date: string | null;
         }> | null;
       }> | null) ?? [];
-    return rows.map((row) => ({
-      id: row.id,
-      first_name: row.first_name,
-      last_name: row.last_name,
-      credentials: row.driver_credentials ?? [],
-    }));
-  } catch {
-    return [];
+    return {
+      drivers: rows.map((row) => ({
+        id: row.id,
+        first_name: row.first_name,
+        last_name: row.last_name,
+        credentials: row.driver_credentials ?? [],
+      })),
+      hasError: false,
+    };
+  } catch (err) {
+    log.error({ event: 'admin.credentials.list.fail' }, (err as Error).message.slice(0, 120));
+    return { drivers: [], hasError: true };
   }
 }
 
@@ -112,7 +135,7 @@ function label(classification: CredentialClassification): string {
 }
 
 export default async function CredentialsListPage() {
-  const drivers = await fetchDrivers();
+  const { drivers, hasError } = await fetchDrivers();
 
   const rows = drivers.map((d) => ({
     driver: d,
@@ -131,7 +154,18 @@ export default async function CredentialsListPage() {
         </p>
       </div>
 
-      {hasAlerts ? (
+      {hasError ? (
+        <Card
+          className="border-error bg-error-100 p-8 text-center text-body text-ink"
+          role="alert"
+          aria-live="polite"
+        >
+          Unable to load credentials right now. Try refreshing the page, or contact support if this
+          keeps happening.
+        </Card>
+      ) : null}
+
+      {!hasError && hasAlerts ? (
         <div
           className={`flex items-start gap-3 rounded-md border p-4 text-body text-ink ${
             expiredCount > 0 ? 'border-error bg-error-100' : 'border-warning bg-warning-100'
@@ -151,7 +185,7 @@ export default async function CredentialsListPage() {
         </div>
       ) : null}
 
-      {drivers.length === 0 ? (
+      {hasError ? null : drivers.length === 0 ? (
         <Card className="border-dashed p-8 text-center text-body text-ink-secondary">
           No credentials on file yet.
         </Card>
