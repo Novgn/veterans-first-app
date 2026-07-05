@@ -1,10 +1,32 @@
+import Link from 'next/link';
+
 import { formatRatePercent } from '@veterans-first/shared/utils';
 
 import { DashboardCard } from '@/components/business/DashboardCard';
-import { formatMoneyCents } from '@/lib/format';
+import { Badge, type BadgeProps } from '@/components/ui/Badge';
+import { formatMoneyCents, humanStatus } from '@/lib/format';
 import { loadBusinessDashboard } from '@/lib/dashboard/loadBusinessDashboard';
 
 export const dynamic = 'force-dynamic';
+
+// Invoice / Stripe payment status → semantic Badge variant — same mapping
+// business/billing/page.tsx's invoiceStatusVariant uses, so the Dashboard's
+// "Recent invoices" chips read identically to the full Billing list.
+function invoiceStatusVariant(status: string): BadgeProps['variant'] {
+  switch (status) {
+    case 'paid':
+    case 'succeeded':
+      return 'success';
+    case 'pending':
+    case 'processing':
+    case 'overdue':
+      return 'warning';
+    case 'failed':
+      return 'error';
+    default:
+      return 'secondary';
+  }
+}
 
 // There is no "on-time" definition anywhere in this codebase (no threshold
 // constant, no prior UI). Rather than invent a pass/fail % and label it
@@ -134,6 +156,53 @@ export default async function BusinessHome() {
           hint="Pending + overdue"
           href="/business/billing"
         />
+      </div>
+
+      <div className="rounded-lg border border-border-hairline bg-card shadow-card">
+        <div className="flex items-center justify-between gap-2 p-6 pb-4">
+          <h3 className="text-title-3 font-semibold text-ink">Recent invoices</h3>
+          <Link
+            href="/business/billing"
+            className="text-caption font-semibold text-navy hover:underline"
+          >
+            View all →
+          </Link>
+        </div>
+        {data.recentInvoices.length === 0 ? (
+          <div className="mx-6 mb-6 rounded-lg border border-dashed border-border-hairline p-6 text-center text-body text-ink-secondary">
+            No recent invoices yet.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-body">
+              <thead className="border-y border-border-hairline text-left">
+                <tr className="text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+                  <th className="px-6 py-3">Payer</th>
+                  <th className="px-6 py-3">Amount</th>
+                  <th className="px-6 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.recentInvoices.map((invoice) => (
+                  <tr
+                    key={invoice.id}
+                    className="border-b border-border-hairline text-ink last:border-0"
+                  >
+                    <td className="px-6 py-3">{invoice.payerName}</td>
+                    <td className="px-6 py-3 text-ink-secondary">
+                      {formatMoneyCents(invoice.amountCents)}
+                    </td>
+                    <td className="px-6 py-3">
+                      <Badge variant={invoiceStatusVariant(invoice.status)}>
+                        {humanStatus(invoice.status)}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

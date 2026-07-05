@@ -1,11 +1,38 @@
 import Link from 'next/link';
 
 import { DashboardCard } from '@/components/business/DashboardCard';
-import { Badge } from '@/components/ui/Badge';
+import { Badge, type BadgeProps } from '@/components/ui/Badge';
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
+import { formatDateTime, humanStatus } from '@/lib/format';
 import { loadAdminDashboard } from '@/lib/dashboard/loadAdminDashboard';
 
 export const dynamic = 'force-dynamic';
+
+// Ride status → semantic Badge variant, same cues as dispatch/fleet's
+// statusVariant: completed/arrived/in_progress read as success, en_route/
+// assigned as the neutral "engaged" default, the not-yet-underway statuses
+// as a pending warning, and cancelled/no_show as the error cue. Color is
+// never the sole signal — the badge always carries the human-readable text.
+function rideStatusVariant(status: string): BadgeProps['variant'] {
+  switch (status) {
+    case 'completed':
+    case 'arrived':
+    case 'in_progress':
+      return 'success';
+    case 'en_route':
+    case 'assigned':
+      return 'default';
+    case 'pending':
+    case 'confirmed':
+    case 'pending_acceptance':
+      return 'warning';
+    case 'cancelled':
+    case 'no_show':
+      return 'error';
+    default:
+      return 'secondary';
+  }
+}
 
 const QUICK_ACTIONS = [
   {
@@ -85,6 +112,53 @@ export default async function AdminHome() {
             </Link>
           ))}
         </div>
+      </div>
+
+      <div className="rounded-lg border border-border-hairline bg-card shadow-card">
+        <div className="flex items-center justify-between gap-2 p-6 pb-4">
+          <h3 className="text-title-3 font-semibold text-ink">Recent rides</h3>
+          <Link
+            href="/dispatch/trip-logs"
+            className="text-caption font-semibold text-navy hover:underline"
+          >
+            View all →
+          </Link>
+        </div>
+        {data.recentRides.length === 0 ? (
+          <div className="mx-6 mb-6 rounded-lg border border-dashed border-border-hairline p-6 text-center text-body text-ink-secondary">
+            No recent rides yet.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-body">
+              <thead className="border-y border-border-hairline text-left">
+                <tr className="text-caption font-semibold uppercase tracking-wide text-ink-secondary">
+                  <th className="px-6 py-3">Rider</th>
+                  <th className="px-6 py-3">Scheduled</th>
+                  <th className="px-6 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.recentRides.map((ride) => (
+                  <tr
+                    key={ride.id}
+                    className="border-b border-border-hairline text-ink last:border-0"
+                  >
+                    <td className="px-6 py-3">{ride.riderName}</td>
+                    <td className="px-6 py-3 text-ink-secondary">
+                      {formatDateTime(ride.scheduledPickupTime)}
+                    </td>
+                    <td className="px-6 py-3">
+                      <Badge variant={rideStatusVariant(ride.status)}>
+                        {humanStatus(ride.status)}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

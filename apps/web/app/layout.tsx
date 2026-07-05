@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ClerkProvider>
+    <ClerkProvider afterSignOutUrl="/sign-in">
       <html lang="en" className={lexend.variable}>
         <body>{children}</body>
       </html>

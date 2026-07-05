@@ -1,14 +1,16 @@
 'use client';
 
 /**
- * SectionNav — section nav for the dispatch / admin / business consoles.
+ * SectionNav — mobile pill-row nav for the dispatch / admin / business
+ * consoles.
  *
  * Story 3.12: Dispatch console shell & navigation.
- * Story 5.x: Admin/business consoles will extend this once their pages exist.
- *
- * Responsive: a horizontally scrollable pill row below the `sm` breakpoint
- * (small viewports can't afford a persistent 224px sidebar), and the
- * original vertical sidebar list at `sm` and up.
+ * Story 5.x (dashboard shell): the `sm`+ vertical sidebar this component
+ * used to render is now ConsoleShell's navy grouped sidebar — SectionNav is
+ * composed *inside* ConsoleShell and only renders below the `sm` breakpoint
+ * (a horizontally scrollable pill row; small viewports can't afford a
+ * persistent sidebar). The active-pill scroll-into-view behavior is
+ * unchanged and still lives here so ConsoleShell doesn't duplicate it.
  */
 
 import Link from 'next/link';
@@ -45,18 +47,18 @@ export function SectionNav({ items, activePath, testId }: SectionNavProps) {
     <nav
       ref={navRef}
       aria-label="Section navigation"
-      className="-mx-4 flex gap-2 overflow-x-auto border-b border-border-hairline px-4 pb-3 sm:mx-0 sm:w-56 sm:shrink-0 sm:overflow-visible sm:border-b-0 sm:border-r sm:px-0 sm:pb-0 sm:pr-4"
+      className="flex gap-2 overflow-x-auto border-b border-border-hairline px-4 pb-3 sm:hidden"
       data-testid={testId}
     >
-      <ul className="flex gap-2 sm:block sm:space-y-1">
+      <ul className="flex gap-2">
         {items.map((item) => {
           const isActive = activePath === item.href || activePath.startsWith(`${item.href}/`);
           return (
-            <li key={item.href} className="shrink-0 sm:shrink">
+            <li key={item.href} className="shrink-0">
               <Link
                 ref={isActive ? activeRef : undefined}
                 href={item.href}
-                className={`flex min-h-12 items-center whitespace-nowrap rounded-md px-4 text-body transition-colors sm:px-3 ${
+                className={`flex min-h-12 items-center whitespace-nowrap rounded-md px-4 text-body transition-colors ${
                   isActive ? 'bg-navy font-semibold text-white' : 'text-ink hover:bg-navy-100'
                 }`}
                 aria-current={isActive ? 'page' : undefined}

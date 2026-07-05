@@ -1,17 +1,31 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import { BarChart3, Car, LayoutDashboard, Receipt, Settings, ShieldCheck } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-import { SectionNav, type SectionNavItem } from '@/components/shared/SectionNav';
+import { ConsoleShell, type ConsoleNavGroup } from '@/components/shared/ConsoleShell';
 import { getCurrentUserWithRole } from '@/lib/auth/current-user';
 
-const BUSINESS_NAV: SectionNavItem[] = [
-  { href: '/business', label: 'Dashboard' },
-  { href: '/business/billing', label: 'Billing' },
-  { href: '/business/drivers', label: 'Drivers' },
-  { href: '/business/compliance', label: 'Compliance' },
-  { href: '/business/reports', label: 'Reports' },
-  { href: '/admin/configuration', label: 'Configuration' },
+const BUSINESS_NAV_GROUPS: ConsoleNavGroup[] = [
+  { items: [{ href: '/business', label: 'Dashboard', icon: LayoutDashboard }] },
+  {
+    label: 'Finance',
+    items: [
+      { href: '/business/billing', label: 'Billing', icon: Receipt },
+      { href: '/business/reports', label: 'Reports', icon: BarChart3 },
+    ],
+  },
+  {
+    label: 'Operations',
+    items: [
+      { href: '/business/drivers', label: 'Drivers', icon: Car },
+      { href: '/business/compliance', label: 'Compliance', icon: ShieldCheck },
+    ],
+  },
+  {
+    label: 'Organization',
+    items: [{ href: '/admin/configuration', label: 'Configuration', icon: Settings }],
+  },
 ];
 
 export default async function BusinessLayout({ children }: { children: ReactNode }) {
@@ -30,17 +44,13 @@ export default async function BusinessLayout({ children }: { children: ReactNode
   const activePath = hdrs.get('x-next-pathname') ?? '/business';
 
   return (
-    <section className="min-h-screen bg-stone">
-      <header className="border-b border-border-hairline bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6 sm:py-5">
-          <h1 className="text-title-1 font-bold text-ink">Business</h1>
-          <p className="text-body text-ink-secondary">Billing, payroll, reports, and compliance.</p>
-        </div>
-      </header>
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:flex-row sm:gap-8 sm:px-6 sm:py-8">
-        <SectionNav items={BUSINESS_NAV} activePath={activePath} testId="business-nav" />
-        <div className="min-w-0 flex-1">{children}</div>
-      </div>
-    </section>
+    <ConsoleShell
+      sectionLabel="BUSINESS"
+      navGroups={BUSINESS_NAV_GROUPS}
+      activePath={activePath}
+      testId="business-nav"
+    >
+      {children}
+    </ConsoleShell>
   );
 }
