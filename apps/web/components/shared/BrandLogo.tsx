@@ -17,16 +17,28 @@ interface BrandLogoProps {
   /** Mark size in px (square). Wordmark scales alongside it. */
   size?: number;
   className?: string;
+  /**
+   * Collapse to the mark-only lockup (public/logo/road-ahead-mark*.svg
+   * equivalent): the wordmark fades + slides out and its space collapses to
+   * zero rather than being removed outright, so the console sidebar's
+   * collapse animation can transition it smoothly instead of snapping.
+   */
+  markOnly?: boolean;
 }
 
-export function BrandLogo({ variant = 'default', size = 46, className }: BrandLogoProps) {
+export function BrandLogo({
+  variant = 'default',
+  size = 46,
+  className,
+  markOnly = false,
+}: BrandLogoProps) {
   const reversed = variant === 'reversed';
   const disc = reversed ? '#FFFFFF' : 'var(--color-navy)';
   const road = reversed ? 'var(--color-navy)' : '#FFFFFF';
   const stroke = reversed ? '#FFFFFF' : 'var(--color-navy)';
 
   return (
-    <span className={cn('inline-flex items-center gap-3', className)}>
+    <span className={cn('inline-flex items-center', className)}>
       <svg
         width={size}
         height={size}
@@ -34,6 +46,7 @@ export function BrandLogo({ variant = 'default', size = 46, className }: BrandLo
         fill="none"
         role="img"
         aria-label="Veterans 1st Transportation, the Road Ahead mark"
+        className="shrink-0"
       >
         <circle cx="32" cy="32" r="28" fill={disc} />
         <path d="M23 47 L41 47 L36.5 25 L27.5 25 Z" fill={road} />
@@ -49,7 +62,15 @@ export function BrandLogo({ variant = 'default', size = 46, className }: BrandLo
           fill="var(--color-brass)"
         />
       </svg>
-      <span className="leading-[1.04]">
+      <span
+        aria-hidden={markOnly || undefined}
+        className={cn(
+          'overflow-hidden whitespace-nowrap leading-[1.04] transition-all duration-150 ease-in-out',
+          markOnly
+            ? 'max-w-0 -translate-x-2 opacity-0'
+            : 'ml-3 max-w-[180px] translate-x-0 opacity-100',
+        )}
+      >
         <span
           className={cn(
             'block text-[20px] font-bold tracking-[-0.01em]',
