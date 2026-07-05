@@ -80,30 +80,35 @@ export default async function BusinessHome() {
           <h3 className="text-title-3 font-semibold text-ink">Revenue by month</h3>
           <span className="text-caption text-ink-secondary">Last 6 months · paid invoices</span>
         </div>
-        <div className="mt-6 flex items-end gap-4" style={{ height: '180px' }}>
-          {data.monthlyRevenue.map((month) => {
-            const barPx = Math.round((month.cents / maxMonthlyCents) * 160);
-            return (
-              <div key={month.key} className="flex flex-1 flex-col items-center justify-end gap-2">
-                <span className="text-caption text-ink-secondary">
-                  {formatMoneyCents(month.cents)}
-                </span>
+        <div className="mt-6 overflow-x-auto overflow-y-hidden">
+          <div className="flex items-end gap-4" style={{ height: '204px', minWidth: '440px' }}>
+            {data.monthlyRevenue.map((month) => {
+              const barPx = Math.round((month.cents / maxMonthlyCents) * 160);
+              return (
                 <div
-                  className={`w-full max-w-[56px] rounded-t-lg ${
-                    month.isCurrent ? 'bg-sage' : 'bg-navy'
-                  }`}
-                  style={{ height: `${barPx}px` }}
-                />
-                <span
-                  className={`text-caption ${
-                    month.isCurrent ? 'font-semibold text-ink' : 'text-ink-secondary'
-                  }`}
+                  key={month.key}
+                  className="flex min-w-[56px] flex-1 flex-col items-center justify-end gap-2"
                 >
-                  {month.label}
-                </span>
-              </div>
-            );
-          })}
+                  <span className="whitespace-nowrap text-caption text-ink-secondary">
+                    {formatMoneyCents(month.cents)}
+                  </span>
+                  <div
+                    className={`w-full max-w-[56px] rounded-t-lg ${
+                      month.isCurrent ? 'bg-sage' : 'bg-navy'
+                    }`}
+                    style={{ height: `${barPx}px` }}
+                  />
+                  <span
+                    className={`whitespace-nowrap text-caption ${
+                      month.isCurrent ? 'font-semibold text-ink' : 'text-ink-secondary'
+                    }`}
+                  >
+                    {month.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

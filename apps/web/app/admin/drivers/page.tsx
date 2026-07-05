@@ -62,19 +62,23 @@ export default async function AdminDriversPage(props: { searchParams: Promise<{ 
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
         <div>
           <h2 className="text-title-2 font-semibold text-ink">Driver Roster</h2>
           <p className="text-body text-ink-secondary">
             All drivers, active and inactive. Up to 100 results shown.
           </p>
         </div>
-        <Link href="/admin/drivers/new">
-          <Button>Add Driver</Button>
+        <Link href="/admin/drivers/new" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto">Add Driver</Button>
         </Link>
       </div>
 
-      <form action="/admin/drivers" method="get" className="flex items-end gap-3">
+      <form
+        action="/admin/drivers"
+        method="get"
+        className="flex flex-col gap-3 sm:flex-row sm:items-end"
+      >
         <div className="flex-1">
           <Input
             name="q"
@@ -84,7 +88,7 @@ export default async function AdminDriversPage(props: { searchParams: Promise<{ 
             aria-label="Search drivers"
           />
         </div>
-        <Button type="submit" size="lg">
+        <Button type="submit" size="lg" className="w-full sm:w-auto">
           Search
         </Button>
       </form>

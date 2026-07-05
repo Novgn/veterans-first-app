@@ -103,14 +103,18 @@ export default async function BusinessDriversPage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
         <div>
           <h2 className="text-title-2 font-semibold text-ink">Driver earnings</h2>
           <p className="mt-1 text-body text-ink-secondary">
             Pay period {window.startIso} → {window.endIso}.
           </p>
         </div>
-        <form action="/business/drivers" method="get" className="flex items-end gap-2">
+        <form
+          action="/business/drivers"
+          method="get"
+          className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-end"
+        >
           <select
             name="period"
             defaultValue={frequency}
@@ -119,7 +123,9 @@ export default async function BusinessDriversPage(props: {
             <option value="weekly">Previous week</option>
             <option value="monthly">Previous month</option>
           </select>
-          <Button type="submit">Apply</Button>
+          <Button type="submit" className="w-full sm:w-auto">
+            Apply
+          </Button>
         </form>
       </div>
 

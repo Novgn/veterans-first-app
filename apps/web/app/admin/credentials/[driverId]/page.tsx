@@ -136,7 +136,7 @@ export default async function CredentialsDriverPage(props: {
                   : null;
             return (
               <Card key={c.id} className="space-y-3 p-6">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
                   <div>
                     <div className="text-title-3 font-semibold text-ink">
                       {humanizeCredentialType(c.credential_type)}
@@ -146,7 +146,7 @@ export default async function CredentialsDriverPage(props: {
                       issued {c.issued_date ?? '—'} · expires {c.expiration_date ?? '—'}
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1 text-right">
+                  <div className="flex flex-col items-start gap-1 text-left sm:items-end sm:text-right">
                     <Badge variant={badge.variant}>{badge.label}</Badge>
                     <div className="text-caption text-ink-secondary">
                       Status: {c.verification_status}
