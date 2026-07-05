@@ -1,16 +1,27 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import { Car, IdCard, LayoutDashboard, Settings, Users } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-import { SectionNav, type SectionNavItem } from '@/components/shared/SectionNav';
+import { ConsoleShell, type ConsoleNavGroup } from '@/components/shared/ConsoleShell';
 import { getCurrentUserWithRole } from '@/lib/auth/current-user';
 
-const ADMIN_NAV: SectionNavItem[] = [
-  { href: '/admin', label: 'Overview' },
-  { href: '/admin/drivers', label: 'Drivers' },
-  { href: '/admin/credentials', label: 'Credentials' },
-  { href: '/admin/users', label: 'Users' },
-  { href: '/admin/configuration', label: 'Configuration' },
+const ADMIN_NAV_GROUPS: ConsoleNavGroup[] = [
+  { items: [{ href: '/admin', label: 'Overview', icon: LayoutDashboard }] },
+  {
+    label: 'Fleet',
+    items: [
+      { href: '/admin/drivers', label: 'Drivers', icon: Car },
+      { href: '/admin/credentials', label: 'Credentials', icon: IdCard },
+    ],
+  },
+  {
+    label: 'Organization',
+    items: [
+      { href: '/admin/users', label: 'Users', icon: Users },
+      { href: '/admin/configuration', label: 'Configuration', icon: Settings },
+    ],
+  },
 ];
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
@@ -28,19 +39,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   const activePath = hdrs.get('x-next-pathname') ?? '/admin';
 
   return (
-    <section className="min-h-screen bg-stone">
-      <header className="border-b border-border-hairline bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6 sm:py-5">
-          <h1 className="text-title-1 font-bold text-ink">Admin</h1>
-          <p className="text-body text-ink-secondary">
-            Driver roster, credentials, and configuration.
-          </p>
-        </div>
-      </header>
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:flex-row sm:gap-8 sm:px-6 sm:py-8">
-        <SectionNav items={ADMIN_NAV} activePath={activePath} testId="admin-nav" />
-        <div className="min-w-0 flex-1">{children}</div>
-      </div>
-    </section>
+    <ConsoleShell
+      sectionLabel="ADMIN"
+      navGroups={ADMIN_NAV_GROUPS}
+      activePath={activePath}
+      testId="admin-nav"
+    >
+      {children}
+    </ConsoleShell>
   );
 }

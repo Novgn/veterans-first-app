@@ -7,7 +7,7 @@
 
 import { SUPPORT_PHONE, SUPPORT_PHONE_TEL } from '@/lib/site-config';
 
-import { BrandLogo } from './BrandLogo';
+import { BrandLogo } from '@/components/shared/BrandLogo';
 
 export function CtaBand() {
   return (
