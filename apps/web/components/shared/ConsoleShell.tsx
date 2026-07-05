@@ -1,11 +1,15 @@
-import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { UserButton } from '@clerk/nextjs';
-import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { BrandLogo } from '@/components/shared/BrandLogo';
+import { ConsoleSidebar } from '@/components/shared/ConsoleSidebar';
 import { SectionNav, type SectionNavItem } from '@/components/shared/SectionNav';
-import { cn } from '@/lib/cn';
+import {
+  flattenNavItems,
+  resolvePageTitle,
+  type ConsoleNavGroup,
+} from '@/components/shared/console-nav';
 
 /**
  * ConsoleShell — the shared dashboard-app chrome for /admin, /dispatch, and
@@ -23,19 +27,18 @@ import { cn } from '@/lib/cn';
  * row renders directly below it — same component/behavior PR #44 verified
  * has no page-level horizontal scroll at 390px, just composed here instead of
  * duplicated per-console.
+ *
+ * The sidebar itself is collapsible (icon-only ~64px rail vs ~240px
+ * expanded). ConsoleShell stays a server component and only reads the
+ * `console-sidebar` cookie to know which width to render first — the actual
+ * collapsed/expanded state + toggle lives in the client ConsoleSidebar so SSR
+ * paints the right width immediately (no hydration flash) while still being
+ * interactive. Reading `cookies()` here makes the route dynamic, which the
+ * console layouts already are (they call `getCurrentUserWithRole()` for
+ * auth), so this doesn't change caching behavior.
  */
 
-export interface ConsoleNavItem {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-}
-
-export interface ConsoleNavGroup {
-  /** Small-caps group header. Omit for the top, ungrouped item(s) (e.g. Overview). */
-  label?: string;
-  items: ConsoleNavItem[];
-}
+export type { ConsoleNavItem, ConsoleNavGroup } from '@/components/shared/console-nav';
 
 export interface ConsoleShellProps {
   /** Small-caps label under the brand mark: ADMIN / DISPATCH / BUSINESS. */
@@ -46,24 +49,7 @@ export interface ConsoleShellProps {
   children: ReactNode;
 }
 
-function flattenNavItems(navGroups: ConsoleNavGroup[]): ConsoleNavItem[] {
-  return navGroups.flatMap((group) => group.items);
-}
-
-function isItemActive(item: { href: string }, activePath: string): boolean {
-  return activePath === item.href || activePath.startsWith(`${item.href}/`);
-}
-
-// Most-specific (longest href) match wins, so e.g. `/admin/drivers/123` shows
-// "Drivers" as the page title rather than falling back to the first item
-// ("Overview") whose `/admin` prefix also matches.
-function resolvePageTitle(items: ConsoleNavItem[], activePath: string, fallback: string): string {
-  const matches = items.filter((item) => isItemActive(item, activePath));
-  if (matches.length === 0) return fallback;
-  return [...matches].sort((a, b) => b.href.length - a.href.length)[0]!.label;
-}
-
-export function ConsoleShell({
+export async function ConsoleShell({
   sectionLabel,
   navGroups,
   activePath,
@@ -77,56 +63,32 @@ export function ConsoleShell({
   }));
   const pageTitle = resolvePageTitle(flatItems, activePath, sectionLabel);
 
+  const cookieStore = await cookies();
+  const initialCollapsed = cookieStore.get('console-sidebar')?.value === 'collapsed';
+
+  // ConsoleSidebar is a Client Component, so nav items can't carry the raw
+  // `LucideIcon` component reference across the server/client boundary
+  // (passing a function/component as a prop to a Client Component isn't
+  // serializable). Render each icon element here on the server instead and
+  // hand down the resulting ReactNode.
+  const sidebarNavGroups = navGroups.map((group) => ({
+    label: group.label,
+    items: group.items.map((item) => ({
+      href: item.href,
+      label: item.label,
+      icon: <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />,
+    })),
+  }));
+
   return (
     <div className="flex min-h-screen flex-col bg-stone sm:flex-row" data-testid={testId}>
       {/* Desktop navy sidebar (sm+) */}
-      <aside
-        aria-label="Console sidebar"
-        className="hidden shrink-0 flex-col bg-navy sm:sticky sm:top-0 sm:flex sm:h-screen sm:w-60"
-      >
-        <div className="px-5 pb-4 pt-6">
-          <BrandLogo variant="reversed" size={32} />
-        </div>
-        <div className="px-5 pb-4">
-          <span className="text-caption font-semibold uppercase tracking-widest text-white/50">
-            {sectionLabel}
-          </span>
-        </div>
-        <nav aria-label="Console navigation" className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">
-          {navGroups.map((group, groupIndex) => (
-            <div key={group.label ?? `group-${groupIndex}`}>
-              {group.label ? (
-                <div className="mb-2 px-3 text-caption font-semibold uppercase tracking-widest text-white/40">
-                  {group.label}
-                </div>
-              ) : null}
-              <ul className="space-y-1">
-                {group.items.map((item) => {
-                  const isActive = isItemActive(item, activePath);
-                  const Icon = item.icon;
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        aria-current={isActive ? 'page' : undefined}
-                        className={cn(
-                          'flex min-h-11 items-center gap-3 rounded-md px-3 text-body transition-colors',
-                          isActive
-                            ? 'bg-white/10 font-semibold text-white'
-                            : 'text-white/70 hover:bg-white/5 hover:text-white',
-                        )}
-                      >
-                        <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </nav>
-      </aside>
+      <ConsoleSidebar
+        sectionLabel={sectionLabel}
+        navGroups={sidebarNavGroups}
+        activePath={activePath}
+        initialCollapsed={initialCollapsed}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Topbar */}
