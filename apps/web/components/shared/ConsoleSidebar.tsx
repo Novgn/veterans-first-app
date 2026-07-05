@@ -32,9 +32,13 @@ import { isItemActive } from '@/components/shared/console-nav';
 
 const COOKIE_NAME = 'console-sidebar';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+const NAV_ID = 'console-sidebar-nav';
 
 function persistCollapsed(collapsed: boolean) {
-  document.cookie = `${COOKIE_NAME}=${collapsed ? 'collapsed' : 'expanded'}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`;
+  // `Secure` when served over https (production); omitted on http localhost
+  // where a Secure cookie would be silently dropped.
+  const secure = window.location.protocol === 'https:' ? '; secure' : '';
+  document.cookie = `${COOKIE_NAME}=${collapsed ? 'collapsed' : 'expanded'}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax${secure}`;
 }
 
 /**
@@ -95,7 +99,12 @@ export function ConsoleSidebar({
           collapsed ? 'justify-center px-2' : 'px-5',
         )}
       >
-        <BrandLogo variant="reversed" size={collapsed ? 24 : 32} markOnly={collapsed} />
+        {/* Constant mark size in both states: `size` sets SVG width/height
+            attributes, which don't transition — varying it per-state made the
+            mark pop while everything else eased. 32px fits the collapsed
+            rail's 48px content width (64px minus px-2) with room to spare,
+            and keeps the expanded lockup exactly as before. */}
+        <BrandLogo variant="reversed" size={32} collapsible markOnly={collapsed} />
       </div>
       <div
         className={cn(
@@ -107,7 +116,11 @@ export function ConsoleSidebar({
           {sectionLabel}
         </span>
       </div>
-      <nav aria-label="Console navigation" className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">
+      <nav
+        id={NAV_ID}
+        aria-label="Console navigation"
+        className="flex-1 space-y-6 overflow-y-auto px-3 pb-6"
+      >
         {navGroups.map((group, groupIndex) => (
           <div key={group.label ?? `group-${groupIndex}`}>
             {group.label ? (
@@ -161,6 +174,7 @@ export function ConsoleSidebar({
           type="button"
           onClick={toggleCollapsed}
           aria-expanded={!collapsed}
+          aria-controls={NAV_ID}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           className={cn(

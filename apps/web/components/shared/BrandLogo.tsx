@@ -18,10 +18,18 @@ interface BrandLogoProps {
   size?: number;
   className?: string;
   /**
+   * Opt-in animated-collapse treatment for the console sidebar: the wordmark
+   * gets `overflow-hidden` + a `max-width` clamp + opacity/translate
+   * transitions so `markOnly` can fade/slide it out smoothly instead of
+   * snapping. Defaults off — marketing usages (MarketingNav, CtaBand,
+   * MarketingFooter) render the lockup at its natural, unclipped width
+   * exactly as before the sidebar work.
+   */
+  collapsible?: boolean;
+  /**
    * Collapse to the mark-only lockup (public/logo/road-ahead-mark*.svg
-   * equivalent): the wordmark fades + slides out and its space collapses to
-   * zero rather than being removed outright, so the console sidebar's
-   * collapse animation can transition it smoothly instead of snapping.
+   * equivalent). Only meaningful with `collapsible` — without it the
+   * wordmark has no collapse/transition styles to animate through.
    */
   markOnly?: boolean;
 }
@@ -30,6 +38,7 @@ export function BrandLogo({
   variant = 'default',
   size = 46,
   className,
+  collapsible = false,
   markOnly = false,
 }: BrandLogoProps) {
   const reversed = variant === 'reversed';
@@ -38,7 +47,7 @@ export function BrandLogo({
   const stroke = reversed ? '#FFFFFF' : 'var(--color-navy)';
 
   return (
-    <span className={cn('inline-flex items-center', className)}>
+    <span className={cn('inline-flex items-center', collapsible ? undefined : 'gap-3', className)}>
       <svg
         width={size}
         height={size}
@@ -63,12 +72,17 @@ export function BrandLogo({
         />
       </svg>
       <span
-        aria-hidden={markOnly || undefined}
+        aria-hidden={(collapsible && markOnly) || undefined}
         className={cn(
-          'overflow-hidden whitespace-nowrap leading-[1.04] transition-all duration-150 ease-in-out',
-          markOnly
-            ? 'max-w-0 -translate-x-2 opacity-0'
-            : 'ml-3 max-w-[180px] translate-x-0 opacity-100',
+          'leading-[1.04]',
+          // The clip/clamp treatment is console-sidebar-only; marketing
+          // lockups keep their natural width (no overflow-hidden, no max-w).
+          collapsible &&
+            'overflow-hidden whitespace-nowrap transition-all duration-150 ease-in-out',
+          collapsible &&
+            (markOnly
+              ? 'max-w-0 -translate-x-2 opacity-0'
+              : 'ml-3 max-w-[180px] translate-x-0 opacity-100'),
         )}
       >
         <span
