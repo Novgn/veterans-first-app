@@ -44,13 +44,15 @@ export default async function AdminUsersPage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
         <div>
           <h2 className="text-title-2 font-semibold text-ink">Staff accounts</h2>
           <p className="mt-1 text-body text-ink-secondary">Admins and dispatchers only.</p>
         </div>
-        <Link href="/admin/users/invite">
-          <Button size="lg">Add staff member</Button>
+        <Link href="/admin/users/invite" className="w-full sm:w-auto">
+          <Button size="lg" className="w-full sm:w-auto">
+            Add staff member
+          </Button>
         </Link>
       </div>
 
