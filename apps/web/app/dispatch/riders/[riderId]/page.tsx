@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { formatDateTime, humanStatus } from '@/lib/format';
 import { getServerSupabase } from '@/lib/supabase';
+import { logPhiAccess } from '@/lib/audit/logPhiAccess';
 import {
   MOBILITY_AID_LABELS,
   firstRelation,
@@ -175,6 +176,9 @@ export default async function RiderDetailPage(props: { params: Promise<{ riderId
   if (!rider) {
     notFound();
   }
+
+  // FR54: record that a staff member accessed this rider's PHI.
+  await logPhiAccess('rider_profile_accessed', 'users', rider.id);
 
   const prefs = firstRelation<RiderPrefs>(rider.rider_preferences);
   const needsAccessible = requiresAccessibleVehicle(prefs);
