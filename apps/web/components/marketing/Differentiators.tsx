@@ -15,7 +15,11 @@ const POINTS = [
 
 export function Differentiators() {
   return (
-    <section className="border-y border-border-hairline bg-white" aria-labelledby="drivers-heading">
+    <section
+      id="drivers"
+      className="scroll-mt-24 border-y border-border-hairline bg-white"
+      aria-labelledby="drivers-heading"
+    >
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-18 md:px-8 md:py-20 lg:grid-cols-2">
         <div
           data-reveal
@@ -35,7 +39,7 @@ export function Differentiators() {
             The same friendly faces
           </p>
           <h2 id="drivers-heading" className="mt-3.5 text-[36px] font-bold leading-[1.22] text-ink">
-            Your driver Dave, who&rsquo;s driven you 23 times
+            Drivers who learn your name and your route
           </h2>
           <p className="mt-4.5 max-w-[480px] text-[19px] leading-relaxed text-ink-secondary">
             We don&rsquo;t assign random drivers. You build a relationship with people who learn

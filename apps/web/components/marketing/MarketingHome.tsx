@@ -22,9 +22,15 @@ import { TrustStrip } from './TrustStrip';
 export function MarketingHome() {
   return (
     <div className="min-h-screen bg-stone">
+      <a
+        href="#main-content"
+        className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:left-4 focus-visible:top-4 focus-visible:z-[60] focus-visible:rounded-md focus-visible:bg-navy focus-visible:px-4 focus-visible:py-2 focus-visible:text-body focus-visible:font-semibold focus-visible:text-white"
+      >
+        Skip to main content
+      </a>
       <ScrollReveal />
       <MarketingNav />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Hero />
         <TrustStrip />
         <HowItWorks />

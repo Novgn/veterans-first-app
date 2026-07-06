@@ -9,11 +9,14 @@ import { cn } from '@/lib/cn';
 
 interface PhoneButtonProps {
   label: string;
-  phone: string;
+  // `null` when the support line is unconfigured — the button renders nothing
+  // rather than dial a missing/placeholder number.
+  phone: string | null;
   className?: string;
 }
 
 export function PhoneButton({ label, phone, className }: PhoneButtonProps) {
+  if (!phone) return null;
   const tel = `tel:${phone.replace(/[^\d+]/g, '')}`;
   return (
     <a
