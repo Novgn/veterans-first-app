@@ -2,9 +2,10 @@
  * Riders database (Story 3.16)
  *
  * Searchable list of riders. Dispatchers filter by name or phone using a
- * GET form (no client JS needed). Click-through opens a detail route (not
- * yet scaffolded — future story).
+ * GET form (no client JS needed). Each row links to the rider detail page.
  */
+
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -100,8 +101,13 @@ export default async function RidersPage(props: { searchParams: Promise<{ q?: st
                     key={r.id}
                     className="border-b border-border-hairline transition-colors last:border-b-0 hover:bg-navy-100"
                   >
-                    <td className="px-6 py-4 font-semibold text-ink">
-                      {r.last_name}, {r.first_name}
+                    <td className="px-6 py-4">
+                      <Link
+                        href={`/dispatch/riders/${r.id}`}
+                        className="font-semibold text-navy hover:underline"
+                      >
+                        {r.last_name}, {r.first_name}
+                      </Link>
                     </td>
                     <td className="px-6 py-4">
                       {r.phone ? (
