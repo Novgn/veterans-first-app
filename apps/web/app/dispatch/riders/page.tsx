@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { getServerSupabase } from '@/lib/supabase';
+import { logPhiAccess } from '@/lib/audit/logPhiAccess';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,7 +45,16 @@ async function fetchRiders(q: string): Promise<RiderRow[]> {
 
 export default async function RidersPage(props: { searchParams: Promise<{ q?: string }> }) {
   const { q = '' } = await props.searchParams;
-  const riders = await fetchRiders(q.trim());
+  const query = q.trim();
+  const riders = await fetchRiders(query);
+
+  // FR54: a rider search exposes PHI (names/phones) — record the access.
+  if (query) {
+    await logPhiAccess('rider_search_performed', 'rider_search', null, {
+      query,
+      result_count: riders.length,
+    });
+  }
 
   return (
     <div className="space-y-6">
