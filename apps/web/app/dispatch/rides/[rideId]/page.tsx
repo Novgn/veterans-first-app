@@ -17,6 +17,7 @@ import { Card } from '@/components/ui/Card';
 import { formatDateTime, formatMoneyCents, humanStatus } from '@/lib/format';
 import { getServerSupabase } from '@/lib/supabase';
 import { cancelRideAction } from '@/lib/dispatch/cancelRide';
+import { logPhiAccess } from '@/lib/audit/logPhiAccess';
 import {
   accessibilityBadgeLabel,
   firstRelation,
@@ -94,6 +95,9 @@ export default async function RideDetailPage(props: {
   if (!ride) {
     notFound();
   }
+
+  // FR54: record staff access to this ride's PHI (rider + destination).
+  await logPhiAccess('phi_accessed', 'rides', ride.id);
 
   const prefs = firstRelation<RiderAccessibility>(ride.rider?.rider_preferences ?? null);
   const needsAccessible = requiresAccessibleVehicle(prefs);
