@@ -6,10 +6,17 @@
 // anchor (the nav's merged "Pricing & families" tab); the family card keeps
 // #for-families for the footer link.
 
+// Pricing claims must stay literally true and internally consistent. The fare
+// figures below are the private-pay model the app actually computes; do not
+// reintroduce a single flat "$45" headline that contradicts the per-mile rate.
+// The Medicaid/VA/NEMT-billing line was removed because that capability does
+// not exist yet (private-pay only at launch) — asserting it is FTC §5
+// deception, and doubly sensitive for a veteran audience. Restore a payer line
+// only when billing is live, and phrase it as capability, never VA endorsement.
 const FARE_LINES = [
   '$25 base + $2.50 per mile',
   '20 minutes of wait time included',
-  'We bill Medicaid, VA, and most NEMT plans directly',
+  'Private pay today — Medicaid & VA billing on the way',
 ];
 
 export function PricingFamily() {
@@ -54,8 +61,10 @@ export function PricingFamily() {
               </svg>
             </span>
             <span className="leading-tight">
-              <span className="block text-[20px] font-bold text-ink">$45 locked</span>
-              <span className="block text-caption text-ink-secondary">No surge. Ever.</span>
+              <span className="block text-[20px] font-bold text-ink">Locked price</span>
+              <span className="block text-caption text-ink-secondary">
+                No surge — you see it before you confirm
+              </span>
             </span>
           </div>
 

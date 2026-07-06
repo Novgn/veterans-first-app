@@ -112,7 +112,7 @@ export function MarketingNav() {
       {open ? (
         <nav
           id="mobile-menu"
-          aria-label="Primary"
+          aria-label="Site menu"
           className="border-t border-border-hairline bg-stone px-6 pb-6 pt-2 lg:hidden"
         >
           <ul className="flex flex-col">

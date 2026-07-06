@@ -18,13 +18,17 @@ export async function sendWaitlistConfirmation(email: string): Promise<void> {
     log.info({ event: 'waitlist.email.skipped' }, 'resend not configured; skipping confirmation');
     return;
   }
+  // CAN-SPAM: this is a solicited, one-time confirmation (transactional-leaning),
+  // but the eventual launch *announcement* blast is a commercial email and MUST
+  // carry a valid physical postal address and a working opt-out/unsubscribe in
+  // its footer (15 USC 7704). Build those into the launch template, not here.
   try {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
       from: fromEmail,
       to: email,
-      subject: "You're on the list — Veterans First",
-      text: "Thanks for joining the Veterans First waitlist. We'll email you the moment the app is available to ride.",
+      subject: "You're on the list — Veterans 1st",
+      text: "Thanks for joining the Veterans 1st waitlist. We'll email you the moment the app is available to ride.",
     });
     if (error) {
       // Resend v6 resolves { data, error } instead of throwing on API-level
