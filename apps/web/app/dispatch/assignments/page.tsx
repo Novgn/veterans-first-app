@@ -24,6 +24,7 @@ import {
   requiresAccessibleVehicle,
   type RiderAccessibility,
 } from '@/lib/rider-accessibility';
+import { notifyDriverRideEvent } from '@/lib/notifications/notifyDriver';
 
 export const dynamic = 'force-dynamic';
 
@@ -87,6 +88,15 @@ async function assignRideAction(formData: FormData): Promise<void> {
   if (!rideId || !driverId) return;
 
   const supabase = await getServerSupabase();
+
+  // Capture the current driver so we can notify them on a reassignment.
+  const { data: prev } = await supabase
+    .from('rides')
+    .select('driver_id')
+    .eq('id', rideId)
+    .maybeSingle();
+  const previousDriverId = (prev as { driver_id: string | null } | null)?.driver_id ?? null;
+
   await supabase
     .from('rides')
     .update({
@@ -95,6 +105,18 @@ async function assignRideAction(formData: FormData): Promise<void> {
       updated_at: new Date().toISOString(),
     })
     .eq('id', rideId);
+
+  // FR79: notify the newly assigned driver. If this was a reassignment, also
+  // tell the previous driver the ride was taken back (deferred-finding 4-7).
+  await notifyDriverRideEvent({ type: 'driver_ride_assigned', rideId, driverId });
+  if (previousDriverId && previousDriverId !== driverId) {
+    await notifyDriverRideEvent({
+      type: 'driver_ride_cancelled',
+      rideId,
+      driverId: previousDriverId,
+      reason: 'Reassigned to another driver',
+    });
+  }
 
   revalidatePath('/dispatch/assignments');
 }

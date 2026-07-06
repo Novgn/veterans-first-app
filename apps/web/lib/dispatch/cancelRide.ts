@@ -16,6 +16,7 @@ import { redirect } from 'next/navigation';
 
 import { getCurrentUserWithRole } from '@/lib/auth/current-user';
 import { getServiceRoleSupabase } from '@/lib/supabase';
+import { notifyDriverRideEvent } from '@/lib/notifications/notifyDriver';
 import { log } from '@/lib/logger';
 
 const CANCELABLE_STATUSES = new Set([
@@ -59,10 +60,12 @@ export async function cancelRideAction(formData: FormData): Promise<void> {
   const supabase = getServiceRoleSupabase();
   const { data: existing } = await supabase
     .from('rides')
-    .select('status')
+    .select('status, driver_id')
     .eq('id', rideId)
     .maybeSingle();
-  const previousStatus = (existing as { status: string } | null)?.status;
+  const existingRow = existing as { status: string; driver_id: string | null } | null;
+  const previousStatus = existingRow?.status;
+  const assignedDriverId = existingRow?.driver_id ?? null;
 
   if (!previousStatus || !CANCELABLE_STATUSES.has(previousStatus)) {
     log.info({ event: 'dispatch.ride.cancel.skipped', previousStatus }, 'ride not cancelable');
@@ -85,6 +88,16 @@ export async function cancelRideAction(formData: FormData): Promise<void> {
       cancelled_via: 'dispatch',
     },
   });
+
+  // FR80: tell the assigned driver the ride was cancelled.
+  if (assignedDriverId) {
+    await notifyDriverRideEvent({
+      type: 'driver_ride_cancelled',
+      rideId,
+      driverId: assignedDriverId,
+      reason: reason || null,
+    });
+  }
 
   log.info({ event: 'dispatch.ride.cancelled' }, 'ride cancelled by dispatch');
   revalidatePath('/dispatch/assignments');
