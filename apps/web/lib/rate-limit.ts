@@ -26,19 +26,19 @@ export interface RateLimitResult {
   resetAt: number;
 }
 
-export async function rateLimit(key: string): Promise<RateLimitResult> {
+export async function rateLimit(key: string, max: number = MAX_REQUESTS): Promise<RateLimitResult> {
   const now = Date.now();
   const bucket = buckets.get(key);
   if (!bucket || bucket.resetAt < now) {
     const fresh: Bucket = { count: 1, resetAt: now + WINDOW_MS };
     buckets.set(key, fresh);
-    return { success: true, remaining: MAX_REQUESTS - 1, resetAt: fresh.resetAt };
+    return { success: true, remaining: max - 1, resetAt: fresh.resetAt };
   }
   bucket.count += 1;
-  if (bucket.count > MAX_REQUESTS) {
+  if (bucket.count > max) {
     return { success: false, remaining: 0, resetAt: bucket.resetAt };
   }
-  return { success: true, remaining: MAX_REQUESTS - bucket.count, resetAt: bucket.resetAt };
+  return { success: true, remaining: max - bucket.count, resetAt: bucket.resetAt };
 }
 
 // Opportunistic cleanup: called by long-lived processes to drop expired

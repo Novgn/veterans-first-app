@@ -113,7 +113,11 @@ export function WaitlistForm() {
         </Button>
       </div>
       <p className="mt-2.5 text-caption text-ink-secondary">
-        We&rsquo;ll only email you about the launch. No spam.
+        We&rsquo;ll only email you about the launch. No spam. See our{' '}
+        <a href="/privacy" className="font-medium text-navy underline hover:text-navy-700">
+          Privacy Policy
+        </a>
+        .
       </p>
     </form>
   );

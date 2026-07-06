@@ -23,10 +23,18 @@ import { z } from 'zod';
 
 import { sendWaitlistConfirmation } from '@/lib/email/resend';
 import { getServiceRoleSupabase } from '@/lib/supabase';
+import { rateLimit } from '@/lib/rate-limit';
 import { log } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+
+// Per-IP cap for this public, unauthenticated endpoint. NOTE: the limiter is
+// in-memory and therefore per-instance on Vercel's serverless runtime — it
+// blunts single-instance floods but is not a durable global limit. Swap
+// lib/rate-limit for an Upstash-backed limiter for true multi-instance
+// protection (tracked in the compliance gap analysis).
+const WAITLIST_MAX_PER_MINUTE = 5;
 
 const bodySchema = z.object({
   email: z.string().trim().email().max(254),
@@ -36,6 +44,17 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  // Shed volumetric abuse before doing any work (this is the only public,
+  // unauthenticated write on the site).
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const limit = await rateLimit(`waitlist:${ip}`, WAITLIST_MAX_PER_MINUTE);
+  if (!limit.success) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again in a minute.' },
+      { status: 429 },
+    );
+  }
+
   let json: unknown;
   try {
     json = await req.json();

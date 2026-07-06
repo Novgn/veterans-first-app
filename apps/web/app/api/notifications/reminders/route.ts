@@ -3,17 +3,21 @@
 // POST /api/notifications/reminders
 // Body: { windowMinutes: 60 | 1440 }
 //
-// Called by Vercel Cron (or external scheduler) with a Clerk-issued
-// service token. Scans `rides` for pickups within the target window and
-// dispatches a reminder for each rider that hasn't already been
-// reminded for this window. Dedupe is done via `notification_logs`.
+// Machine-only endpoint. Authenticated with a shared CRON_SECRET bearer token
+// (set the same value on the Vercel Cron job / external scheduler). It does NOT
+// accept an interactive user session — previously any signed-in user could
+// trigger the sweep. Fails closed: with no CRON_SECRET configured it returns
+// 503. Scans `rides` for pickups within the target window and dispatches a
+// reminder for each rider not already reminded for this window; dedupe via
+// `notification_logs`.
+
+import crypto from 'node:crypto';
 
 import { and, between, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 import { getDb, rides, users } from '@veterans-first/shared/db';
 
-import { getCurrentUserId } from '@/lib/auth/roles';
 import { dispatchNotification, hasDispatched } from '@/lib/notifications/dispatch';
 import {
   buildReminderMessage,
@@ -35,10 +39,22 @@ function parseWindow(minutes: number | undefined): ReminderWindow {
   return 1;
 }
 
+// Constant-time compare so a mismatched token can't be timed byte-by-byte.
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a, 'utf8');
+  const bb = Buffer.from(b, 'utf8');
+  return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
+}
+
 export async function POST(req: Request) {
-  const caller = await getCurrentUserId();
-  if (!caller) {
-    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    log.error({ event: 'notifications.reminders.unconfigured' }, 'CRON_SECRET unset; rejecting');
+    return NextResponse.json({ error: 'cron not configured' }, { status: 503 });
+  }
+  const authHeader = req.headers.get('authorization') ?? '';
+  if (!safeEqual(authHeader, `Bearer ${secret}`)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   let body: ReminderRequest = {};
