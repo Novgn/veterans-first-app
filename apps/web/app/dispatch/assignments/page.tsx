@@ -162,6 +162,12 @@ export default async function AssignmentsPage() {
                       <span className="text-callout text-ink-secondary">
                         {formatDateTime(ride.scheduled_pickup_time)}
                       </span>
+                      <Link
+                        href={`/dispatch/rides/${ride.id}`}
+                        className="text-callout font-semibold text-navy hover:underline"
+                      >
+                        Ride details
+                      </Link>
                     </div>
                     <div className="mt-3 space-y-1 text-body text-ink">
                       <div>
